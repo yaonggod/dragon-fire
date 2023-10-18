@@ -1,49 +1,40 @@
 package com.dragong.dragong.domain.game.controller;
 
-import lombok.RequiredArgsConstructor;
+import com.dragong.dragong.domain.game.dto.PeopleCounter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.HashMap;
+import java.util.Map;
 
-@RequiredArgsConstructor
+
 @RestController
 public class GameController {
-    private Queue<String> waitingPlayers = new LinkedList<>();
-    private final Lock lock = new ReentrantLock();
-    @MessageMapping("/start-game")
-    @SendTo("/topic/game-status")
-    public String startGame(@Payload String playerName) {
-        System.out.println("이거 실행됩니다");
-        waitingPlayers.add(playerName);
-        if (waitingPlayers.size() == 2) {
-            // 두 명의 플레이어가 모였을 때만 게임 시작
-            System.out.println("현재 이거 실행중");
-            String player1 = waitingPlayers.poll();
-            String player2 = waitingPlayers.poll();
-            return "Game started with " + player1 + " and " + player2;
-        }
-        System.out.println("이게 실행되어버렸다");
-        // 아직 두 명이 모이지 않았을 때 "아직 기다리는 중" 반환
-        return "아직 기다리는 중";
+    @Autowired
+    private PeopleCounter peopleCounter;
+    @MessageMapping("/ws/{roomId}/chat")
+    public void handleChat(@DestinationVariable String roomId, Message message) {
+        // roomId를 이용하여 방 관련 처리 수행
+        System.out.println("controller들어옴");
+    }
+    @GetMapping("/wait")
+    public ResponseEntity<Map<String, Integer>> assignRoom() {
+        peopleCounter.incrementPeopleCount();
+        System.out.println("대기방 입장"); // start game을 누르는 순간 입장
+        int nowNumber = peopleCounter.getPeopleCnt(); // 내가 몇 번째로 들어온 인간인지 확인
+
+        // 내가 반환해야 하는 숫자는 nowNumber + 1 / 2를 반환해야합니다.
+        int roomId = (nowNumber + 1) / 2;
+
+        // roomId를 JSON 형식으로 반환
+        Map<String, Integer> response = new HashMap<>();
+        response.put("roomId", roomId);
+
+        return ResponseEntity.ok(response);
     }
 }
