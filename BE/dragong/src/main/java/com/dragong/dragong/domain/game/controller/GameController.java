@@ -109,6 +109,13 @@ public class GameController {
         }
     }
 
-
-
+    @MessageMapping("/{roomId}/dispose")
+    public void disposeHandle() {
+        // 방을 폭파시켜야 한다.
+        System.out.println("방 폭파 명령을 받음");
+        int nowNumber = peopleCounter.getPeopleCnt(); // 내가 몇 번째로 들어온 인간인지 확인
+        if(nowNumber%2==1){
+            peopleCounter.incrementPeopleCount();
+        }
+    }
 }
