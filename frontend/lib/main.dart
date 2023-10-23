@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/main_screen.dart';
 
 void main() {
   runApp(const DragonG());
@@ -18,6 +19,7 @@ class DragonG extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      home: const MainScreen(),
     );
   }
 }
