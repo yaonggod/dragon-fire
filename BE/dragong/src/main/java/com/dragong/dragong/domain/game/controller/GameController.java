@@ -1,6 +1,7 @@
 package com.dragong.dragong.domain.game.controller;
 
 import com.dragong.dragong.domain.game.dto.PeopleCounter;
+import com.dragong.dragong.domain.game.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
@@ -9,7 +10,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,20 +19,31 @@ import java.util.Map;
 public class GameController {
     @Autowired
     private PeopleCounter peopleCounter;
-    @MessageMapping("/ws/{roomId}/chat")
-    public void handleChat(@DestinationVariable String roomId, Message message) {
-        // roomId를 이용하여 방 관련 처리 수행
-        System.out.println("controller들어옴");
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private GameService gameService;
+
+    private int localCnt=0;
+
+    @MessageMapping("/{roomId}/pickwhat")
+    @SendTo("/sub/{roomId}/pickwhat")
+    public String handleChatMessage(@DestinationVariable String roomId,String message) {
+        // 무엇을 선택했는지 저장하기 위해서
+        System.out.println("선택한 값 저장을 위해 controller 입장");
+        System.out.println(message);
+        String[] parts = message.split(":");
+        if (parts.length == 2) {
+            String nickname = parts[0].trim();
+            String picked = parts[1].trim();
+            gameService.gameStack(roomId,nickname,picked);
+            return "success";
+        } else {
+            System.out.println("올바른 메시지 형식이 아님");
+            return "error";
+        }
     }
 
-    @MessageMapping("/{roomId}")
-    @SendTo("/sub/{roomId}")
-    public String handleChatMessage(String message) {
-        // 메시지 처리 로직 수행
-        System.out.println("여기로 들어옴");
-        String letsgo = "hello";
-        return letsgo; // 처리된 메시지 다시 클라이언트로 전송
-    }
     @GetMapping("/wait")
     public ResponseEntity<Map<String, Integer>> assignRoom() {
         peopleCounter.incrementPeopleCount();
@@ -47,16 +59,56 @@ public class GameController {
 
         return ResponseEntity.ok(response);
     }
+
     @MessageMapping("/{roomId}/checkNum")
     @SendTo("/sub/{roomId}")
-    public String checkNum() {
+    public String checkNum(@DestinationVariable String roomId,String message) {
         // 게임 시작 여부를 정하기 위해서
         System.out.println("현재 몇명인지 확인합니다");
-        
-        int standard= peopleCounter.getPeopleCnt()%2;
+        System.out.println(message);
+        String nickname = message;
+        gameService.giInit(roomId,nickname);
+        int standard = peopleCounter.getPeopleCnt() % 2;
 
         // return 하는 값이 1 이라면 아직 방에 1명만 들어가 있다는 말
         // return 하는 값이 0 이라면 방에 2명이 들어간 상황이라는 말
+
+        if(standard==0){
+            // 0 일때 게임이 시작하니까
+            // gi가 몇개인지 보내줘야겠지?
+            String giMessage = gameService.giReturn(roomId);
+            messagingTemplate.convertAndSend("/sub/" + roomId+"/countGi", String.valueOf(giMessage));
+        }
         return String.valueOf(standard); // 처리된 메시지 다시 클라이언트로 전송
     }
+
+    @MessageMapping("/{roomId}/Count")
+    public void Count(@DestinationVariable String roomId){
+        // 카운트 다운을 해준다.
+        localCnt+=1;
+        if(localCnt%2==0){
+            for(int i=5;i>=0;i--){
+                try {
+                    Thread.sleep(1000);
+                }catch(InterruptedException e){
+                    Thread.currentThread().interrupt();
+                }
+
+                if(i==0){
+                    String answer= gameService.gameResult(roomId);
+                    messagingTemplate.convertAndSend("/sub/" + roomId+"/result", answer);
+
+                }else{
+                    messagingTemplate.convertAndSend("/sub/" + roomId+"/countdown", String.valueOf(i));
+                }
+                System.out.println(i);
+            }
+
+            String giMessage = gameService.giReturn(roomId);
+            messagingTemplate.convertAndSend("/sub/" + roomId+"/countGi", String.valueOf(giMessage));
+        }
+    }
+
+
+
 }
