@@ -64,12 +64,12 @@ public class GameService {
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 1) {
             // 한 명만 정보를 입력한 경우
             grd1 = gameRoom[Integer.parseInt(roomId)].poll();
-            String player1 = grd1.getNickname();
-            answer= player1;
+            answer+=grd1.getNickname()+":"+grd1.getPicked()+" "+"player2"+":"+"미처리"+" "+"무효입니다";
             return answer;
+
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 0) {
             // 둘 다 정보를 입력하지 않은 경우
-            answer = "무효입니다";
+            answer = "player1:미처리 player2:미처리 무효입니다";
             return answer;
         }
 
@@ -79,7 +79,7 @@ public class GameService {
 
         String player2 = grd2.getNickname();
         String picked2 = grd2.getPicked();
-
+        answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2+" ";
         String nick1 = giDataRoom[Integer.parseInt(roomId)].get(0).getNickname();
         int gi1 = giDataRoom[Integer.parseInt(roomId)].get(0).getGi(); // Arraylist안의 첫번째 사람의 기 개수
         String nick2 = giDataRoom[Integer.parseInt(roomId)].get(1).getNickname();// Arraylist안의 두번째 사람의 닉네임
@@ -90,94 +90,93 @@ public class GameService {
                 gi1 += 1;
                 if (picked2.equals("기")) {
                     gi2 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi2 -= 1;
-                    answer = player2;
+                    answer += player2;
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi2 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
             } else if (picked1.equals("파")) {
                 gi1 -= 1;
                 if (picked2.equals("기")) {
                     gi2 += 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("파")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi2 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else if (picked1.equals("막기")) {
                 if (picked2.equals("기")) {
                     gi2 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     gi2 -= 3;
                     // 원기옥
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else if (picked1.equals("순간이동")) {
                 gi1 -= 1;
                 if (picked2.equals("기")) {
                     gi2 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi2 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else {
                 gi1 -= 3;
                 if (picked2.equals("기")) {
                     gi2 += 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("파")) {
                     gi2 += 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("막기")) {
-
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     //원기옥
                     gi2 -= 3;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 }
 
             }
@@ -187,99 +186,100 @@ public class GameService {
                 gi2 += 1;
                 if (picked2.equals("기")) {
                     gi1 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
-                    answer = player2;
+                    answer += player2;
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi1 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
             } else if (picked1.equals("파")) {
                 gi2 -= 1;
                 if (picked2.equals("기")) {
                     gi1 += 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi1 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else if (picked1.equals("막기")) {
                 if (picked2.equals("기")) {
                     gi1 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi1 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else if (picked1.equals("순간이동")) {
                 gi2 -= 1;
                 if (picked2.equals("기")) {
                     gi1 += 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("막기")) {
 
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     // 원기옥
                     gi1 -= 3;
-                    answer = player2;
+                    answer += player2;
                 }
 
             } else {
                 gi2 -= 3;
                 if (picked2.equals("기")) {
                     gi1 += 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("막기")) {
-                    answer = player1;
+                    answer += player1;
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 } else {
                     //원기옥
                     gi1 -= 3;
-                    answer = "비겼습니다";
+                    answer += "비겼습니다";
                 }
 
             }
 
         }
+
 
         // 이제 다시 넣어줘야한다.
         GiData giData1 = new GiData(nick1, gi1);

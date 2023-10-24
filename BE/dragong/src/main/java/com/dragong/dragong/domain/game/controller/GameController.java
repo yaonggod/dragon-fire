@@ -87,7 +87,7 @@ public class GameController {
         // 카운트 다운을 해준다.
         localCnt+=1;
         if(localCnt%2==0){
-            for(int i=5;i>=0;i--){
+            for(int i=3;i>=0;i--){
                 try {
                     Thread.sleep(1000);
                 }catch(InterruptedException e){
@@ -96,6 +96,17 @@ public class GameController {
 
                 if(i==0){
                     String answer= gameService.gameResult(roomId);
+                    // 이건 이제 0초가 되는 순간을 생각하는건데. => 지금은 그냥 바로 재 경기를 실시하거나, 게임 결과가 나왔다.
+                    // 하지만 이 사이에 gif를 추가해줄 계획이다. gif를 보여주는 시간은 일단 3초라고 생각하자.
+                    System.out.println(answer);
+                    for(int j=3;j>=0;j--){
+                        try {
+                            Thread.sleep(1000);
+                        }catch(InterruptedException e){
+                            Thread.currentThread().interrupt();
+                        }
+                        messagingTemplate.convertAndSend("/sub/" + roomId+"/selected", String.valueOf(j)+" "+answer);
+                    }
                     messagingTemplate.convertAndSend("/sub/" + roomId+"/result", answer);
 
                 }else{
