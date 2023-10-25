@@ -1,6 +1,9 @@
 package com.dragong.dragong.member.entity;
 
 import com.dragong.dragong.global.common.BaseTimeEntity;
+import com.dragong.dragong.member.entity.auth.GoogleAuth;
+import com.dragong.dragong.member.entity.auth.NaverAuth;
+import com.dragong.dragong.member.entity.auth.RefreshToken;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,10 +41,36 @@ public class Member extends BaseTimeEntity {
             optional = false)
     private MemberInfo memberInfo;
 
+    @OneToOne(mappedBy = "member",
+            fetch = FetchType.LAZY)
+    private GoogleAuth googleAuth;
+
+    @OneToOne(mappedBy = "member",
+            fetch = FetchType.LAZY)
+    private NaverAuth naverAuth;
+
+
+    @OneToOne(mappedBy = "member",
+            fetch = FetchType.LAZY)
+    private RefreshToken refreshToken;
+
     // member 먼저 생성 후 memberInfo를 생성해야하므로 builder와 따로
-    public void addMemberInfo(MemberInfo memberInfo){
+    public void addMemberInfo(MemberInfo memberInfo) {
         this.memberInfo = memberInfo;
     }
+
+    public void addGoogleAuth(GoogleAuth googleAuth) {
+        this.googleAuth = googleAuth;
+    }
+
+    public void addNaverAuth(NaverAuth naverAuth) {
+        this.naverAuth = naverAuth;
+    }
+
+    public void addRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 
     @Builder
     public Member(UUID memberId, Role role, SocialType socialType, boolean quitFlag) {
