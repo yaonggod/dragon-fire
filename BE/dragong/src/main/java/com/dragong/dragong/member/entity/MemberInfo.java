@@ -32,4 +32,9 @@ public class MemberInfo extends BaseTimeEntity {
         this.member = member;
         this.nickname = nickname;
     }
+
+    @Builder(builderMethodName = "updateNicknameBuilder")
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
 }
