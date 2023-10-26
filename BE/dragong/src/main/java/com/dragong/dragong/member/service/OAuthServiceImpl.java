@@ -1,5 +1,8 @@
 package com.dragong.dragong.member.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,5 +34,32 @@ public class OAuthServiceImpl implements OAuthService {
         String email = response.get("email").toString();
 
         return email;
+    }
+
+    // 네이버 인증 서버에 AccessToken 보내서 정보 받아오기
+    @Override
+    public String getNaverEmailInfo(String accessToken) {
+        webClient = WebClient.create("https://openapi.naver.com/v1/nid/me");
+
+        Map<String, Object> response =
+                webClient
+                        .get()
+                        .uri(uriBuilder ->
+                                uriBuilder
+                                        .queryParam("access_token", accessToken)
+                                        .build())
+                        .retrieve()
+                        .bodyToMono(Map.class)
+                        .block();
+
+        // 네이버는 response 안의 response 객체에 이메일이 들어있음
+        ObjectMapper mapper = new ObjectMapper();
+
+        // 그런데 Map으로 만들려면 Exception띄워야댐....
+        Map<String, Object> res = mapper.readValue(response.get("response").toString(), Map.class);
+        String email = res.get("email").toString();
+
+        return email;
+
     }
 }
