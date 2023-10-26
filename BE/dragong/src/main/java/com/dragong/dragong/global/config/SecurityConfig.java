@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers(new AntPathRequestMatcher("/member/oauth/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/oauth/**")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

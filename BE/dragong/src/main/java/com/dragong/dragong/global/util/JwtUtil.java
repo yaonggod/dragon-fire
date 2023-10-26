@@ -1,6 +1,8 @@
 package com.dragong.dragong.global.util;
 
+import com.dragong.dragong.member.entity.Member;
 import com.dragong.dragong.member.entity.Role;
+import com.dragong.dragong.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -8,12 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
     @Value("${spring.jwt.secret}")
@@ -27,6 +31,8 @@ public class JwtUtil {
 
     @Value("${spring.jwt.access_expire}")
     private long accessExpirationTime;
+
+    private final MemberRepository memberRepository;
 
 
     public String generateAccessToken(UUID memberId, Role role) {
@@ -59,8 +65,12 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return true;
+            // secret 키와 일치한지 확인
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Date expirationDate = claims.getExpiration();
+
+            // 현재 날짜와 만료일을 비교해서 현재 날짜보다 이전이면 만료, 현재 날짜보다 이후이면 유효
+            return !expirationDate.before(new Date());
         } catch (Exception e) {
             return false;
         }
@@ -83,6 +93,32 @@ public class JwtUtil {
 
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         response.setHeader("refreshtoken", "Bearer " + refreshToken);
+    }
+
+    /*
+     * 리프레시 토큰이 유효하고 액세스 토큰이 만료된 경우
+     * 액세스 토큰을 재발급해줌과 동시에 리프레시 토큰을 재발급해준다.
+     */
+    public Map<String, String> refreshTokens(String refreshToken) {
+        if (validateToken(refreshToken)) {
+            Claims refreshTokenClaims = Jwts.parser().setSigningKey(secret)
+                    .parseClaimsJws(refreshToken).getBody();
+
+            Member member = memberRepository.findMemberByRefreshToken_RefreshToken(refreshToken)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException());
+            // 새로운 액세스 토큰 생성
+            String newAccessToken = generateAccessToken(member.getMemberId(), Role.USER);
+
+            // 새로운 리프레시 토큰 생성
+            String newRefreshToken = generateRefreshToken();
+
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("Authorization", newAccessToken);
+            tokens.put("refreshToken", newRefreshToken);
+            return tokens;
+        }
+        return null;
     }
 
 }
