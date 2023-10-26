@@ -86,7 +86,7 @@ public class GameController {
         int localCnt = gameService.evenReturn(roomId);
         if (localCnt % 2 == 0) {
             gameService.cleanList(roomId);
-            for (int i = 5; i >= 0; i--) {
+            for (int i = 3; i >= 0; i--) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
