@@ -1,5 +1,7 @@
 package com.dragong.dragong.playResult.service;
 
+import com.dragong.dragong.playResult.dto.GetMyRankRequestDto;
+import com.dragong.dragong.playResult.dto.GetRankRequestDto;
 import java.util.UUID;
 
 public interface PlayResultService {
@@ -7,6 +9,9 @@ public interface PlayResultService {
     // 동일한 키에 스트링을 순서대로 넣으면 리스트가 됨(LPUSH 해야함)
 
 
-    void findRank();
+    void putRank();
 
+    GetRankRequestDto getRank();
+
+    GetMyRankRequestDto getMyRank(String accessToken);
 }
