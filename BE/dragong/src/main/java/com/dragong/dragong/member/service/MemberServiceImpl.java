@@ -3,7 +3,6 @@ package com.dragong.dragong.member.service;
 import com.dragong.dragong.global.util.JwtUtil;
 import com.dragong.dragong.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.member.dto.request.LoginRequestDto;
-import com.dragong.dragong.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.member.entity.Member;
 import com.dragong.dragong.member.entity.MemberInfo;
 import com.dragong.dragong.member.entity.Role;
@@ -30,57 +29,60 @@ public class MemberServiceImpl implements MemberService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuthService googleService;
 
-    // 이미 있는 유저인지 확인
+
     @Override
     @Transactional
-    public LoginResponseDto checkMember(LoginRequestDto verifyMemberRequestDto,
-            SocialType socialType, HttpServletResponse httpServletResponse) {
-        if (socialType == SocialType.GOOGLE) {
-            // access_token으로 구글로부터 유저 이메일을 불러옴
+    public void login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
+
+        //구글 로그인 여부 확인
+        if (loginRequestDto.getSocialType() == SocialType.GOOGLE) {
+
+            // access_token의 구글로부터 유저 이메일 요청
             String email = googleService.getGoogleEmailInfo(
-                    verifyMemberRequestDto.getAccessToken());
+                    loginRequestDto.getAccessToken());
 
-            // DB에서 이메일 조회
+            // DB에서 구글 이메일 조회
             GoogleAuth googleAuth = googleAuthRepository.findByEmail(email)
-                    .orElseThrow(() -> new NoSuchElementException());
+                    .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
 
-            //jwt 발급
+            // 회원인 경우
+            // jwt 발급
             String accessToken = jwtUtil.generateAccessToken(googleAuth.getMemberId(),
                     googleAuth.getMember()
                             .getRole());
             String refreshToken = jwtUtil.generateRefreshToken();
 
-            LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-
+            // 기존 회원정보 불러오기
             Member member = googleAuth.getMember();
+            RefreshToken refreshTokenEntity = member.getRefreshToken();
 
-            RefreshToken refreshTokenEntity = RefreshToken.builder()
-                    .member(member)
-                    .refreshToken(refreshToken)
-                    .build();
+            // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
+            if(refreshTokenEntity != null){
 
-            member.addRefreshToken(refreshTokenEntity);
-            refreshTokenRepository.save(refreshTokenEntity);
+                // db에 refreshToken update
+                refreshTokenEntity.updateRefreshToken(refreshToken);
 
-            // 헤더에 토큰 담기
-            jwtUtil.setHeaderRefreshToken(httpServletResponse, loginResponseDto.getRefreshToken());
-            jwtUtil.setHeaderAccessToken(httpServletResponse, loginResponseDto.getAccessToken());
+            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+            }else {
 
-            return loginResponseDto;
+                // db에 refreshToken 저장
+                RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                        .member(member)
+                        .refreshToken(refreshToken)
+                        .build();
+
+                member.addRefreshToken(newRefreshTokenEntity);
+                refreshTokenRepository.save(newRefreshTokenEntity);
+            }
+
+            httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
+            httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
             // 네이버
         } else {
             String accessToken = "123";
             String refreshToken = "123";
 
-            LoginResponseDto loginResponseDto = LoginResponseDto.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-            return loginResponseDto;
         }
     }
 
@@ -116,28 +118,13 @@ public class MemberServiceImpl implements MemberService {
                     .email(email)
                     .build();
 
-            String accessToken = jwtUtil.generateAccessToken(memberId,
-                    member.getRole());
-            String refreshToken = jwtUtil.generateRefreshToken();
-
-            RefreshToken refreshTokenEntity = RefreshToken.builder()
-                    .member(member)
-                    .refreshToken(refreshToken)
-                    .build();
-
             member.addMemberInfo(memberInfo);
             member.addGoogleAuth(googleAuth);
-            member.addRefreshToken(refreshTokenEntity);
             memberInfoRepository.save(memberInfo);
             googleAuthRepository.save(googleAuth);
-            refreshTokenRepository.save(refreshTokenEntity);
 
             // memberInfo 저장시 member 또한 저장됨
             // memberRepository.save(member);
-
-            // 헤더에 토큰 담기
-            jwtUtil.setHeaderRefreshToken(httpServletResponse, accessToken);
-            jwtUtil.setHeaderAccessToken(httpServletResponse, refreshToken);
         }
     }
 

@@ -3,7 +3,6 @@ package com.dragong.dragong.member.controller;
 
 import com.dragong.dragong.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.member.dto.request.LoginRequestDto;
-import com.dragong.dragong.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.member.entity.SocialType;
 import com.dragong.dragong.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,20 +22,19 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/login/{socialType}")
-    public ResponseEntity<?> verify_token(@RequestBody LoginRequestDto memberRequestDto,
-            @PathVariable("socialType") SocialType socialType,
-            HttpServletResponse httpServletResponse) {
+    @PostMapping("/login")
+    public ResponseEntity<?> loginMember(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
         try {
-            LoginResponseDto loginResponseDto = memberService.checkMember(memberRequestDto,
-                    socialType, httpServletResponse);
-            return ResponseEntity.ok(loginResponseDto);
+            // 로그인
+            memberService.login(loginRequestDto, httpServletResponse);
+            return new ResponseEntity<>("success", HttpStatus.OK);
         } catch (Exception e) {
+            // 회원가입
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PostMapping("/regist/{socialType}")
+    @PostMapping("/{socialType}")
     public ResponseEntity<?> registMember(
             @RequestBody RegistRequestDto registRequestDto,
             @PathVariable("socialType") SocialType socialType,
@@ -46,16 +44,6 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/jwt/login")
-    public ResponseEntity<?> jwtLogin(HttpServletResponse httpServletResponse) {
-        try {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
