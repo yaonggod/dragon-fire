@@ -34,4 +34,10 @@ public class RefreshToken {
         this.member = member;
         this.refreshToken = refreshToken;
     }
+
+    @Builder(builderMethodName = "updateRefreshTokenBuilder")
+    public void updateRefreshToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
+
 }

@@ -2,8 +2,8 @@ package com.dragong.dragong.member.entity;
 
 public enum SocialType {
 
-    GOOGLE("Goolge"),
-    NAVER("Naver");
+    GOOGLE("GOOGLE"),
+    NAVER("NAVER");
 
     private final String socialType;
 
