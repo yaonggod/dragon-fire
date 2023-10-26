@@ -1,17 +1,14 @@
 package com.dragong.dragong.playResult.service.serviceImpl;
 
 import com.dragong.dragong.global.util.JwtUtil;
-import com.dragong.dragong.member.entity.Member;
 import com.dragong.dragong.playResult.dto.GetMyRankRequestDto;
 import com.dragong.dragong.playResult.dto.GetRankRequestDto;
 import com.dragong.dragong.playResult.entity.PlayResult;
-import com.dragong.dragong.playResult.entity.PlayResultEmpId;
 import com.dragong.dragong.playResult.repository.PlayResultRepository;
 import com.dragong.dragong.playResult.service.PlayResultService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
