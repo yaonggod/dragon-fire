@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -8,11 +9,21 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  void _navigateToLoginScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
+        title: Center(
           child: Column(
             children: [
               Text(
@@ -20,6 +31,10 @@ class _MainScreenState extends State<MainScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                 ),
+              ),
+              ElevatedButton(
+                onPressed: _navigateToLoginScreen,
+                child: Text("로그인 페이지"),
               ),
               Text(
                 '천하제일 쎄쎄쎄',
