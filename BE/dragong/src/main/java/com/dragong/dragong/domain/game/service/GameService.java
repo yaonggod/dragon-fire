@@ -17,13 +17,35 @@ public class GameService {
 
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000];
 
+    private final Queue<Integer> user = new LinkedList<>();
+    private int total=0;
+
     @PostConstruct
     public void initializeGameRoom() {
         for (int i = 0; i < gameRoom.length; i++) {
             gameRoom[i] = new LinkedList<>();
             giDataRoom[i] = new ArrayList<>();
-            countDownandstartGame[i]= new ArrayList<>();
+            countDownandstartGame[i] = new ArrayList<>();
         }
+    }
+
+    public int enter() {
+        // 한 명 들어올 때마다 Queue에 넣어준다.
+        // 그리고 한 명을 넣은 순간! 몇 명이 남아 있는지 확인해준다.
+        total+=1;
+        user.add(total);
+        return user.peek();
+    }
+
+    public void gameStart(){
+        // 2 명을 빼준다
+        user.poll();
+        user.poll();
+
+    }
+    public void gameStop(){
+        user.poll(); // 혼자 일 때 나가는 경우
+        total-=1;
     }
 
     public int giInit(String roomId, String nickname) {
@@ -33,6 +55,10 @@ public class GameService {
 
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
+    public void giClear(String roomId){
+        giDataRoom[Integer.parseInt(roomId)].clear();
+    }
+
 
     public String giReturn(String roomId) {
         String answer = "";
@@ -54,11 +80,12 @@ public class GameService {
         //들어오는 값들을 확인하고
     }
 
-    public void messageInsert(String roomId,String nickname) {
+    public void messageInsert(String roomId, String nickname) {
         // 양쪽에서 메시지 전달을 받았는지 확인하기 위한 용도
         countDownandstartGame[Integer.parseInt(roomId)].add(nickname);
     }
-    public String returnName(String roomId){
+
+    public String returnName(String roomId) {
         return countDownandstartGame[Integer.parseInt(roomId)].get(0);
     }
 
@@ -90,9 +117,9 @@ public class GameService {
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 1) {
             // 한 명만 정보를 입력한 경우
             grd1 = gameRoom[Integer.parseInt(roomId)].poll();
-            if(grd1.getNickname().equals(countDownandstartGame[Integer.parseInt(roomId)].get(0))){
+            if (grd1.getNickname().equals(countDownandstartGame[Integer.parseInt(roomId)].get(0))) {
                 answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[Integer.parseInt(roomId)].get(1) + ":" + "미처리" + " " + grd1.getNickname();
-            }else{
+            } else {
                 answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[Integer.parseInt(roomId)].get(0) + ":" + "미처리" + " " + grd1.getNickname();
             }
 
@@ -100,7 +127,7 @@ public class GameService {
 
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 0) {
             // 둘 다 정보를 입력하지 않은 경우
-            answer=countDownandstartGame[Integer.parseInt(roomId)].get(0)+":미처리"+" "+countDownandstartGame[Integer.parseInt(roomId)].get(1)+":미처리"+" "+"무효입니다";
+            answer = countDownandstartGame[Integer.parseInt(roomId)].get(0) + ":미처리" + " " + countDownandstartGame[Integer.parseInt(roomId)].get(1) + ":미처리" + " " + "무효입니다";
             return answer;
         }
 
