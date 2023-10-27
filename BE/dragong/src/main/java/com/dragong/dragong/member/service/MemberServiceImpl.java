@@ -175,6 +175,8 @@ public class MemberServiceImpl implements MemberService {
             String email = oAuthService.getNaverEmailInfo(
                     registRequestDto.getAccessToken());
 
+            System.out.println(email);
+
             // 이미 회원가입을 한 회원인 경우
             if (naverAuthRepository.findByEmail(email).isPresent()) {
                 throw new RuntimeException();
