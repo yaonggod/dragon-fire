@@ -32,6 +32,7 @@ public class GameService {
     public int enter() {
         // 한 명 들어올 때마다 Queue에 넣어준다.
         // 그리고 한 명을 넣은 순간! 몇 명이 남아 있는지 확인해준다.
+        System.out.println("현재 userQueue에 있는 사람의 수는: "+user.size());
         total+=1;
         user.add(total);
         return user.peek();
@@ -56,6 +57,8 @@ public class GameService {
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
     public void giClear(String roomId){
+        System.out.println("현재 giDataRoom[roomId]에 있는 자료의 수는: "+giDataRoom[Integer.parseInt(roomId)].size());
+        System.out.println("이를 지웁니다");
         giDataRoom[Integer.parseInt(roomId)].clear();
     }
 
