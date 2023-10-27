@@ -41,20 +41,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (memberId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // 액세스, 리프레시 토큰이 모두 유효한 경우
-            if (jwtUtil.validateToken(accessToken) && jwtUtil.validateToken(refreshToken)) {
+            if (jwtUtil.validateAccessToken(accessToken) && jwtUtil.validateRefreshToken(
+                    refreshToken)) {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                         memberId, null, new ArrayList<>());
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);
 
-            // 액세스 토큰만 만료된 경우
-            } else if (!jwtUtil.validateToken(accessToken) && jwtUtil.validateToken(refreshToken)){
+                // 액세스 토큰만 만료된 경우
+            } else if (!jwtUtil.validateAccessToken(accessToken) && jwtUtil.validateRefreshToken(
+                    refreshToken)) {
                 Map<String, String> newTokens = jwtUtil.refreshTokens(refreshToken);
                 response.setHeader("Authorization", "Bearer " + newTokens.get("Authorization"));
                 response.setHeader("refreshToken", "Bearer " + newTokens.get("refreshToken"));
 
-            // 액세스, 리프레시 모두 만료된 경우
-            } else if(!jwtUtil.validateToken(accessToken) && !jwtUtil.validateToken(refreshToken)){
+                // 액세스, 리프레시 모두 만료된 경우
+            } else if (!jwtUtil.validateAccessToken(accessToken) && !jwtUtil.validateRefreshToken(
+                    refreshToken)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("토큰 유효하지 않음");
             }

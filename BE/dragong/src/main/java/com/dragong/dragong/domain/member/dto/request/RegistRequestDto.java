@@ -1,4 +1,4 @@
-package com.dragong.dragong.member.dto.request;
+package com.dragong.dragong.domain.member.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,19 +1,22 @@
-package com.dragong.dragong.member.service;
+package com.dragong.dragong.domain.member.service;
 
+import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
+import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
+import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.entity.Member;
+import com.dragong.dragong.domain.member.entity.MemberInfo;
+import com.dragong.dragong.domain.member.entity.Role;
+import com.dragong.dragong.domain.member.entity.SocialType;
+import com.dragong.dragong.domain.member.entity.auth.GoogleAuth;
+import com.dragong.dragong.domain.member.entity.auth.NaverAuth;
+import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
+import com.dragong.dragong.domain.member.repository.GoogleAuthRepository;
+import com.dragong.dragong.domain.member.repository.MemberInfoRepository;
+import com.dragong.dragong.domain.member.repository.MemberRepository;
+import com.dragong.dragong.domain.member.repository.NaverAuthRepository;
+import com.dragong.dragong.domain.member.repository.RefreshTokenRepository;
 import com.dragong.dragong.global.util.JwtUtil;
-import com.dragong.dragong.member.dto.request.RegistRequestDto;
-import com.dragong.dragong.member.dto.request.LoginRequestDto;
-import com.dragong.dragong.member.entity.Member;
-import com.dragong.dragong.member.entity.MemberInfo;
-import com.dragong.dragong.member.entity.Role;
-import com.dragong.dragong.member.entity.SocialType;
-import com.dragong.dragong.member.entity.auth.GoogleAuth;
-import com.dragong.dragong.member.entity.auth.NaverAuth;
-import com.dragong.dragong.member.entity.auth.RefreshToken;
-import com.dragong.dragong.member.repository.GoogleAuthRepository;
-import com.dragong.dragong.member.repository.MemberInfoRepository;
-import com.dragong.dragong.member.repository.NaverAuthRepository;
-import com.dragong.dragong.member.repository.RefreshTokenRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
 
     private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
     private final MemberInfoRepository memberInfoRepository;
     private final GoogleAuthRepository googleAuthRepository;
     private final NaverAuthRepository naverAuthRepository;
@@ -60,13 +64,13 @@ public class MemberServiceImpl implements MemberService {
             RefreshToken refreshTokenEntity = member.getRefreshToken();
 
             // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
-            if(refreshTokenEntity != null){
+            if (refreshTokenEntity != null) {
 
                 // db에 refreshToken update
                 refreshTokenEntity.updateRefreshToken(refreshToken);
 
-            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
-            }else {
+                // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+            } else {
 
                 // db에 refreshToken 저장
                 RefreshToken newRefreshTokenEntity = RefreshToken.builder()
@@ -81,7 +85,7 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
-        // 네이버
+            // 네이버
         } else {
             // AccessToken으로 네이버에 요청해서 유저 이메일 받아오기
             String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
@@ -104,12 +108,12 @@ public class MemberServiceImpl implements MemberService {
             RefreshToken refreshTokenEntity = member.getRefreshToken();
 
             // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
-            if (refreshTokenEntity != null){
+            if (refreshTokenEntity != null) {
 
                 // db에 refreshToken update
                 refreshTokenEntity.updateRefreshToken(refreshToken);
 
-            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+                // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
             } else {
 
                 // db에 refreshToken 저장
@@ -168,7 +172,7 @@ public class MemberServiceImpl implements MemberService {
             // memberInfo 저장시 member 또한 저장됨
             // memberRepository.save(member);
 
-        // 네이버로 회원가입했음
+            // 네이버로 회원가입했음
         } else {
             // AccessToken으로 네이버의 이메일을 가져와서
             String email = oAuthService.getNaverEmailInfo(
@@ -215,4 +219,61 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    @Override
+    @Transactional
+    public void update(UpdateRequestDto updateRequestDto, HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+
+        // 헤더에 담겨온 액세스 토큰 가져옴
+        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
+
+        UUID memberId = jwtUtil.extractMemberId(accessToken);
+
+        MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        memberInfo.updateNickname(updateRequestDto.getNickname());
+    }
+
+    @Override
+    @Transactional
+    public void nicknameCheck(String nickname, HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+        if (memberInfoRepository.existsByNicknameAndMember_QuitFlagIsFalse(nickname)) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void logout(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+
+        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
+        String refreshToken = httpServletRequest.getHeader("refreshToken").substring(7);
+
+        UUID memberId = jwtUtil.extractMemberId(accessToken);
+
+        Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        RefreshToken refreshTokenEntity = member.getRefreshToken();
+
+        refreshTokenEntity.updateRefreshToken(null);
+    }
+
+    @Override
+    @Transactional
+    public void delete(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+        System.out.println(123);
+        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
+        System.out.println(accessToken);
+        System.out.println(123);
+        UUID memberId = jwtUtil.extractMemberId(accessToken);
+
+        Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        member.deleteMember();
+    }
 }

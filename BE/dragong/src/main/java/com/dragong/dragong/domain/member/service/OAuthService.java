@@ -1,4 +1,4 @@
-package com.dragong.dragong.member.service;
+package com.dragong.dragong.domain.member.service;
 
 public interface OAuthService {
 
