@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_sign_in: ^6.1.5
   flutter_secure_storage: ^9.0.0
+  flutter_naver_login: ^1.8.0
 
 dev_dependencies:
   flutter_test:
