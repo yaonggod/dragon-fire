@@ -44,8 +44,6 @@ public class GameController {
 
     @GetMapping("/wait")
     public ResponseEntity<Map<String, Integer>> assignRoom() {
-
-
         System.out.println("대기방 입장"); // start game을 누르는 순간 입장
 
         int nowNumber = gameService.enter(); // 몇 번째로 들어온 사람인지 확인한다.
@@ -67,10 +65,8 @@ public class GameController {
         String nickname = message;
 
         int standard = gameService.giInit(roomId, nickname) % 2;
-
         // return 하는 값이 1 이라면 아직 방에 1명만 들어가 있다는 말
         // return 하는 값이 0 이라면 방에 2명이 들어간 상황이라는 말
-
         if (standard == 0) {
             // 0 일때 게임이 시작하니까
             // gi가 몇개인지 보내줘야겠지?
@@ -162,7 +158,6 @@ public class GameController {
                 }
                 System.out.println(i);
             }
-
             String giMessage = gameService.giReturn(roomId);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
         }
@@ -176,6 +171,7 @@ public class GameController {
         //두명일 때는 false를 return 하고 혼자 있는 방을 나올 때는 true를 return 한다
         if(message.equals("true")){
             // 혼자 일 때
+            System.out.println("혼자 인데 방 폭파 명령을 받았습니다.");
             gameService.giClear(roomId);
             gameService.gameStop();
         }
