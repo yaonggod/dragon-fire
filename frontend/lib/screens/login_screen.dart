@@ -82,10 +82,11 @@ class _LoginScreenState extends State<LoginScreen> {
         FlutterSecureStorage storage = new FlutterSecureStorage();
         storage.deleteAll();
         print("로그아웃 완료");
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => MainScreen()),
+            (route) => false,
         );
       }
       setState(() {});
@@ -108,10 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
         FlutterSecureStorage storage = new FlutterSecureStorage();
         storage.deleteAll();
         print("탈퇴 완료");
-        Navigator.push(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => MainScreen()),
+              (route) => false,
         );
       }
       setState(() {});
