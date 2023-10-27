@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/main_screen.dart';
 import 'package:frontend/screens/regist_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,13 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    final storage = new FlutterSecureStorage();
-    storage.deleteAll();
     _checkLoginStatus();
   }
 
   Future<void> _checkLoginStatus() async {
-    List<String> tokens = await readToken();
+    Map<String, String> tokens = await readToken();
     setState(() {
       _isLoggedIn = tokens.isNotEmpty;
     });
@@ -66,9 +65,57 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  _logout() {
-    _googleSignIn.signOut();
-    setState(() {});
+  _logout() async {
+    Map<String, String> list = await readToken();
+    if(list.isNotEmpty) {
+      _googleSignIn.signOut();
+      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
+      final response = await http.post(uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + list["Authorization"]!,
+            'refreshToken': 'Bearer ' + list['refreshToken']!
+          },
+         );
+
+      if (response.statusCode == 200) {
+        FlutterSecureStorage storage = new FlutterSecureStorage();
+        storage.deleteAll();
+        print("로그아웃 완료");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MainScreen()),
+        );
+      }
+      setState(() {});
+    }
+  }
+  _out() async {
+    Map<String, String> list = await readToken();
+    if(list.isNotEmpty) {
+      _googleSignIn.signOut();
+      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
+      final response = await http.delete(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + list["Authorization"]!,
+          'refreshToken': 'Bearer ' + list['refreshToken']!
+        },
+      );
+
+      if (response.statusCode == 200) {
+        FlutterSecureStorage storage = new FlutterSecureStorage();
+        storage.deleteAll();
+        print("탈퇴 완료");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MainScreen()),
+        );
+      }
+      setState(() {});
+    }
   }
 
   void saveToken(String accessToken, String refreshToken) async {
@@ -77,15 +124,15 @@ class _LoginScreenState extends State<LoginScreen> {
     await storage.write(key: 'refreshToken', value: refreshToken);
   }
 
-  Future<List<String>> readToken() async {
+  Future<Map<String, String>> readToken() async {
     final storage = new FlutterSecureStorage();
-    List<String> list = [];
+    Map<String, String> list = {};
     String? accessToken = await storage.read(key: 'accessToken');
     String? refreshToken = await storage.read(key: 'refreshToken');
 
     if (accessToken != null && refreshToken != null) {
-      list.add(accessToken);
-      list.add(refreshToken);
+      list['Authorization']=accessToken;
+      list['refreshToken']=refreshToken;
     }
 
     return list;
@@ -140,6 +187,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   )
                 : Container(),
+            if(_isLoggedIn)
+              MaterialButton(
+                color: Colors.red,
+                child: Text(
+                  '회원탈퇴',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _out();
+                  print('회원탈퇴.');
+                },
+            )
           ],
         ),
       ),
