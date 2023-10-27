@@ -1,4 +1,4 @@
-package com.dragong.dragong.member.service;
+package com.dragong.dragong.domain.member.service;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +41,12 @@ public class OAuthServiceImpl implements OAuthService {
         // 해더에 AT 넣기
         webClient = WebClient.builder().
                 baseUrl("https://openapi.naver.com/v1/nid/me").
-                defaultHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken)).build();
+                defaultHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken))
+                .build();
 
         // response를 map 형태로 받아오기
-        Map<String, Object> response = webClient.get().uri("").retrieve().bodyToMono(Map.class).block();
+        Map<String, Object> response = webClient.get().uri("").retrieve().bodyToMono(Map.class)
+                .block();
 
         // response 안에 response 객체가 한 번 더 들어있음
         String res = response.get("response").toString();

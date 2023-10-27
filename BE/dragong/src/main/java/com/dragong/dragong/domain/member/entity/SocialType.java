@@ -1,4 +1,4 @@
-package com.dragong.dragong.member.entity;
+package com.dragong.dragong.domain.member.entity;
 
 public enum SocialType {
 
@@ -7,11 +7,11 @@ public enum SocialType {
 
     private final String socialType;
 
-    SocialType(String socialType){
+    SocialType(String socialType) {
         this.socialType = socialType;
     }
 
-    public String getSocialType(){
+    public String getSocialType() {
         return socialType;
     }
 
