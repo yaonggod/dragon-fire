@@ -1,7 +1,6 @@
-package com.dragong.dragong.member.entity.auth;
+package com.dragong.dragong.domain.member.entity.auth;
 
-
-import com.dragong.dragong.member.entity.Member;
+import com.dragong.dragong.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class RefreshToken {
+public class GoogleAuth {
 
     @Id
     private UUID memberId;
@@ -25,19 +24,12 @@ public class RefreshToken {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
-
     @Column
-    private String refreshToken;
+    private String email;
 
     @Builder
-    public RefreshToken(Member member, String refreshToken){
+    public GoogleAuth(Member member, String email) {
         this.member = member;
-        this.refreshToken = refreshToken;
+        this.email = email;
     }
-
-    @Builder(builderMethodName = "updateRefreshTokenBuilder")
-    public void updateRefreshToken(String refreshToken){
-        this.refreshToken = refreshToken;
-    }
-
 }

@@ -1,9 +1,9 @@
-package com.dragong.dragong.member.entity;
+package com.dragong.dragong.domain.member.entity;
 
+import com.dragong.dragong.domain.member.entity.auth.GoogleAuth;
+import com.dragong.dragong.domain.member.entity.auth.NaverAuth;
+import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
 import com.dragong.dragong.global.common.BaseTimeEntity;
-import com.dragong.dragong.member.entity.auth.GoogleAuth;
-import com.dragong.dragong.member.entity.auth.NaverAuth;
-import com.dragong.dragong.member.entity.auth.RefreshToken;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -71,6 +71,9 @@ public class Member extends BaseTimeEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void deleteMember() {
+        this.quitFlag = true;
+    }
 
     @Builder
     public Member(UUID memberId, Role role, SocialType socialType, boolean quitFlag) {

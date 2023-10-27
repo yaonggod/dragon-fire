@@ -44,9 +44,9 @@ public class GameController {
 
     @GetMapping("/wait")
     public ResponseEntity<Map<String, Integer>> assignRoom() {
-        peopleCounter.incrementPeopleCount();
         System.out.println("대기방 입장"); // start game을 누르는 순간 입장
-        int nowNumber = peopleCounter.getPeopleCnt(); // 내가 몇 번째로 들어온 인간인지 확인
+
+        int nowNumber = gameService.enter(); // 몇 번째로 들어온 사람인지 확인한다.
         // 내가 반환해야 하는 숫자는 nowNumber + 1 / 2를 반환해야합니다.
         int roomId = (nowNumber + 1) / 2;
         // roomId를 JSON 형식으로 반환
@@ -59,18 +59,18 @@ public class GameController {
     @SendTo("/sub/{roomId}/numCheck")
     public String checkNum(@DestinationVariable String roomId, String message) {
         // 게임 시작 여부를 정하기 위해서
+        // 이건 socket 연결이 되자마자 자동적으로 보내는 것이다.
         System.out.println("현재 몇명인지 확인합니다");
         System.out.println(message);
         String nickname = message;
 
         int standard = gameService.giInit(roomId, nickname) % 2;
-
         // return 하는 값이 1 이라면 아직 방에 1명만 들어가 있다는 말
         // return 하는 값이 0 이라면 방에 2명이 들어간 상황이라는 말
-
         if (standard == 0) {
             // 0 일때 게임이 시작하니까
             // gi가 몇개인지 보내줘야겠지?
+            gameService.gameStart();
             String giMessage = gameService.giReturn(roomId);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
         }
@@ -158,20 +158,24 @@ public class GameController {
                 }
                 System.out.println(i);
             }
-
             String giMessage = gameService.giReturn(roomId);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
         }
     }
 
     @MessageMapping("/{roomId}/dispose")
-    public void disposeHandle() {
+    public void disposeHandle(@DestinationVariable String roomId,String message) {
         // 방을 폭파시켜야 한다.
         System.out.println("방 폭파 명령을 받음");
-        int nowNumber = peopleCounter.getPeopleCnt(); // 내가 몇 번째로 들어온 인간인지 확인
-        if (nowNumber % 2 == 1) {
-            peopleCounter.incrementPeopleCount();
+        System.out.println(message);
+        //두명일 때는 false를 return 하고 혼자 있는 방을 나올 때는 true를 return 한다
+        if(message.equals("true")){
+            // 혼자 일 때
+            System.out.println("혼자 인데 방 폭파 명령을 받았습니다.");
+            gameService.giClear(roomId);
+            gameService.gameStop();
         }
+
     }
 
     @MessageMapping("/{roomId}/timereturn")
