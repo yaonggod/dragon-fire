@@ -31,6 +31,21 @@ class _RegistScreenState extends State<RegistScreen> {
     return list;
   }
 
+  Future<bool> nicknameCheck() async {
+    String nickname= nicknameController.text;
+
+    final response = await http.get(
+        Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
+    );
+    if(response.statusCode == 200){
+      print("사용 가능");
+      return false; // 중복되지 않은 경우
+    }else{
+      print("중복");
+      return true; // 중복된 경우
+    }
+  }
+
   void sendDataToServer() async {
     final String nickname = nicknameController.text;
 
@@ -105,6 +120,12 @@ class _RegistScreenState extends State<RegistScreen> {
                       color: Colors.grey,
                     ),
                   )),
+              ElevatedButton(
+                onPressed: () {
+                  nicknameCheck();
+                },
+                child: Text('중복체크'),
+              ),
               ElevatedButton(
                 onPressed: () {
                   // print(widget.code);
