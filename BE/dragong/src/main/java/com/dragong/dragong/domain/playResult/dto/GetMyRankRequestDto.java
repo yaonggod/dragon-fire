@@ -1,4 +1,4 @@
-package com.dragong.dragong.playResult.dto;
+package com.dragong.dragong.domain.playResult.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

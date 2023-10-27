@@ -1,8 +1,8 @@
-package com.dragong.dragong.playResult.Controller;
+package com.dragong.dragong.domain.playResult.Controller;
 
-import com.dragong.dragong.playResult.dto.GetMyRankRequestDto;
-import com.dragong.dragong.playResult.dto.GetRankRequestDto;
-import com.dragong.dragong.playResult.service.PlayResultService;
+import com.dragong.dragong.domain.playResult.dto.GetMyRankRequestDto;
+import com.dragong.dragong.domain.playResult.dto.GetRankRequestDto;
+import com.dragong.dragong.domain.playResult.service.PlayResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

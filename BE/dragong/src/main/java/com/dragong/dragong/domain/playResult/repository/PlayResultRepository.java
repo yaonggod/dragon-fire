@@ -1,7 +1,7 @@
-package com.dragong.dragong.playResult.repository;
+package com.dragong.dragong.domain.playResult.repository;
 
-import com.dragong.dragong.playResult.entity.PlayResult;
-import com.dragong.dragong.playResult.entity.PlayResultEmpId;
+import com.dragong.dragong.domain.playResult.entity.PlayResult;
+import com.dragong.dragong.domain.playResult.entity.PlayResultEmpId;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
