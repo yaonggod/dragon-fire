@@ -8,9 +8,11 @@ import com.dragong.dragong.member.entity.MemberInfo;
 import com.dragong.dragong.member.entity.Role;
 import com.dragong.dragong.member.entity.SocialType;
 import com.dragong.dragong.member.entity.auth.GoogleAuth;
+import com.dragong.dragong.member.entity.auth.NaverAuth;
 import com.dragong.dragong.member.entity.auth.RefreshToken;
 import com.dragong.dragong.member.repository.GoogleAuthRepository;
 import com.dragong.dragong.member.repository.MemberInfoRepository;
+import com.dragong.dragong.member.repository.NaverAuthRepository;
 import com.dragong.dragong.member.repository.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
@@ -26,8 +28,9 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtil jwtUtil;
     private final MemberInfoRepository memberInfoRepository;
     private final GoogleAuthRepository googleAuthRepository;
+    private final NaverAuthRepository naverAuthRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final OAuthService googleService;
+    private final OAuthService oAuthService;
 
 
     @Override
@@ -38,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
         if (loginRequestDto.getSocialType() == SocialType.GOOGLE) {
 
             // access_token의 구글로부터 유저 이메일 요청
-            String email = googleService.getGoogleEmailInfo(
+            String email = oAuthService.getGoogleEmailInfo(
                     loginRequestDto.getAccessToken());
 
             // DB에서 구글 이메일 조회
@@ -78,10 +81,49 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
-            // 네이버
+        // 네이버
         } else {
-            String accessToken = "123";
-            String refreshToken = "123";
+            // AccessToken으로 네이버에 요청해서 유저 이메일 받아오기
+            String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
+
+            // DB에서 네이버 이메일 조회
+            NaverAuth naverAuth = naverAuthRepository.findByEmail(email)
+                    .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
+
+            // 회원인 경우
+            // jwt 발급
+            String accessToken = jwtUtil.generateAccessToken(naverAuth.getMemberId(),
+                    naverAuth.getMember()
+                            .getRole());
+            String refreshToken = jwtUtil.generateRefreshToken();
+
+            // 기존 회원정보 불러오기
+            Member member = naverAuth.getMember();
+
+            // 회원 정보로 과거 리프레시 토큰 내역 가져오기
+            RefreshToken refreshTokenEntity = member.getRefreshToken();
+
+            // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
+            if (refreshTokenEntity != null){
+
+                // db에 refreshToken update
+                refreshTokenEntity.updateRefreshToken(refreshToken);
+
+            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+            } else {
+
+                // db에 refreshToken 저장
+                RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                        .member(member)
+                        .refreshToken(refreshToken)
+                        .build();
+
+                member.addRefreshToken(newRefreshTokenEntity);
+                refreshTokenRepository.save(newRefreshTokenEntity);
+            }
+
+            httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
+            httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
         }
     }
@@ -92,7 +134,7 @@ public class MemberServiceImpl implements MemberService {
             HttpServletResponse httpServletResponse) {
         if (socialType == SocialType.GOOGLE) {
 
-            String email = googleService.getGoogleEmailInfo(
+            String email = oAuthService.getGoogleEmailInfo(
                     registRequestDto.getAccessToken());
 
             // 이미 회원가입을 한 회원인 경우
@@ -122,6 +164,51 @@ public class MemberServiceImpl implements MemberService {
             member.addGoogleAuth(googleAuth);
             memberInfoRepository.save(memberInfo);
             googleAuthRepository.save(googleAuth);
+
+            // memberInfo 저장시 member 또한 저장됨
+            // memberRepository.save(member);
+
+        // 네이버로 회원가입했음
+        } else {
+            // AccessToken으로 네이버의 이메일을 가져와서
+            String email = oAuthService.getNaverEmailInfo(
+                    registRequestDto.getAccessToken());
+
+            System.out.println(email);
+
+            // 이미 회원가입을 한 회원인 경우
+            if (naverAuthRepository.findByEmail(email).isPresent()) {
+                throw new RuntimeException();
+            }
+
+            // 멤버를 생성하자
+            UUID memberId = UUID.randomUUID();
+
+            Member member = Member.builder()
+                    .memberId(memberId)
+                    .socialType(socialType)
+                    .role(Role.USER)
+                    .build();
+
+            // 유저가 앱에서 직접 입력한 닉네임은 유저 엔티티랑 분리해서 저장
+            MemberInfo memberInfo = MemberInfo.builder()
+                    .member(member)
+                    .nickname(registRequestDto.getNickname())
+                    .build();
+
+            // 이 사람은 네이버로 가입한 사람임을 저장
+            NaverAuth naverAuth = NaverAuth.builder()
+                    .member(member)
+                    .email(email)
+                    .build();
+
+            // 멤버에 멤버 정보와 네이버 Auth 엔티티 저장
+            member.addMemberInfo(memberInfo);
+            member.addNaverAuth(naverAuth);
+
+            // 멤버 정보와 네이버 Auth 엔티티 각각 저장
+            memberInfoRepository.save(memberInfo);
+            naverAuthRepository.save(naverAuth);
 
             // memberInfo 저장시 member 또한 저장됨
             // memberRepository.save(member);
