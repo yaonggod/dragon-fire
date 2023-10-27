@@ -1,6 +1,6 @@
-package com.dragong.dragong.member.entity.auth;
+package com.dragong.dragong.domain.member.entity;
 
-import com.dragong.dragong.member.entity.Member;
+import com.dragong.dragong.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class GoogleAuth {
+public class MemberInfo extends BaseTimeEntity {
 
     @Id
     private UUID memberId;
@@ -25,11 +25,16 @@ public class GoogleAuth {
     private Member member;
 
     @Column
-    private String email;
+    private String nickname;
 
     @Builder
-    public GoogleAuth(Member member, String email){
+    public MemberInfo(Member member, String nickname) {
         this.member = member;
-        this.email = email;
+        this.nickname = nickname;
+    }
+
+    @Builder(builderMethodName = "updateNicknameBuilder")
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

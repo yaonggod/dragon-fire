@@ -1,4 +1,4 @@
-package com.dragong.dragong.member.entity;
+package com.dragong.dragong.domain.member.entity;
 
 public enum Role {
 
@@ -7,10 +7,11 @@ public enum Role {
 
     private final String role;
 
-    Role(String role){
+    Role(String role) {
         this.role = role;
     }
-    public String getRole(){
+
+    public String getRole() {
         return role;
     }
 

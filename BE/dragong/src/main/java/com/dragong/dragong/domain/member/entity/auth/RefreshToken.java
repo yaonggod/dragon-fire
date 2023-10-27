@@ -1,6 +1,7 @@
-package com.dragong.dragong.member.entity.auth;
+package com.dragong.dragong.domain.member.entity.auth;
 
-import com.dragong.dragong.member.entity.Member;
+
+import com.dragong.dragong.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class NaverAuth {
+public class RefreshToken {
 
     @Id
     private UUID memberId;
@@ -24,12 +25,19 @@ public class NaverAuth {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
+
     @Column
-    private String email;
+    private String refreshToken;
 
     @Builder
-    public NaverAuth(Member member, String email){
+    public RefreshToken(Member member, String refreshToken) {
         this.member = member;
-        this.email = email;
+        this.refreshToken = refreshToken;
     }
+
+    @Builder(builderMethodName = "updateRefreshTokenBuilder")
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
 }

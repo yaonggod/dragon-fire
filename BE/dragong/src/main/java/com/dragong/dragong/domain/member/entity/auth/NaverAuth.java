@@ -1,6 +1,6 @@
-package com.dragong.dragong.member.entity;
+package com.dragong.dragong.domain.member.entity.auth;
 
-import com.dragong.dragong.global.common.BaseTimeEntity;
+import com.dragong.dragong.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class MemberInfo extends BaseTimeEntity {
+public class NaverAuth {
 
     @Id
     private UUID memberId;
@@ -24,17 +24,12 @@ public class MemberInfo extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(unique = true) // 닉네임 중복 불가
-    private String nickname;
+    @Column
+    private String email;
 
     @Builder
-    public MemberInfo(Member member, String nickname){
+    public NaverAuth(Member member, String email) {
         this.member = member;
-        this.nickname = nickname;
-    }
-
-    @Builder(builderMethodName = "updateNicknameBuilder")
-    public void updateNickname(String nickname){
-        this.nickname = nickname;
+        this.email = email;
     }
 }
