@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/start_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,6 +20,16 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _navigateToStartScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StartScreen(),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,10 +43,6 @@ class _MainScreenState extends State<MainScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              ElevatedButton(
-                onPressed: _navigateToLoginScreen,
-                child: Text("로그인 페이지"),
-              ),
               Text(
                 '천하제일 쎄쎄쎄',
                 style: TextStyle(
@@ -46,6 +53,18 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         backgroundColor: Colors.red[100],
+      ),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: _navigateToLoginScreen,
+            child: Text("로그인 페이지"),
+          ),
+          ElevatedButton(
+            onPressed: _navigateToStartScreen,
+            child: Text("게임"),
+          ),
+        ],
       ),
     );
   }
