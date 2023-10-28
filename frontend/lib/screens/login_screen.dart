@@ -31,6 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> googleLogin() async {
+    _googleSignIn.disconnect();
     GoogleSignInAccount? account = await _googleSignIn.signIn();
 
     final accessToken =
@@ -167,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: MediaQuery.of(context).size.height / 8),
             GestureDetector(
               onTap: googleLogin,
-              child: Text("kakao 로그인"),
+              child: Text("네이버 로그인"),
             ),
             SizedBox(height: MediaQuery.of(context).size.height / 8),
             _isLoggedIn == false
