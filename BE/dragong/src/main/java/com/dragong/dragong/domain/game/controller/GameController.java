@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,7 +25,6 @@ public class GameController {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private GameService gameService;
-
 
 
     @MessageMapping("/{roomId}/pickwhat")
@@ -78,13 +78,23 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/Count")
-    public void Count(@DestinationVariable String roomId,String nickname) {
+    public void Count(@DestinationVariable String roomId, String nickname) {
         // 카운트 다운을 해준다.
         int errorCnt = 0;
-
-        gameService.messageInsert(roomId,nickname);
+        System.out.println("count를 실행합니다" + nickname);
+        String[] parts = nickname.split(":");
+        System.out.println(parts[0]);
+        System.out.println(parts[1]);
+        if(Integer.parseInt(parts[1])==0){
+            System.out.println("지금은 0이다");
+        }
+        if(Integer.parseInt(parts[1])==1){
+            System.out.println("지금은 1이다.");
+        }
+        //gameService.messageInsert(roomId, nickname);
+        gameService.messageInsert(roomId, parts[0]);
         int localCnt = gameService.evenReturn(roomId);
-        if (localCnt % 2 == 0) {
+        if (localCnt % 2 == 0||Integer.parseInt(parts[1])!=0) {
             gameService.cleanList(roomId);
             for (int i = 3; i >= 0; i--) {
                 try {
@@ -96,7 +106,7 @@ public class GameController {
                 if (i == 0) {
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i)); // 0초도 한번 보내준다.
                     // 보내주는 이유는 한 명이라도 선택을 하지 않았을 경우, 해당 유저의 닉네임을 처리해야하기 때문(이건 선택을 하지 않을 상황이지, 튕긴 상황이 아니다)
-                    while(gameService.evenReturn(roomId)!=2){
+                    while (gameService.evenReturn(roomId) != 2) {
                         //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
                         try {
                             Thread.sleep(300);
@@ -121,10 +131,10 @@ public class GameController {
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
 
                 } else {
-                    errorCnt=0;
+                    errorCnt = 0;
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i));
 
-                    while(gameService.evenReturn(roomId)!=2){
+                    while (gameService.evenReturn(roomId) != 2) {
                         //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
                         try {
                             Thread.sleep(300);
@@ -132,20 +142,20 @@ public class GameController {
                             Thread.currentThread().interrupt();
                         }
                         System.out.println("아직 양쪽으로부터 값을 받지 못했습니다");
-                        errorCnt +=1;
+                        errorCnt += 1;
 
-                        if(errorCnt>=3){
+                        if (errorCnt >= 3) {
                             //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
-                            if(gameService.evenReturn(roomId)==0){
+                            if (gameService.evenReturn(roomId) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
 
                                 System.out.println("현재 이거 실행");
                                 return;
-                            }else{
+                            } else {
                                 // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
                                 System.out.println("현재 이거 실행1");
                                 String remainName = gameService.returnName(roomId);
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는"+" "+remainName);
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
                                 gameService.cleanList(roomId); // 값을 정리해준다.
                                 return;
                             }
@@ -164,12 +174,12 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/dispose")
-    public void disposeHandle(@DestinationVariable String roomId,String message) {
+    public void disposeHandle(@DestinationVariable String roomId, String message) {
         // 방을 폭파시켜야 한다.
         System.out.println("방 폭파 명령을 받음");
         System.out.println(message);
         //두명일 때는 false를 return 하고 혼자 있는 방을 나올 때는 true를 return 한다
-        if(message.equals("true")){
+        if (message.equals("true")) {
             // 혼자 일 때
             System.out.println("혼자 인데 방 폭파 명령을 받았습니다.");
             gameService.giClear(roomId);
@@ -182,6 +192,6 @@ public class GameController {
     public void gotTime(@DestinationVariable String roomId, String nickname) {
         // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
         System.out.println("현재 카운트 다운을 받아오고 있습니다" + " " + nickname);
-        gameService.messageInsert(roomId,nickname);
+        gameService.messageInsert(roomId, nickname);
     }
 }

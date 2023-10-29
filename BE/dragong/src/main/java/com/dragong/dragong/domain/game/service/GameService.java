@@ -85,6 +85,8 @@ public class GameService {
 
     public void messageInsert(String roomId, String nickname) {
         // 양쪽에서 메시지 전달을 받았는지 확인하기 위한 용도
+
+        System.out.println("message를 넣습니다"+ nickname);
         countDownandstartGame[Integer.parseInt(roomId)].add(nickname);
     }
 
