@@ -1,8 +1,9 @@
 package com.dragong.dragong.global.util;
 
-import com.dragong.dragong.member.entity.Member;
-import com.dragong.dragong.member.entity.Role;
-import com.dragong.dragong.member.repository.MemberRepository;
+import com.dragong.dragong.domain.member.entity.Member;
+import com.dragong.dragong.domain.member.entity.Role;
+import com.dragong.dragong.domain.member.repository.MemberRepository;
+import com.dragong.dragong.domain.member.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -34,6 +36,7 @@ public class JwtUtil {
 
     private final MemberRepository memberRepository;
 
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateAccessToken(UUID memberId, Role role) {
         Map<String, Object> claims = new HashMap<>();
@@ -63,11 +66,27 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
             // secret 키와 일치한지 확인
             Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
             Date expirationDate = claims.getExpiration();
+
+            // 현재 날짜와 만료일을 비교해서 현재 날짜보다 이전이면 만료, 현재 날짜보다 이후이면 유효
+            return !expirationDate.before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            // secret 키와 일치한지 확인
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Date expirationDate = claims.getExpiration();
+
+            refreshTokenRepository.findRefreshTokenByRefreshToken(token)
+                    .orElseThrow(() -> new NotFoundException());
 
             // 현재 날짜와 만료일을 비교해서 현재 날짜보다 이전이면 만료, 현재 날짜보다 이후이면 유효
             return !expirationDate.before(new Date());
@@ -100,7 +119,7 @@ public class JwtUtil {
      * 액세스 토큰을 재발급해줌과 동시에 리프레시 토큰을 재발급해준다.
      */
     public Map<String, String> refreshTokens(String refreshToken) {
-        if (validateToken(refreshToken)) {
+        if (validateAccessToken(refreshToken)) {
             Claims refreshTokenClaims = Jwts.parser().setSigningKey(secret)
                     .parseClaimsJws(refreshToken).getBody();
 
