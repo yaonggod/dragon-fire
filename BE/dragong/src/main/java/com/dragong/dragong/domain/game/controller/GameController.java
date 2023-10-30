@@ -87,8 +87,10 @@ public class GameController {
         gameService.messageInsert(roomId, parts[0]);
         int localCnt = gameService.evenReturn(roomId);
         boolean gameStart = false;
+        int standard=0;
         if(Integer.parseInt(parts[1])==0){
-            // 처음 들어오는 경우
+            // 처음 들어
+            // 오는 경우
             log.info("첫 게임인 경우");
             if(localCnt % 2 == 0){
                 log.info("한 방에 두 명이 들어온 경우");
@@ -106,7 +108,16 @@ public class GameController {
                 }
                 cnt+=1;
             }
-            gameStart=true;
+            if(localCnt%2==0){
+                // 2개가 전부 들어온 경우라면 명령을 하나만 보내야 한다.
+                standard+=1;
+                if(standard==1){
+                    gameStart=true;
+                }else{
+                    gameStart=false;
+                }
+
+            }
         }
         //gameService.messageInsert(roomId, nickname);
 
@@ -135,7 +146,7 @@ public class GameController {
                     // 이건 이제 0초가 되는 순간을 생각하는건데. => 지금은 그냥 바로 재 경기를 실시하거나, 게임 결과가 나왔다.
                     // 하지만 이 사이에 gif를 추가해줄 계획이다. gif를 보여주는 시간은 일단 3초라고 생각하자.
                     log.info("반환할 결과값은: "+ answer);
-                    gameService.cleanList(roomId); // 양쪽에서 값을 전달 받았으니 다시 0으로 정리를 해준다.
+                    gameService.cleanList(roomId); // 양쪽에서 값을 전                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    달 받았으니 다시 0으로 정리를 해준다.
                     for (int j = 3; j >= 0; j--) {
                         try {
                             Thread.sleep(1000);
