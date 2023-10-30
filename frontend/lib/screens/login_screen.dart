@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,36 +18,51 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   // 구글
-  bool _isLoggedIn = false;
-
+  // 구글 로그인 여부
+  bool _googleLoggedIn = false;
+  // 구글 로그인 객체
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // 네이버
-  // 네이버 로그인 객체
-  NaverLoginResult? naverLoginResult;
   // 네이버 로그인 결과 객체: loggedIn, cancelledByUser, error
-  NaverLoginStatus naverLoginStatus = NaverLoginStatus.cancelledByUser;
+  NaverLoginStatus _naverLoginStatus = NaverLoginStatus.cancelledByUser;
+  // 네이버 로그인 객체
+  NaverLoginResult? _naverLoginResult;
 
   @override
   void initState() {
     super.initState();
+    // storage에 토큰을 확인하고 로그인 여부 불러오기
     _checkLoginStatus();
   }
 
+  // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
     Map<String, String> tokens = await readToken();
     setState(() {
-      _isLoggedIn = tokens.isNotEmpty;
+      // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
+      if (tokens.isNotEmpty) {
+        if (tokens['socialType'] == "GOOGLE") {
+          _googleLoggedIn = true;
+        } else if (tokens['socialType'] == "NAVER") {
+          _naverLoginStatus = NaverLoginStatus.loggedIn;
+        }
+      }
     });
+    print(_googleLoggedIn);
+    print(_naverLoginStatus);
   }
 
   Future<void> googleLogin() async {
+    print('google');
+    _googleSignIn.disconnect();
     GoogleSignInAccount? account = await _googleSignIn.signIn();
 
     final accessToken =
         (await _googleSignIn.currentUser!.authentication).accessToken!;
 
-    Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
+    Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+    // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -70,9 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (accessToken1 != null && refreshToken1 != null) {
         print(accessToken1.substring(7));
         print(refreshToken1.substring(7));
-        saveToken(accessToken1.substring(7), refreshToken1.substring(7));
+        saveToken(
+            accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
         setState(() {
-          _isLoggedIn = true;
+          _googleLoggedIn = true;
         });
       }
     }
@@ -80,14 +97,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> naverLogin() async {
     // 네이버 로그인하기
-    naverLoginResult = await FlutterNaverLogin.logIn();
+    _naverLoginResult = await FlutterNaverLogin.logIn();
 
     // 그럼 네이버에서 토큰을 주는데, 성공했을 경우에는 토큰 문자열이 오지만 실패하면 빈 문자열이 옴
     NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
 
     if (token.accessToken != "") {
       // 네이버 AT를 보내서 백엔드에서 로그인하고, 서비스 AT와 RT를 받아오기
-      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
+
+      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(uri,
           headers: {
             'Content-Type': 'application/json',
@@ -114,9 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
         String? refreshToken1 = response.headers['refreshtoken'];
 
         if (accessToken1 != null && refreshToken1 != null) {
-          saveToken(accessToken1.substring(7), refreshToken1.substring(7));
+          saveToken(
+              accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
           setState(() {
-            naverLoginStatus = naverLoginResult!.status;
+            _naverLoginStatus = _naverLoginResult!.status;
           });
         }
       }
@@ -126,7 +146,12 @@ class _LoginScreenState extends State<LoginScreen> {
   _logout() async {
     Map<String, String> list = await readToken();
     if (list.isNotEmpty) {
-      _googleSignIn.signOut();
+      if (_googleLoggedIn) {
+        _googleSignIn.signOut();
+      }
+      if (_naverLoginStatus == NaverLoginStatus.loggedIn) {
+        _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
+      }
       Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(
         uri,
@@ -154,8 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
   _out() async {
     Map<String, String> list = await readToken();
     if (list.isNotEmpty) {
-      _googleSignIn.signOut();
-      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
+      if (_googleLoggedIn) {
+        _googleSignIn.signOut();
+      }
+      if (_naverLoginStatus == NaverLoginStatus.loggedIn) {
+        _naverLoginResult = await FlutterNaverLogin.logOut();
+      }
+      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
+      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
       final response = await http.delete(
         uri,
         headers: {
@@ -179,10 +210,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void saveToken(String accessToken, String refreshToken) async {
+  void saveToken(
+      String accessToken, String refreshToken, String socialType) async {
     const storage = FlutterSecureStorage();
     await storage.write(key: 'accessToken', value: accessToken);
     await storage.write(key: 'refreshToken', value: refreshToken);
+    await storage.write(key: 'socialType', value: socialType);
   }
 
   Future<Map<String, String>> readToken() async {
@@ -224,33 +257,36 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             SizedBox(height: MediaQuery.of(context).size.height / 3),
             SizedBox(height: MediaQuery.of(context).size.height / 8),
-            naverLoginStatus != NaverLoginStatus.loggedIn
+            Text(_naverLoginStatus.toString()),
+            Text(_googleLoggedIn ? "구글 로그인됨" : "구글 로그인 안됨"),
+            (_naverLoginStatus != NaverLoginStatus.loggedIn && !_googleLoggedIn)
                 ? GestureDetector(
                     onTap: naverLogin,
                     child: const Text("Naver 로그인"),
                   )
                 : Container(),
             SizedBox(height: MediaQuery.of(context).size.height / 8),
-            _isLoggedIn == false
+            (_naverLoginStatus != NaverLoginStatus.loggedIn && !_googleLoggedIn)
                 ? GestureDetector(
                     onTap: googleLogin,
                     child: const Text("Gmail 로그인"),
                   )
                 : Container(),
-            _isLoggedIn == true
-                ? MaterialButton(
-                    color: Colors.red,
-                    child: const Text(
-                      '로그아웃',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      _logout();
-                      print('Logout button pressed.');
-                    },
-                  )
-                : Container(),
-            if (_isLoggedIn)
+            if (_naverLoginStatus == NaverLoginStatus.loggedIn ||
+                _googleLoggedIn == true)
+              MaterialButton(
+                color: Colors.red,
+                child: const Text(
+                  '로그아웃',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _logout();
+                  print('Logout button pressed.');
+                },
+              ),
+            if (_naverLoginStatus == NaverLoginStatus.loggedIn ||
+                _googleLoggedIn == true)
               MaterialButton(
                 color: Colors.red,
                 child: const Text(

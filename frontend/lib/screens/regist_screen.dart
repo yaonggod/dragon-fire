@@ -36,8 +36,10 @@ class _RegistScreenState extends State<RegistScreen> {
   Future<bool> nicknameCheck() async {
     String nickname = nicknameController.text;
 
-    final response = await http.get(
-        Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/$nickname'));
+    final response = await http.get(Uri.parse(
+            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nickname')
+        // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
+        );
     if (response.statusCode == 200) {
       print("사용 가능");
       return false; // 중복되지 않은 경우
@@ -51,7 +53,8 @@ class _RegistScreenState extends State<RegistScreen> {
     final String nickname = nicknameController.text;
 
     final response = await http.post(
-        Uri.parse('http://10.0.2.2:8080/oauth/${widget.socialType}'),
+        Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
+        // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
             {'accessToken': widget.accessToken, 'nickname': nickname}));
