@@ -276,4 +276,19 @@ public class MemberServiceImpl implements MemberService {
 
         member.deleteMember();
     }
+
+    @Override
+    public MemberInfo getMyMemberInfo(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+        // 헤더에 담겨온 액세스 토큰 가져옴
+        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
+
+        UUID memberId = jwtUtil.extractMemberId(accessToken);
+
+        MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        return memberInfo;
+    }
+
 }
