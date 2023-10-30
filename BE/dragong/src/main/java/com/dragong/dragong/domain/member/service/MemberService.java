@@ -4,6 +4,8 @@ package com.dragong.dragong.domain.member.service;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.entity.Member;
+import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.SocialType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,13 +17,19 @@ public interface MemberService {
 
     void login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse);
 
-    void update(UpdateRequestDto updateRequestDto, HttpServletRequest httpServletRequest,
+    void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse);
 
-    void nicknameCheck(String nickname, HttpServletRequest httpServletRequest,
+    void nicknameCheck(String nickname);
+
+    void logout(String accessToken, String refreshToken, HttpServletResponse httpServletResponse);
+
+    void delete(String accessToken, String refreshToken, HttpServletResponse httpServletResponse);
+
+    MemberInfo getMyMemberInfo(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse);
 
-    void logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+    Member getMyMember(String accessToken, String refreshToken,
+            HttpServletResponse httpServletResponse);
 
-    void delete(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 }
