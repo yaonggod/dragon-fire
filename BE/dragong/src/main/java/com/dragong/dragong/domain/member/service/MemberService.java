@@ -4,6 +4,7 @@ package com.dragong.dragong.domain.member.service;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.SocialType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,5 +28,7 @@ public interface MemberService {
     void delete(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 
     MemberInfo getMyMemberInfo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+
+    Member getMyMember(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 
 }
