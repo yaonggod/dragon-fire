@@ -236,7 +236,7 @@ public class MemberServiceImpl implements MemberService {
     public void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken, httpServletResponse);
+        MemberInfo memberInfo = getMyMemberInfo(accessToken.substring(7), refreshToken.substring(7), httpServletResponse);
 
         memberInfo.updateNickname(updateRequestDto.getNickname());
 
@@ -257,7 +257,7 @@ public class MemberServiceImpl implements MemberService {
     public void logout(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        UUID memberId = jwtUtil.extractMemberId(accessToken);
+        UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
 
         Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
                 .orElseThrow(() -> new NoSuchElementException());
@@ -275,7 +275,7 @@ public class MemberServiceImpl implements MemberService {
     public void delete(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        Member member = getMyMember(accessToken, refreshToken, httpServletResponse);
+        Member member = getMyMember(accessToken.substring(7), refreshToken.substring(7), httpServletResponse);
 
         member.deleteMember();
 
@@ -287,7 +287,7 @@ public class MemberServiceImpl implements MemberService {
     public MemberInfo getMyMemberInfo(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        UUID memberId = jwtUtil.extractMemberId(accessToken);
+        UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
 
         MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(memberId)
                 .orElseThrow(() -> new NoSuchElementException());
@@ -299,7 +299,7 @@ public class MemberServiceImpl implements MemberService {
     public Member getMyMember(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        UUID memberId = jwtUtil.extractMemberId(accessToken);
+        UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
 
         Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
                 .orElseThrow(() -> new NoSuchElementException());
