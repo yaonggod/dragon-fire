@@ -101,13 +101,13 @@ public class GameController {
             int cnt =0;
             while(cnt<3&&localCnt%2!=0){
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(700);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
                 cnt+=1;
             }
-            if(localCnt%2==0){
+            if(localCnt%2==1){
                 // 2개가 전부 들어온 경우라면 명령을 하나만 보내야 한다.
                 gameStart=true;
 
