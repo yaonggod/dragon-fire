@@ -37,7 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final accessToken =
         (await _googleSignIn.currentUser!.authentication).accessToken!;
 
-    Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
+    Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+    // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Map<String, String> list = await readToken();
     if(list.isNotEmpty) {
       _googleSignIn.signOut();
-      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
+      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/logout");
+      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(uri,
           headers: {
             'Content-Type': 'application/json',
@@ -97,7 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Map<String, String> list = await readToken();
     if(list.isNotEmpty) {
       _googleSignIn.signOut();
-      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
+      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
+      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
       final response = await http.delete(uri,
         headers: {
           'Content-Type': 'application/json',
