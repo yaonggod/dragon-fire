@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _googleSignIn.signOut();
       }
       if (_naverLoginStatus == NaverLoginStatus.loggedIn) {
-        _naverLoginResult = await FlutterNaverLogin.logOut();
+        _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
       Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
