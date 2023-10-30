@@ -33,7 +33,8 @@ public class GameService {
         System.out.println("현재 userQueue에 있는 사람의 수는: "+user.size());
         total+=1;
         user.add(total);
-        return user.peek();
+        return total;
+        //return user.peek();
     }
 
     public void gameStart(){

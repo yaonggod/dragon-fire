@@ -89,8 +89,7 @@ public class GameController {
         boolean gameStart = false;
         int standard=0;
         if(Integer.parseInt(parts[1])==0){
-            // 처음 들어
-            // 오는 경우
+            // 처음 들어오는 경우
             log.info("첫 게임인 경우");
             if(localCnt % 2 == 0){
                 log.info("한 방에 두 명이 들어온 경우");
@@ -110,12 +109,7 @@ public class GameController {
             }
             if(localCnt%2==0){
                 // 2개가 전부 들어온 경우라면 명령을 하나만 보내야 한다.
-                standard+=1;
-                if(standard==1){
-                    gameStart=true;
-                }else{
-                    gameStart=false;
-                }
+                gameStart=true;
 
             }
         }
@@ -140,6 +134,7 @@ public class GameController {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
+                        log.info("현재 문제가 발생하는 곳의 roomId는: "+ roomId);
                         log.info("0초인데 아직 양쪽으로부터 값을 받지 못했습니다");
                     }
                     String answer = gameService.gameResult(roomId);
