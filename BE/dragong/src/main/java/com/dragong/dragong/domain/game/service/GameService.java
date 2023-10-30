@@ -6,13 +6,11 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 @Service
 public class GameService {
-    private final Queue<GameRoomData> gameRoom[] = new Queue[100000];
+    private final Set<GameRoomData> gameRoom[] = new HashSet[100000];
     private final ArrayList<GiData> giDataRoom[] = new ArrayList[100000];
 
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000];
@@ -23,7 +21,7 @@ public class GameService {
     @PostConstruct
     public void initializeGameRoom() {
         for (int i = 0; i < gameRoom.length; i++) {
-            gameRoom[i] = new LinkedList<>();
+            gameRoom[i] = new HashSet<>();
             giDataRoom[i] = new ArrayList<>();
             countDownandstartGame[i] = new ArrayList<>();
         }
@@ -117,11 +115,18 @@ public class GameService {
         GameRoomData grd2 = null;
         if (gameRoom[Integer.parseInt(roomId)].size() == 2) {
             //둘다 제대로 정보를 입력한 경우
-            grd1 = gameRoom[Integer.parseInt(roomId)].poll();
-            grd2 = gameRoom[Integer.parseInt(roomId)].poll();
+            ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[Integer.parseInt(roomId)]);
+            gameRoom[Integer.parseInt(roomId)].clear();
+            //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
+            //grd2 = gameRoom[Integer.parseInt(roomId)].poll();
+            grd1 = list.get(0);
+            grd2= list.get(1);
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 1) {
             // 한 명만 정보를 입력한 경우
-            grd1 = gameRoom[Integer.parseInt(roomId)].poll();
+            ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[Integer.parseInt(roomId)]);
+            gameRoom[Integer.parseInt(roomId)].clear();
+            //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
+            grd1 = list.get(0);
             if (grd1.getNickname().equals(countDownandstartGame[Integer.parseInt(roomId)].get(0))) {
                 answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[Integer.parseInt(roomId)].get(1) + ":" + "미처리" + " " + grd1.getNickname();
             } else {

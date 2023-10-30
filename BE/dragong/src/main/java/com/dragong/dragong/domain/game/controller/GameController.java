@@ -85,16 +85,30 @@ public class GameController {
         String[] parts = nickname.split(":");
         System.out.println(parts[0]);
         System.out.println(parts[1]);
-        if(Integer.parseInt(parts[1])==0){
-            System.out.println("지금은 0이다");
-        }
-        if(Integer.parseInt(parts[1])==1){
-            System.out.println("지금은 1이다.");
-        }
-        //gameService.messageInsert(roomId, nickname);
         gameService.messageInsert(roomId, parts[0]);
         int localCnt = gameService.evenReturn(roomId);
-        if (localCnt % 2 == 0||Integer.parseInt(parts[1])!=0) {
+        boolean gameStart = false;
+        if(Integer.parseInt(parts[1])==0){
+            // 처음 들어오는 경우
+            if(localCnt % 2 == 0){
+                gameStart=true;
+            }
+        }else{
+            //이건 이제 처음들어온게 아니라 그 이후에 들어온 경우를 생각
+            int cnt =0;
+            while(cnt<3||localCnt%2==0){
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                cnt+=1;
+            }
+            gameStart=true;
+        }
+        //gameService.messageInsert(roomId, nickname);
+
+        if (gameStart) {
             gameService.cleanList(roomId);
             for (int i = 3; i >= 0; i--) {
                 try {
@@ -159,8 +173,6 @@ public class GameController {
                                 gameService.cleanList(roomId); // 값을 정리해준다.
                                 return;
                             }
-
-
                         }
                     }
                     gameService.cleanList(roomId); // 양쪽에서 값을 전달 받았으니 다시 0으로 정리를 해준다.
