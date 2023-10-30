@@ -107,8 +107,8 @@ public class PlayResultServiceImpl implements PlayResultService {
     }
 
     @Override
-    public GetRankRequestDto getRank() {
-        List<String[]> ranking = new ArrayList<>();
+    public List<GetRankRequestDto> getRank() {
+        List<GetRankRequestDto> ranking = new ArrayList<>();
         List<String> nicknameList = redisTemplate.opsForList().range("nickname", 0, -1);
         List<String> scoreList = redisTemplate.opsForList().range("score", 0, -1);
         List<String> rankList = redisTemplate.opsForList().range("rank", 0, -1);
@@ -118,9 +118,10 @@ public class PlayResultServiceImpl implements PlayResultService {
             String score = scoreList.get(i);
             String rank = rankList.get(i);
 
-            ranking.add(new String[]{nickname, score, rank});
+            GetRankRequestDto getRankRequestDto = new GetRankRequestDto(nickname, score, rank);
+            ranking.add(getRankRequestDto);
         }
-        return new GetRankRequestDto(ranking);
+        return ranking;
     }
 
     @Override
@@ -141,7 +142,7 @@ public class PlayResultServiceImpl implements PlayResultService {
                 String score = scoreList.get(i);
                 String rank = rankList.get(i);
 
-                return new GetMyRankRequestDto(new String[]{nickname, score, rank});
+                return new GetMyRankRequestDto(nickname, score, rank);
             }
         }
         return null;
