@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,9 +25,11 @@ public class MemberController {
 
     @PutMapping("/nickname-modify")
     public ResponseEntity<?> updateMember(@RequestBody UpdateRequestDto updateRequestDto,
-            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+            @RequestHeader("Authorization") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken,
+            HttpServletResponse httpServletResponse) {
         try {
-            memberService.update(updateRequestDto, httpServletRequest, httpServletResponse);
+            memberService.update(updateRequestDto, accessToken, refreshToken, httpServletResponse);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -34,10 +37,9 @@ public class MemberController {
     }
 
     @GetMapping("/nickname-duplicate/{nickname}")
-    public ResponseEntity<?> nicknameCheck(@PathVariable("nickname") String nickname,
-            HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<?> nicknameCheck(@PathVariable("nickname") String nickname) {
         try {
-            memberService.nicknameCheck(nickname, httpServletRequest, httpServletResponse);
+            memberService.nicknameCheck(nickname);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
