@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -10,7 +11,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   void _navigateToLoginScreen() {
     Navigator.push(
       context,
@@ -29,12 +29,20 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _navigateToRankingScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RankingScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        title: const Center(
           child: Column(
             children: [
               Text(
@@ -58,11 +66,15 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           ElevatedButton(
             onPressed: _navigateToLoginScreen,
-            child: Text("로그인 페이지"),
+            child: const Text("로그인 페이지"),
           ),
           ElevatedButton(
             onPressed: _navigateToStartScreen,
-            child: Text("게임"),
+            child: const Text("게임"),
+          ),
+          ElevatedButton(
+            onPressed: _navigateToRankingScreen,
+            child: const Text("랭킹"),
           ),
         ],
       ),
