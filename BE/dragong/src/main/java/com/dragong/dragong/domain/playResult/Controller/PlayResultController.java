@@ -3,6 +3,7 @@ package com.dragong.dragong.domain.playResult.Controller;
 import com.dragong.dragong.domain.playResult.dto.GetMyRankRequestDto;
 import com.dragong.dragong.domain.playResult.dto.GetRankRequestDto;
 import com.dragong.dragong.domain.playResult.service.PlayResultService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class PlayResultController {
 
     @GetMapping
     public ResponseEntity<?> getRank() {
-        GetRankRequestDto getRankRequestDto = playResultService.getRank();
+        List<GetRankRequestDto> getRankRequestDto = playResultService.getRank();
         return new ResponseEntity<>(getRankRequestDto, HttpStatus.OK);
     }
 
