@@ -8,8 +8,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RegistScreen extends StatefulWidget {
   final String accessToken;
+  final String socialType;
 
-  RegistScreen({required this.accessToken});
+  const RegistScreen(
+      {super.key, required this.accessToken, required this.socialType});
 
   @override
   _RegistScreenState createState() => _RegistScreenState();
@@ -19,7 +21,7 @@ class _RegistScreenState extends State<RegistScreen> {
   TextEditingController nicknameController = TextEditingController();
 
   Future<List<String>> readToken() async {
-    final storage = new FlutterSecureStorage();
+    const storage = FlutterSecureStorage();
     List<String> list = [];
     String? accessToken = await storage.read(key: 'accessToken');
     String? refreshToken = await storage.read(key: 'refreshToken');
@@ -32,16 +34,16 @@ class _RegistScreenState extends State<RegistScreen> {
   }
 
   Future<bool> nicknameCheck() async {
-    String nickname= nicknameController.text;
+    String nickname = nicknameController.text;
 
-    final response = await http.get(
-        Uri.parse('https://k9a209.p.ssafy.io/api/member/nickname-duplicate/'+nickname)
+    final response = await http.get(Uri.parse(
+            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nickname')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
-    );
-    if(response.statusCode == 200){
+        );
+    if (response.statusCode == 200) {
       print("사용 가능");
       return false; // 중복되지 않은 경우
-    }else{
+    } else {
       print("중복");
       return true; // 중복된 경우
     }
@@ -51,7 +53,7 @@ class _RegistScreenState extends State<RegistScreen> {
     final String nickname = nicknameController.text;
 
     final response = await http.post(
-        Uri.parse('https://k9a209.p.ssafy.io/api/oauth/GOOGLE'),
+        Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
         // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
@@ -61,7 +63,7 @@ class _RegistScreenState extends State<RegistScreen> {
       print("Successfully sent data to server");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
         (Route<dynamic> route) => false,
       );
     } else {
@@ -73,7 +75,7 @@ class _RegistScreenState extends State<RegistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('회원가입',
+        title: const Text('회원가입',
             style: TextStyle(
               fontWeight: FontWeight.bold,
             )),
@@ -86,11 +88,11 @@ class _RegistScreenState extends State<RegistScreen> {
             children: [
               SizedBox(height: MediaQuery.of(context).size.height / 15),
               SizedBox(height: MediaQuery.of(context).size.height / 20),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(left: 5.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text(
+                  child: Text(
                     '닉네임',
                     style: TextStyle(
                       fontSize: 15.0,
@@ -104,7 +106,7 @@ class _RegistScreenState extends State<RegistScreen> {
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Color(0xFFF6766E),
                       ),
                     ),
@@ -116,9 +118,9 @@ class _RegistScreenState extends State<RegistScreen> {
                     ),
                     isDense: true,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
-                    contentPadding: EdgeInsets.all(12),
+                    contentPadding: const EdgeInsets.all(12),
                     labelText: '닉네임을 입력해주세요',
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       color: Colors.grey,
                     ),
                   )),
@@ -126,7 +128,7 @@ class _RegistScreenState extends State<RegistScreen> {
                 onPressed: () {
                   nicknameCheck();
                 },
-                child: Text('중복체크'),
+                child: const Text('중복체크'),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -134,7 +136,7 @@ class _RegistScreenState extends State<RegistScreen> {
                   if (nicknameController.text.isEmpty) {
                     // 경고 메시지 표시 로직
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
+                      const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
                     );
                   } else {
                     sendDataToServer();
@@ -142,7 +144,7 @@ class _RegistScreenState extends State<RegistScreen> {
 
                   // '등록하기' 버튼이 눌렸을 때 수행할 로직
                 },
-                child: Text('등록'),
+                child: const Text('등록'),
               ),
             ],
           ),
