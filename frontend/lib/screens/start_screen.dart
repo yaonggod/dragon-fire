@@ -7,8 +7,8 @@ class StartScreen extends StatelessWidget {
   final TextEditingController _nicknameController = TextEditingController();
 
   void startGame(BuildContext context) async {
-    //final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
-    final response = await http.get(Uri.parse('http://10.0.2.2:8080/wait'));
+    final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
+    // final response = await http.get(Uri.parse('http://10.0.2.2:8080/wait'));
     String nickname = _nicknameController.text;
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);

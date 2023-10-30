@@ -479,8 +479,8 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     stompClient = StompClient(
       config: StompConfig(
-        //url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           print('Waiting to connect...');
@@ -524,7 +524,7 @@ class _GameScreenState extends State<GameScreen> {
                     width: 200, // 원하는 너비 값으로 설정
                     height: 200, // 원하는 높이 값으로 설정
                     child: Lottie.asset(
-                      'assets/lottie/${youPick}.json',
+                      'lib/assets/lottie/${youPick}.json',
                       repeat: true,
                       onLoaded: (composition) {
                         Timer(Duration(milliseconds: 1200), () {
@@ -537,7 +537,7 @@ class _GameScreenState extends State<GameScreen> {
                     width: 200, // 원하는 너비 값으로 설정
                     height: 200, // 원하는 높이 값으로 설정
                     child: Lottie.asset(
-                      'assets/lottie/${mePick}.json',
+                      'lib/assets/lottie/${mePick}.json',
                       repeat: true,
                       onLoaded: (composition) {
                         Timer(Duration(milliseconds: 2000), () {
