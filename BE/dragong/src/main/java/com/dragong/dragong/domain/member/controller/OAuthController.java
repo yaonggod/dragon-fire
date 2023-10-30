@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,10 +50,11 @@ public class OAuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutMember(HttpServletRequest httpServletRequest,
+    public ResponseEntity<?> logoutMember(@RequestHeader("Authorization") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken,
             HttpServletResponse httpServletResponse) {
         try {
-            memberService.logout(httpServletRequest, httpServletResponse);
+            memberService.logout(accessToken, refreshToken, httpServletResponse);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -60,10 +62,11 @@ public class OAuthController {
     }
 
     @DeleteMapping("/out")
-    public ResponseEntity<?> deleteMember(HttpServletRequest httpServletRequest,
+    public ResponseEntity<?> deleteMember(@RequestHeader("Authorization") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken,
             HttpServletResponse httpServletResponse) {
         try {
-            memberService.delete(httpServletRequest, httpServletResponse);
+            memberService.delete(accessToken, refreshToken, httpServletResponse);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

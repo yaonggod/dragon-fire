@@ -233,10 +233,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void update(UpdateRequestDto updateRequestDto, HttpServletRequest httpServletRequest,
+    public void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        MemberInfo memberInfo = getMyMemberInfo(httpServletRequest, httpServletResponse);
+        MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken, httpServletResponse);
 
         memberInfo.updateNickname(updateRequestDto.getNickname());
 
@@ -247,19 +247,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void nicknameCheck(String nickname, HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse) {
+    public void nicknameCheck(String nickname) {
         if (memberInfoRepository.existsByNicknameAndMember_QuitFlagIsFalse(nickname)) {
             throw new RuntimeException();
         }
     }
 
     @Override
-    public void logout(HttpServletRequest httpServletRequest,
+    public void logout(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
-
-        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
-        String refreshToken = httpServletRequest.getHeader("refreshToken").substring(7);
 
         UUID memberId = jwtUtil.extractMemberId(accessToken);
 
@@ -276,10 +272,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void delete(HttpServletRequest httpServletRequest,
+    public void delete(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        Member member = getMyMember(httpServletRequest, httpServletResponse);
+        Member member = getMyMember(accessToken, refreshToken, httpServletResponse);
 
         member.deleteMember();
 
@@ -288,10 +284,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberInfo getMyMemberInfo(HttpServletRequest httpServletRequest,
+    public MemberInfo getMyMemberInfo(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
-        // 헤더에 담겨온 액세스 토큰 가져옴
-        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
 
         UUID memberId = jwtUtil.extractMemberId(accessToken);
 
@@ -302,10 +296,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Member getMyMember(HttpServletRequest httpServletRequest,
+    public Member getMyMember(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
-        // 헤더에 담겨온 액세스 토큰 가져옴
-        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
 
         UUID memberId = jwtUtil.extractMemberId(accessToken);
 
@@ -314,7 +306,6 @@ public class MemberServiceImpl implements MemberService {
 
         return member;
     }
-
 
 
 }
