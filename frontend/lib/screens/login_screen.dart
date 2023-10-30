@@ -144,7 +144,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _logout() async {
     Map<String, String> list = await readToken();
-<<<<<<< frontend/lib/screens/login_screen.dart
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -152,44 +151,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_naverLoginStatus == NaverLoginStatus.loggedIn) {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
-      Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
-      final response = await http.post(
-        uri,
-=======
-    if(list.isNotEmpty) {
-      _googleSignIn.signOut();
+
       Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
-      final response = await http.post(uri,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + list["Authorization"]!,
-            'refreshToken': 'Bearer ' + list['refreshToken']!
-          },
-         );
-
-      if (response.statusCode == 200) {
-        FlutterSecureStorage storage = new FlutterSecureStorage();
-        storage.deleteAll();
-        print("로그아웃 완료");
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MainScreen()),
-            (route) => false,
-        );
-      }
-      setState(() {});
-    }
-  }
-  _out() async {
-    Map<String, String> list = await readToken();
-    if(list.isNotEmpty) {
-      _googleSignIn.signOut();
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
-      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
-      final response = await http.delete(uri,
->>>>>>> frontend/lib/screens/login_screen.dart
+      final response = await http.post(
+        uri,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${list["Authorization"]!}',
