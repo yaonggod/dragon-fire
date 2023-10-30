@@ -21,11 +21,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberServiceImpl implements MemberService {
 
     private final JwtUtil jwtUtil;
@@ -85,6 +87,7 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+            log.info("Google 로그인 성공: " + email);
             // 네이버
         } else {
             // AccessToken으로 네이버에 요청해서 유저 이메일 받아오기
@@ -129,6 +132,7 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+            log.info("Naver 로그인 성공: " + email);
         }
     }
 
@@ -169,6 +173,10 @@ public class MemberServiceImpl implements MemberService {
             memberInfoRepository.save(memberInfo);
             googleAuthRepository.save(googleAuth);
 
+            log.info("회원가입 완료: " + "Google");
+            log.info("  UUID: " + memberId);
+            log.info("  이메일: " + email);
+            log.info("  닉네임: " + registRequestDto.getNickname());
             // memberInfo 저장시 member 또한 저장됨
             // memberRepository.save(member);
 
@@ -214,6 +222,10 @@ public class MemberServiceImpl implements MemberService {
             memberInfoRepository.save(memberInfo);
             naverAuthRepository.save(naverAuth);
 
+            log.info("회원가입 완료: " + "Naver");
+            log.info("  UUID: " + memberId);
+            log.info("  이메일: " + email);
+            log.info("  닉네임: " + registRequestDto.getNickname());
             // memberInfo 저장시 member 또한 저장됨
             // memberRepository.save(member);
         }
@@ -224,15 +236,13 @@ public class MemberServiceImpl implements MemberService {
     public void update(UpdateRequestDto updateRequestDto, HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
 
-        // 헤더에 담겨온 액세스 토큰 가져옴
-        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
-
-        UUID memberId = jwtUtil.extractMemberId(accessToken);
-
-        MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(memberId)
-                .orElseThrow(() -> new NoSuchElementException());
+        MemberInfo memberInfo = getMyMemberInfo(httpServletRequest, httpServletResponse);
 
         memberInfo.updateNickname(updateRequestDto.getNickname());
+
+        log.info("회원정보 수정 완료: ");
+        log.info("  UUID: " + memberInfo.getMemberId());
+        log.info("  닉네임: " + memberInfo.getNickname());
     }
 
     @Override
@@ -259,22 +269,22 @@ public class MemberServiceImpl implements MemberService {
         RefreshToken refreshTokenEntity = member.getRefreshToken();
 
         refreshTokenEntity.updateRefreshToken(null);
+
+        log.info("로그아웃 완료: ");
+        log.info("  UUID: " + member.getMemberId());
     }
 
     @Override
     @Transactional
     public void delete(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
-        System.out.println(123);
-        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
-        System.out.println(accessToken);
-        System.out.println(123);
-        UUID memberId = jwtUtil.extractMemberId(accessToken);
 
-        Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
-                .orElseThrow(() -> new NoSuchElementException());
+        Member member = getMyMember(httpServletRequest, httpServletResponse);
 
         member.deleteMember();
+
+        log.info("회원탈퇴 완료: ");
+        log.info("  UUID: " + member.getMemberId());
     }
 
     @Override
@@ -290,5 +300,21 @@ public class MemberServiceImpl implements MemberService {
 
         return memberInfo;
     }
+
+    @Override
+    public Member getMyMember(HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse) {
+        // 헤더에 담겨온 액세스 토큰 가져옴
+        String accessToken = httpServletRequest.getHeader("Authorization").substring(7);
+
+        UUID memberId = jwtUtil.extractMemberId(accessToken);
+
+        Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        return member;
+    }
+
+
 
 }
