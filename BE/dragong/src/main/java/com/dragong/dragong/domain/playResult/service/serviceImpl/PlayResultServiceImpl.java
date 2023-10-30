@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -149,6 +150,7 @@ public class PlayResultServiceImpl implements PlayResultService {
     }
 
     @Scheduled(cron = "0 0 0 * * ?")
+    @Async
     public void updateSeason() {
         // 매주 월요일마다 시즌 초기화
         // cron의 시간이 겹치면, 먼저 선언된 메소드 부터 실행이됨 => 그래서 시즌 초기화를 먼저 실행시킴
@@ -157,6 +159,7 @@ public class PlayResultServiceImpl implements PlayResultService {
 
     //    @Scheduled(cron = "0 */5 * * * ?")
     @Scheduled(cron = "0 */1 * * * ?")
+    @Async
     public void updateRank() {
         // 5분마다 랭크 초기화
         log.info("랭킹 초기화 중.....");
