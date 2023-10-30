@@ -95,9 +95,6 @@ public class GameService {
     public int evenReturn(String roomId) {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
         int answer = countDownandstartGame[Integer.parseInt(roomId)].size();
-//        if (answer == 0) {
-//            countDownandstartGame[Integer.parseInt(roomId)] = 0;
-//        }
         return answer;
     }
 
