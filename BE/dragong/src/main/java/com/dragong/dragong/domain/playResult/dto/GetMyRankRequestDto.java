@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetMyRankRequestDto {
-    String[] myRanking;
+    String nickname;
+    String score;
+    String rank;
 }
