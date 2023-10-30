@@ -50,8 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
         _googleLoggedIn = true;
       });
-    }
-    else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
+    } else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
       print(2);
       setState(() {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
@@ -265,50 +264,82 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: MediaQuery.of(context).size.height / 3),
-            SizedBox(height: MediaQuery.of(context).size.height / 8),
-            Text(_googleLoggedIn ? "구글 로그인됨" : "구글 로그인 안됨"),
-            (_naverLoginStatus != true && !_googleLoggedIn)
-                ? GestureDetector(
-                    onTap: naverLogin,
-                    child: const Text("Naver 로그인"),
-                  )
-                : Container(),
-            SizedBox(height: MediaQuery.of(context).size.height / 8),
-            (_naverLoginStatus != true && !_googleLoggedIn)
-                ? GestureDetector(
-                    onTap: googleLogin,
-                    child: const Text("Gmail 로그인"),
-                  )
-                : Container(),
-            if (_naverLoginStatus == true || _googleLoggedIn == true)
-              MaterialButton(
-                color: Colors.red,
-                child: const Text(
-                  '로그아웃',
-                  style: TextStyle(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height / 3),
+              (_naverLoginStatus != true && !_googleLoggedIn)
+                  ? GestureDetector(
+                      onTap: naverLogin,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0, 3),
+                              blurRadius: 5,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'lib/assets/icons/naverButton.png',
+                          width: MediaQuery.of(context).size.width * 0.8,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              SizedBox(height: MediaQuery.of(context).size.height / 100),
+              (_naverLoginStatus != true && !_googleLoggedIn)
+                  ? GestureDetector(
+                      onTap: googleLogin,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0, 5),
+                              blurRadius: 5,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'lib/assets/icons/googleButton.png',
+                          width: MediaQuery.of(context).size.width * 0.8,
+                        ),
+                      ),
+                    )
+                  : Container(),
+              if (_naverLoginStatus == true || _googleLoggedIn == true)
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '로그아웃',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    _logout();
+                    print('Logout button pressed.');
+                  },
                 ),
-                onPressed: () {
-                  _logout();
-                  print('Logout button pressed.');
-                },
-              ),
-            if (_naverLoginStatus == true || _googleLoggedIn == true)
-              MaterialButton(
-                color: Colors.red,
-                child: const Text(
-                  '회원탈퇴',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () {
-                  _out();
-                  print('회원탈퇴.');
-                },
-              )
-          ],
+              if (_naverLoginStatus == true || _googleLoggedIn == true)
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '회원탈퇴',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    _out();
+                    print('회원탈퇴.');
+                  },
+                )
+            ],
+          ),
         ),
       ),
     );
