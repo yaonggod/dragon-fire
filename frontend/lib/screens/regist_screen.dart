@@ -53,7 +53,11 @@ class _RegistScreenState extends State<RegistScreen> {
     final String nickname = nicknameController.text;
 
     final response = await http.post(
+<<<<<<< frontend/lib/screens/regist_screen.dart
         Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
+=======
+        Uri.parse('https://k9a209.p.ssafy.io/api/oauth/GOOGLE'),
+>>>>>>> frontend/lib/screens/regist_screen.dart
         // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(
