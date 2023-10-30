@@ -19,6 +19,7 @@ class RegistScreen extends StatefulWidget {
 
 class _RegistScreenState extends State<RegistScreen> {
   TextEditingController nicknameController = TextEditingController();
+  bool nicknameChecked = false;
 
   Future<List<String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -33,7 +34,7 @@ class _RegistScreenState extends State<RegistScreen> {
     return list;
   }
 
-  Future<bool> nicknameCheck() async {
+  Future<void> nicknameCheck() async {
     String nickname = nicknameController.text;
 
     final response = await http.get(Uri.parse(
@@ -42,10 +43,43 @@ class _RegistScreenState extends State<RegistScreen> {
         );
     if (response.statusCode == 200) {
       print("사용 가능");
-      return false; // 중복되지 않은 경우
+      // 사용 가능 팝업 표시
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('사용 가능'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
     } else {
       print("중복");
-      return true; // 중복된 경우
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('이미 사용중인 닉네임입니다'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -139,7 +173,28 @@ class _RegistScreenState extends State<RegistScreen> {
                       const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
                     );
                   } else {
-                    sendDataToServer();
+                    if(nicknameChecked == false){
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('알림'),
+                            content: Text('닉네임 중복체크를 해주세요.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('확인'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }else{
+                      sendDataToServer();
+                    }
+
                   }
 
                   // '등록하기' 버튼이 눌렸을 때 수행할 로직
