@@ -1,6 +1,6 @@
 flutter_icons:
 #  ios: true
   android: true
-  image_path: "lib/assets/icons/dragonicon.png"
+  image_path: "lib/assets/icons/appIcon.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "lib/assets/icons/dragonicon.png"
+  adaptive_icon_foreground: "lib/assets/icons/appIcon.png"
