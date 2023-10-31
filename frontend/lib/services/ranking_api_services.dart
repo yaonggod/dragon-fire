@@ -14,11 +14,19 @@ class RankingApiServices {
     if (response.statusCode == 200) {
       var jsonString = utf8.decode(response.bodyBytes);
       final totalRankings = jsonDecode(jsonString);
-      for (var totalRanking in totalRankings) {
-        totalRankingInstances.add(TotalRankingModel.fromJson(totalRanking));
+      for (int i = 0; i < 100 && i < totalRankings.length; i++) {
+        totalRankingInstances.add(TotalRankingModel.fromJson(totalRankings[i]));
       }
       return totalRankingInstances;
     }
     throw Error();
   }
+
+  // 내 랭킹 정보 가져오기
+  // static Future<Map<String, dynamic>> getMyRanking() async {
+  //   Map<String, dynamic> myRankingInstance = {};
+  //   final url = Uri.parse('$baseUrl/rank/my');
+  //   final response = await http.get(url, headers: {});
+  //   throw Error();
+  // }
 }

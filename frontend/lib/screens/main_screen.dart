@@ -16,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginScreen(),
+        builder: (context) => const LoginScreen(),
       ),
     );
   }
@@ -31,18 +31,21 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _navigateToRankingScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RankingScreen(),
-      ),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: RankingScreen(),
+        );
+      },
     );
   }
+
   void _navigateToReportScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReportScreen(),
+        builder: (context) => const ReportScreen(),
       ),
     );
   }
