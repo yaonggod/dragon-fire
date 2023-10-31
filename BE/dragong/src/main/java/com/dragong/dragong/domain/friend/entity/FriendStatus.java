@@ -5,7 +5,10 @@ public enum FriendStatus {
     REQUESTCHECK("REQUESTCHECK"),
     ACCEPTCHECK("ACCEPTCHECK"),
     FRIEND("FRIEND"),
-    DISCONNECTED("DISCONNECTED");
+    DISCONNECTED("DISCONNECTED"),
+
+    // Friend가 DB에 없으면 response로 리턴할 값
+    NONE("NONE");
 
     private final String friendStatus;
 

@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class FriendRequestDto {
-    private UUID fromMember;
+    // fromMember의 정보는 AT, RT로 얻어내기
     private UUID toMember;
 }

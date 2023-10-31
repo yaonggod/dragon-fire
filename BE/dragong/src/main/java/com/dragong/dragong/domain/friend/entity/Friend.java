@@ -1,15 +1,11 @@
 package com.dragong.dragong.domain.friend.entity;
 
-import com.dragong.dragong.domain.member.entity.Member;
-import com.dragong.dragong.domain.member.entity.Role;
 import com.dragong.dragong.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +29,12 @@ public class Friend extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FriendStatus friendStatus;
 
+    @Column
+    private int win = 0;
+
+    @Column
+    private int lose = 0;
+
     @Builder
     public Friend(FriendPk friendPk, FriendStatus friendStatus) {
         this.friendPk = friendPk;
@@ -41,6 +43,14 @@ public class Friend extends BaseTimeEntity {
 
     public void updateFriendStatus(FriendStatus friendStatus) {
         this.friendStatus = friendStatus;
+    }
+
+    public void updateWin() {
+        this.win++;
+    }
+
+    public void updateLose() {
+        this.lose++;
     }
 
 }
