@@ -166,9 +166,10 @@ class _FriendScreenState extends State<FriendScreen> {
         children: [
           if (friendSelected == true)
             Positioned(
-              top: MediaQuery.of(context).size.height * 53 / 1000,
-              width: MediaQuery.of(context).size.width * 10 / 20,
-              right: MediaQuery.of(context).size.width * 1 / 40,
+              top: 66,
+              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
+              height: 35,
+              right: 10.0,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -176,15 +177,18 @@ class _FriendScreenState extends State<FriendScreen> {
                   });
                 },
                 child: Image.asset(
+
                   'lib/assets/icons/friendState1_1.png',
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
           if (friendSelected == true)
             Positioned(
-              top: MediaQuery.of(context).size.height * 22 / 500,
-              width: MediaQuery.of(context).size.width * 10 / 20,
-              left: MediaQuery.of(context).size.width * 1 / 40,
+              top: 58,
+              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
+              height: 44,
+              left: 10.0,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -192,15 +196,18 @@ class _FriendScreenState extends State<FriendScreen> {
                   });
                 },
                 child: Image.asset(
+
                   'lib/assets/icons/friendState1.png',
+                  fit: BoxFit.fill
                 ),
               ),
             ),
           if (friendSelected == false)
             Positioned(
-              top: MediaQuery.of(context).size.height * 53 / 1000,
-              width: MediaQuery.of(context).size.width * 10 / 20,
-              left: MediaQuery.of(context).size.width * 1 / 40,
+              top: 66,
+              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
+              height: 35,
+              left: 10.0,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -209,14 +216,16 @@ class _FriendScreenState extends State<FriendScreen> {
                 },
                 child: Image.asset(
                   'lib/assets/icons/friendState2_1.png',
+                  fit: BoxFit.fill
                 ),
               ),
             ),
           if (friendSelected == false)
             Positioned(
-              top: MediaQuery.of(context).size.height * 22 / 500,
-              width: MediaQuery.of(context).size.width * 10 / 20,
-              right: MediaQuery.of(context).size.width * 1 / 40,
+              top: 58,
+              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
+              height: 44,
+              right: 10.0,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
@@ -225,13 +234,14 @@ class _FriendScreenState extends State<FriendScreen> {
                 },
                 child: Image.asset(
                   'lib/assets/icons/friendState2.png',
+                  fit: BoxFit.fill
                 ),
               ),
             ),
           Positioned(
-            top: MediaQuery.of(context).size.height * 46 / 500,
-            width: MediaQuery.of(context).size.width * 38 / 40,
-            left: MediaQuery.of(context).size.width * 1 / 40,
+            top: 100.0,
+            width: MediaQuery.of(context).size.width -20.0,
+            left: 10.0,
             child: SingleChildScrollView(
               child: Column(
                 children: [
