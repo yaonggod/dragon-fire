@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
+import 'package:frontend/screens/report_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -34,6 +35,14 @@ class _MainScreenState extends State<MainScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => const RankingScreen(),
+      ),
+    );
+  }
+  void _navigateToReportScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReportScreen(),
       ),
     );
   }
@@ -75,6 +84,10 @@ class _MainScreenState extends State<MainScreen> {
           ElevatedButton(
             onPressed: _navigateToRankingScreen,
             child: const Text("랭킹"),
+          ),
+          ElevatedButton(
+            onPressed: _navigateToReportScreen,
+            child: const Text("신고"),
           ),
         ],
       ),
