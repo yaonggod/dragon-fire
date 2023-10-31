@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -145,6 +146,34 @@ class _FriendScreenState extends State<FriendScreen> {
     return list;
   }
 
+  Future<bool> _deleteConfirmDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('삭제'),
+          content: Text('친구를 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _onDeleteCourse() async {}
+
   Future<void> deleteFriend() async {
     // final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/friend/disconnect'));
     // if (response.statusCode == 200) {
@@ -166,9 +195,11 @@ class _FriendScreenState extends State<FriendScreen> {
         children: [
           if (friendSelected == true)
             Positioned(
-              top: 66,
-              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
-              height: 35,
+              top: 70,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
               right: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -177,7 +208,6 @@ class _FriendScreenState extends State<FriendScreen> {
                   });
                 },
                 child: Image.asset(
-
                   'lib/assets/icons/friendState1_1.png',
                   fit: BoxFit.fill,
                 ),
@@ -186,8 +216,10 @@ class _FriendScreenState extends State<FriendScreen> {
           if (friendSelected == true)
             Positioned(
               top: 58,
-              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
-              height: 44,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
               left: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -195,18 +227,17 @@ class _FriendScreenState extends State<FriendScreen> {
                     friendSelected = true;
                   });
                 },
-                child: Image.asset(
-
-                  'lib/assets/icons/friendState1.png',
-                  fit: BoxFit.fill
-                ),
+                child: Image.asset('lib/assets/icons/friendState1.png',
+                    fit: BoxFit.fill),
               ),
             ),
           if (friendSelected == false)
             Positioned(
-              top: 66,
-              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
-              height: 35,
+              top: 70,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
               left: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -214,17 +245,17 @@ class _FriendScreenState extends State<FriendScreen> {
                     friendSelected = true;
                   });
                 },
-                child: Image.asset(
-                  'lib/assets/icons/friendState2_1.png',
-                  fit: BoxFit.fill
-                ),
+                child: Image.asset('lib/assets/icons/friendState2_1.png',
+                    fit: BoxFit.fill),
               ),
             ),
           if (friendSelected == false)
             Positioned(
               top: 58,
-              width: (MediaQuery.of(context).size.width- 20.0) / 1.9,
-              height: 44,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
               right: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -232,15 +263,20 @@ class _FriendScreenState extends State<FriendScreen> {
                     friendSelected = false;
                   });
                 },
-                child: Image.asset(
-                  'lib/assets/icons/friendState2.png',
-                  fit: BoxFit.fill
-                ),
+                child: Image.asset('lib/assets/icons/friendState2.png',
+                    fit: BoxFit.fill),
               ),
             ),
           Positioned(
-            top: 100.0,
-            width: MediaQuery.of(context).size.width -20.0,
+            top: 58 +
+                (MediaQuery
+                    .of(context)
+                    .size
+                    .width - 20.0) / 1.9 * 136 / 642,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width - 20.0,
             left: 10.0,
             child: SingleChildScrollView(
               child: Column(
@@ -248,50 +284,82 @@ class _FriendScreenState extends State<FriendScreen> {
                   if (friendSelected)
                     Container(
                       color: Colors.white,
-                      padding: EdgeInsets.only(top:10.0, bottom:10.0),
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.75,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       child: ListView.builder(
                         itemCount: friendList.length,
                         itemBuilder: (context, index) {
-                          return Card(
-                            color: Color.fromRGBO(0, 0, 0, 0.5),
-                            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
-                                    radius: 30,
-                                  ),
-                                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${friendList[index]}',
+                          return Slidable(
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              extentRatio: 0.15,
+                              closeThreshold: 0.01,
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  padding: EdgeInsets.only(right: 10),
+                                  icon: Icons.delete,
+                                  onPressed: (context) async {
+                                    bool confirmDelete = await _deleteConfirmDialog(context);
+                                    if (confirmDelete) {
+                                      _onDeleteCourse();
+                                    }
+                                  },
+                                ),
+                              ],
+                              openThreshold: 0.001,
+                            ),
+                            child: Card(
+                              color: Color.fromRGBO(0, 0, 0, 0.5),
+                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
+                                          radius: 30,
+                                        ),
+                                        SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${friendList[index]}',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              'Ranking',
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      '전적',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                      },
+                                      child: Text(
+                                        '대결',
                                         style: TextStyle(fontWeight: FontWeight.bold),
                                       ),
-                                      Text(
-                                        'Ranking',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          deleteFriend();
-                                        },
-                                        child: Text('삭제'),
-                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -301,27 +369,41 @@ class _FriendScreenState extends State<FriendScreen> {
                   else
                     Container(
                       color: Colors.white,
-                      padding: EdgeInsets.only(top:10.0),
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.only(top: 10.0),
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.75,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       child: ListView.builder(
                         itemCount: notificationList.length,
                         itemBuilder: (context, index) {
                           return Card(
                             color: Color.fromRGBO(0, 0, 0, 0.5),
-                            margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                  SizedBox(
+                                      width: MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width *
+                                          0.03),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${friendList[index]}가 친추했음',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
