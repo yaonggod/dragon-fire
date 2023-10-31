@@ -133,7 +133,7 @@ public class PlayResultServiceImpl implements PlayResultService {
         List<String> scoreList = redisTemplate.opsForList().range("score", 0, -1);
         List<String> rankList = redisTemplate.opsForList().range("rank", 0, -1);
 
-        String myUUID = jwtUtil.extractRole(accessToken).toString(); // getUUID로 UUID 얻기
+        String myUUID = jwtUtil.extractMemberId(accessToken.substring(7)).toString(); // getUUID로 UUID 얻기
 
         for (int i = 0; i < UUIDList.size(); i++) {
             String UUID = UUIDList.get(i);
