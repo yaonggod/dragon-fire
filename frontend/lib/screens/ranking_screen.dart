@@ -13,17 +13,24 @@ class RankingScreen extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.width * 1.5,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Flexible(
             flex: 3,
-            child: Container(
-              decoration: const BoxDecoration(color: Colors.amber),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.amber,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
           ),
           Flexible(
             flex: 5,
             child: Container(
-              decoration: const BoxDecoration(color: Colors.blue),
+              // decoration: const BoxDecoration(color: Colors.blue),
               child: FutureBuilder(
                 future: allRankings,
                 builder: (context, snapshot) {

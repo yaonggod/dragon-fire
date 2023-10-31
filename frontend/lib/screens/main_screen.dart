@@ -35,6 +35,9 @@ class _MainScreenState extends State<MainScreen> {
       context: context,
       builder: (context) {
         return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: RankingScreen(),
         );
       },
