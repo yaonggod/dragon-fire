@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/friend_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
@@ -47,6 +48,15 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _navigateToFriendScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FriendScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +98,10 @@ class _MainScreenState extends State<MainScreen> {
           ElevatedButton(
             onPressed: _navigateToReportScreen,
             child: const Text("신고"),
+          ),
+          ElevatedButton(
+            onPressed: _navigateToFriendScreen,
+            child: const Text("친구"),
           ),
         ],
       ),
