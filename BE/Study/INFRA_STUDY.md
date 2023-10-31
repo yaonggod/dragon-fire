@@ -410,3 +410,94 @@ pipeline {
     }
 }
 ```
+
+---
+
+# 메타모스트 젠킨스 연동
+
+## 1️⃣ MatterMost 설정
+
+### 1.1 통합
+
+!https://velog.velcdn.com/images/rungoat/post/1bea07b0-e2c5-43cc-ab8b-3a662ea480af/image.PNG
+
+### 1.2 전체 Incoming Webhook
+
+!https://velog.velcdn.com/images/rungoat/post/7cb73590-474f-48e3-b713-37a327fe5791/image.png
+
+### 1.3 Incoming Webhook 추가하기
+
+!https://velog.velcdn.com/images/rungoat/post/3c8225f1-7275-4e42-ac20-f7624ac6e1a0/image.png
+
+### 1.4 추가
+
+!https://velog.velcdn.com/images/rungoat/post/4218ad5d-8160-4483-97d8-b223378888bc/image.png
+
+> 제목 : 임의의 제목설명 : 설명채널 : 메세지를 받을 채널 선택
+> 
+
+### 1.5 확인
+
+!https://velog.velcdn.com/images/rungoat/post/8e9d3125-2972-40f0-8c1a-36bde8e9cb90/image.png
+
+- 이 URL이 Endpoint URL이며 아래 2.2 설정에 입력한다.
+
+## 2️⃣ Jenkins 설정
+
+### 2.1 Mattermost Notification Plugin 설치
+
+> Jenkins 관리 - 플러그인 관리 - Available plugins에서
+> 
+> 
+> **Mattermost Notification Plugin**을 설치
+> 
+> !https://velog.velcdn.com/images/rungoat/post/71c70a52-44c7-43b7-9b04-40879d1ab285/image.png
+> 
+
+### 2.2 Global Mattermost Notifier Settings 설정
+
+> Jenkins 관리 - 시스템 설정에서
+> 
+> 
+> **Global Mattermost Notifier Settings** 설정
+> 
+> !https://velog.velcdn.com/images/rungoat/post/9cc352fd-18eb-455e-9966-caa2b6c11c6c/image.png
+> 
+> - **Endpoint**: 위에서 언급한 URL 입력
+> - **Channel**: Incoming Webhook을 추가할 때 설정했던 채널 이름
+> - **Build Server URL**: Jenkins 주소 (자동으로 입력되어 있을 것이다.)
+> 
+> 설정 후 사진 아래의 Test Connection을 눌러보면 사진 하단 왼쪽 부근에 Success가 나타날 것이다!
+> 
+
+### 2.3 Pipeline
+
+```jsx
+post {
+        success {
+            script {
+                // 빌드 성공 시 Mattermost 메시지 전송
+                mattermostSend(
+                    color: 'good',
+                    message: "빌드 성공: ${currentBuild.fullDisplayName}",
+                    endpoint: 'https://meeting.ssafy.com/hooks/3hqizpg8njr7fdk1dr4m5taf5r',
+                    channel: 'Dragon-Fire-Jenkins'
+                )
+            }
+        }
+
+        failure {
+            script {
+                // 빌드 실패 시 Mattermost 메시지 전송
+                mattermostSend(
+                    color: 'danger',
+                    message: "빌드 실패: ${currentBuild.fullDisplayName}",
+                    endpoint: 'https://meeting.ssafy.com/hooks/3hqizpg8njr7fdk1dr4m5taf5r',
+                    channel: 'Dragon-Fire-Jenkins'
+                )
+            }
+        }
+    }
+```
+
+---
