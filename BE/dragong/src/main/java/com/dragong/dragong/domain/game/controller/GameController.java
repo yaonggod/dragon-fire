@@ -118,6 +118,7 @@ public class GameController {
         if (gameStart) {
             gameService.cleanList(roomId);
             for (int i = 3; i >= 0; i--) {
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
