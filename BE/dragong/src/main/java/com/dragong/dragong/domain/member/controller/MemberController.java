@@ -3,7 +3,6 @@ package com.dragong.dragong.domain.member.controller;
 
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
 import com.dragong.dragong.domain.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

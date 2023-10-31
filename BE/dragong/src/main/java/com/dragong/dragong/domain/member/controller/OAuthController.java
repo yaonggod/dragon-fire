@@ -3,9 +3,9 @@ package com.dragong.dragong.domain.member.controller;
 
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
+import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.domain.member.entity.SocialType;
 import com.dragong.dragong.domain.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +29,8 @@ public class OAuthController {
     public ResponseEntity<?> loginMember(@RequestBody LoginRequestDto loginRequestDto,
             HttpServletResponse httpServletResponse) {
         try {
-            memberService.login(loginRequestDto, httpServletResponse);
-            return new ResponseEntity<>(HttpStatus.OK);
+            LoginResponseDto response = memberService.login(loginRequestDto, httpServletResponse);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
