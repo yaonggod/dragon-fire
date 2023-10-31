@@ -3,6 +3,7 @@ package com.dragong.dragong.domain.member.service;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.Role;
@@ -41,7 +42,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse httpServletResponse) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto,
+            HttpServletResponse httpServletResponse) {
 
         //구글 로그인 여부 확인
         if (loginRequestDto.getSocialType() == SocialType.GOOGLE) {
@@ -87,8 +89,13 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+            LoginResponseDto response = LoginResponseDto.builder()
+                    .nickname(member.getMemberInfo().getNickname())
+                    .build();
+
             log.info("Google 로그인 성공: " + email);
-            // 네이버
+
+            return response;
         } else {
             // AccessToken으로 네이버에 요청해서 유저 이메일 받아오기
             String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
@@ -132,8 +139,15 @@ public class MemberServiceImpl implements MemberService {
             httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
             httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+            LoginResponseDto response = LoginResponseDto.builder()
+                    .nickname(member.getMemberInfo().getNickname())
+                    .build();
+
             log.info("Naver 로그인 성공: " + email);
+
+            return response;
         }
+
     }
 
     @Override
@@ -236,7 +250,8 @@ public class MemberServiceImpl implements MemberService {
     public void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        MemberInfo memberInfo = getMyMemberInfo(accessToken.substring(7), refreshToken.substring(7), httpServletResponse);
+        MemberInfo memberInfo = getMyMemberInfo(accessToken.substring(7), refreshToken.substring(7),
+                httpServletResponse);
 
         memberInfo.updateNickname(updateRequestDto.getNickname());
 
@@ -275,7 +290,8 @@ public class MemberServiceImpl implements MemberService {
     public void delete(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        Member member = getMyMember(accessToken.substring(7), refreshToken.substring(7), httpServletResponse);
+        Member member = getMyMember(accessToken.substring(7), refreshToken.substring(7),
+                httpServletResponse);
 
         member.deleteMember();
 
