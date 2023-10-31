@@ -33,9 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
+    _checkLoginStatus();
     super.initState();
     // storage에 토큰을 확인하고 로그인 여부 불러오기
-    _checkLoginStatus();
   }
 
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
