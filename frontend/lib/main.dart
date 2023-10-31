@@ -17,7 +17,7 @@ class DragonG extends StatelessWidget {
     return MaterialApp(
       title: '드래곤 불',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.dark(),
         useMaterial3: true,
       ),
       home: const AccessScreen(),
