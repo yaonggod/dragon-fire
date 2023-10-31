@@ -75,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           ElevatedButton(
             onPressed: _navigateToLoginScreen,
-            child: const Text("로그인 페이지"),
+            child: const Text("로그인"),
           ),
           ElevatedButton(
             onPressed: _navigateToStartScreen,
