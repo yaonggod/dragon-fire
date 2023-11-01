@@ -90,7 +90,7 @@ class _MainScreenState extends State<MainScreen> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height*0.5,),
+            SizedBox(height: MediaQuery.of(context).size.height*0.3,),
             InkWell(
               onTap: _navigateToStartScreen,
               child: Image.asset(
