@@ -149,6 +149,11 @@ public class PlayResultServiceImpl implements PlayResultService {
         return null;
     }
 
+    @Override
+    public int getSeason() {
+        return season;
+    }
+
     @Scheduled(cron = "0 0 0 * * ?")
     @Async
     public void updateSeason() {
@@ -166,4 +171,6 @@ public class PlayResultServiceImpl implements PlayResultService {
         putRank();
         log.info("랭킹 초기화 완료!");
     }
+
+
 }
