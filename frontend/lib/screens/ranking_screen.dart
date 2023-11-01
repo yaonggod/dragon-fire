@@ -8,8 +8,7 @@ class RankingScreen extends StatelessWidget {
   final Future<List<TotalRankingModel>?> allRankings =
       RankingApiServices.getCurrentSeasonTotalRanking();
   final Future<MyRankingModel?> myRanking = RankingApiServices.getMyRanking(
-    token:
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhY2Nlc3NfdG9rZW4iLCJyb2xlIjoiUk9MRV9VU0VSIiwibWVtYmVyIjoiNDFjOTFkNTctMmQ1Zi00OTEyLWFlYWItNmM0MzUzMTliMDc1IiwiaWF0IjoxNjk4ODAwMTEwLCJleHAiOjE2OTg4ODY1MTB9.4pFHcTYVeQIiZvKiiCpjloHG7O2hWh9_4Z0v3CCkg19Pi8FrDEQrgQhdMEv6EvSQikuMuPOBfvBi-9jTbECU2Q',
+    token: '',
   );
 
   @override
