@@ -31,9 +31,11 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     @Override
     @Transactional
     public void updateWinner(String accessToken) {
+        log.info("impl에서 updateWinnder 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
-
+        log.info("uuid 출력"+String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
+        log.info(member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
         int winCount = playResult.getWin();
@@ -51,9 +53,11 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     @Override
     @Transactional
     public void updateLoser(String accessToken) {
+        log.info("impl에서 updateLoser 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
-
+        log.info("uuid 출력"+String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
+        log.info(member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
         int loseCount = playResult.getLose();

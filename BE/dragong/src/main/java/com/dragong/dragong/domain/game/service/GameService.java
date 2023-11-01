@@ -33,7 +33,10 @@ public class GameService {
         // 처음 대기화면에서 방 배정을 받을 때 accessToken 값을 넣어준다.
         log.info(nickname+"이 nickname과 accessToken 값을 넣어줍니다.");
         TokenData tokenData = new TokenData(accessToken,nickname);
+        log.info(tokenData.getAccessToken());
+        log.info(tokenData.getNickname());
         accessTokenRoom[roomId].add(tokenData);
+        log.info("현재 accessToken의 사이즈는?"+ accessTokenRoom[roomId].size());
     }
 
     public void deleteAccessToken(String roomId){
@@ -47,9 +50,13 @@ public class GameService {
 
         if(tokenData1.getNickname().equals(nickname)){
             // tokenData1이 승자의 nickname과 일치할 경우
+            log.info("결과 업데이트를 위해 값을 반환합니다");
+            log.info(tokenData1.getAccessToken()+":"+tokenData2.getAccessToken());
             return tokenData1.getAccessToken()+":"+tokenData2.getAccessToken();
         }else{
             //tokenData2가 승자의 nickname과 일치할 경우
+            log.info("결과 업데이트를 위해 값을 반환합니다");
+            log.info(tokenData2.getAccessToken()+":"+tokenData1.getAccessToken());
             return tokenData2.getAccessToken()+":"+tokenData1.getAccessToken();
         }
     }

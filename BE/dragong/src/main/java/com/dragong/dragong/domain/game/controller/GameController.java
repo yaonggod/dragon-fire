@@ -245,13 +245,19 @@ public class GameController {
     public void updateRecord(@DestinationVariable String roomId, String winner) {
         // 이제 결과를 받아올건데
         System.out.println("마지막 결과를 반환합니다: " + winner);
-        String result = gameService.winnerAndLoserToken(roomId, winner);
-        String[] parts = result.split(":");
+        gameService.messageInsert(roomId,winner);
 
-        resultUpdateService.updateWinner(parts[0]);
-        resultUpdateService.updateWinner(parts[1]);
+        if(gameService.evenReturn(roomId)%2==1){
+            String result = gameService.winnerAndLoserToken(roomId, winner);
+            String[] parts = result.split(":");
+            log.info(parts[0]);
+            log.info(parts[1]);
+            resultUpdateService.updateWinner(parts[0]);
+            resultUpdateService.updateWinner(parts[1]);
+        }
+        gameService.cleanList(roomId);
+
     }
-
 //    @GetMapping("/test")
 //    public String testing() {
 //        resultUpdateService.testing();
