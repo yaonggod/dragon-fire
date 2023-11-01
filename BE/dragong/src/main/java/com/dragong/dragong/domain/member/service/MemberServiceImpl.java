@@ -250,7 +250,7 @@ public class MemberServiceImpl implements MemberService {
     public void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        MemberInfo memberInfo = getMyMemberInfo(accessToken.substring(7), refreshToken.substring(7),
+        MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken,
                 httpServletResponse);
 
         memberInfo.updateNickname(updateRequestDto.getNickname());
