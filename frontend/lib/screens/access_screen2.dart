@@ -23,7 +23,7 @@ class _AccessScreen2State extends State<AccessScreen2>
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeOut,
+        curve: Curves.easeInOut,
       ),
     );
 
@@ -95,6 +95,7 @@ class _AccessScreen2State extends State<AccessScreen2>
               child: Image.asset(
                 'lib/assets/icons/fire.png',
                 height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
                 fit: BoxFit.fitHeight,
               ),
             ),
