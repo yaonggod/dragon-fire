@@ -33,11 +33,18 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _navigateToRankingScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RankingScreen(),
-      ),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(10),
+          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: RankingScreen(),
+        );
+      },
     );
   }
 
@@ -45,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReportScreen(),
+        builder: (context) => const ReportScreen(),
       ),
     );
   }
