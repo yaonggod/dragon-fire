@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 class AccessScreen2 extends StatefulWidget {
-  const AccessScreen2({Key? key});
+
+  final bool isloggedin;
+
+  const AccessScreen2({Key? key, required this.isloggedin}) : super(key: key);
 
   @override
   _AccessScreen2State createState() => _AccessScreen2State();
@@ -12,6 +16,7 @@ class _AccessScreen2State extends State<AccessScreen2>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+
 
   @override
   void initState() {
@@ -27,18 +32,33 @@ class _AccessScreen2State extends State<AccessScreen2>
       ),
     );
 
-    _controller.forward().whenComplete(() {
-      Navigator.pushAndRemoveUntil(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) =>
-              MainScreen(),
-          transitionDuration: Duration.zero,
-          reverseTransitionDuration: Duration.zero,
-        ),
-            (Route<dynamic> route) => false,
-      );
-    });
+    if(widget.isloggedin) {
+      _controller.forward().whenComplete(() {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) =>
+                MainScreen(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
+              (Route<dynamic> route) => false,
+        );
+      });
+    }else{
+      _controller.forward().whenComplete(() {
+        Navigator.pushAndRemoveUntil(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) =>
+                LoginScreen(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
+              (Route<dynamic> route) => false,
+        );
+      });
+    }
 
     super.initState();
   }
