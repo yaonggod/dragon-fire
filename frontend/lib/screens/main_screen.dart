@@ -13,6 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String buttonsrc = 'lib/assets/icons/startButton.png';
   void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
@@ -91,11 +92,30 @@ class _MainScreenState extends State<MainScreen> {
         child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).size.height*0.3,),
-            InkWell(
-              onTap: _navigateToStartScreen,
-              child: Image.asset(
-                'lib/assets/icons/startButton.png',
+            GestureDetector(
+              onTap: () {
+                _navigateToStartScreen();
+              },
+              onTapDown: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton2.png';
+                });
+              },
+              onTapUp: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton.png';
+                });
+              },
+
+              child: Container(
                 width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(buttonsrc),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
               ),
             ),
             Row(
