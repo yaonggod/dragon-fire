@@ -39,6 +39,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
   void _navigateToReportScreen() {
     Navigator.push(
       context,
@@ -61,8 +62,9 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Column(
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '드래곤 불',
@@ -70,40 +72,51 @@ class _MainScreenState extends State<MainScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                '천하제일 쎄쎄쎄',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              )
+              // Text(
+              //   '천하제일 쎄쎄쎄',
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //   ),
+              // ),
+              ElevatedButton(
+                onPressed: _navigateToLoginScreen,
+                child: const Text("로그인"),
+              ),
             ],
           ),
         ),
         backgroundColor: Colors.red[100],
       ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: _navigateToLoginScreen,
-            child: const Text("로그인"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToStartScreen,
-            child: const Text("게임"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToRankingScreen,
-            child: const Text("랭킹"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToReportScreen,
-            child: const Text("신고"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToFriendScreen,
-            child: const Text("친구"),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height*0.5,),
+            InkWell(
+              onTap: _navigateToStartScreen,
+              child: Image.asset(
+                'lib/assets/icons/startButton.png',
+                width: 100,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _navigateToRankingScreen,
+                  child: const Text("랭킹"),
+                ),
+                ElevatedButton(
+                  onPressed: _navigateToReportScreen,
+                  child: const Text("신고"),
+                ),
+                ElevatedButton(
+                  onPressed: _navigateToFriendScreen,
+                  child: const Text("친구"),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
