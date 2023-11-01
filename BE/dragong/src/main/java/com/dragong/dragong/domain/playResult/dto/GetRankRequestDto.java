@@ -13,4 +13,7 @@ public class GetRankRequestDto {
     String nickname;
     String score;
     String rank;
+    String win;
+    String lose;
+    String seasonMaxScore;
 }
