@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/screens/access_screen2.dart';
-import 'package:frontend/screens/main_screen.dart';
 
 class AccessScreen extends StatefulWidget {
   const AccessScreen({super.key});
@@ -14,8 +14,36 @@ class _AccessScreenState extends State<AccessScreen>
   late AnimationController _controller;
   late AnimationController _controller2;
 
+  bool _isLoggedIn= false;
+
+  Future<void> _checkLoginStatus() async {
+    Map<String, String> tokens = await readToken();
+    if (tokens.isNotEmpty) {
+      setState((){
+        _isLoggedIn = true;
+      });
+    }
+  }
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
   @override
   void initState() {
+    _checkLoginStatus();
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2),
@@ -60,7 +88,7 @@ class _AccessScreenState extends State<AccessScreen>
                 context,
                 PageRouteBuilder(
                   pageBuilder: (context, animation1, animation2) =>
-                      AccessScreen2(),
+                      AccessScreen2(isloggedin: _isLoggedIn),
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ),
@@ -89,7 +117,7 @@ class _AccessScreenState extends State<AccessScreen>
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
-                            AccessScreen2(),
+                            AccessScreen2(isloggedin: _isLoggedIn),
                         transitionDuration: Duration.zero,
                         reverseTransitionDuration: Duration.zero,
                       ),
@@ -136,7 +164,7 @@ class _AccessScreenState extends State<AccessScreen>
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        AccessScreen2(),
+                        AccessScreen2(isloggedin: _isLoggedIn),
                     transitionDuration: Duration.zero,
                     reverseTransitionDuration: Duration.zero,
                   ),

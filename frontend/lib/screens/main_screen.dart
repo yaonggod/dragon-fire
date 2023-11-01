@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/friend_screen.dart';
-import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
@@ -13,11 +13,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  void _navigateToLoginScreen() {
+  void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LoginScreen(),
+        builder: (context) => MyInfoScreen(),
       ),
     );
   }
@@ -79,8 +79,8 @@ class _MainScreenState extends State<MainScreen> {
               //   ),
               // ),
               ElevatedButton(
-                onPressed: _navigateToLoginScreen,
-                child: const Text("로그인"),
+                onPressed: _navigateToMyInfoScreen,
+                child: const Text("내 정보"),
               ),
             ],
           ),
