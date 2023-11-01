@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/friend_screen.dart';
+import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
@@ -12,11 +13,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  void _navigateToLoginScreen() {
+  String buttonsrc = 'lib/assets/icons/startButton.png';
+  void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
+        builder: (context) => MyInfoScreen(),
       ),
     );
   }
@@ -55,12 +57,22 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _navigateToFriendScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FriendScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Column(
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '드래곤 불',
@@ -68,36 +80,70 @@ class _MainScreenState extends State<MainScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              Text(
-                '천하제일 쎄쎄쎄',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              )
+              // Text(
+              //   '천하제일 쎄쎄쎄',
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //   ),
+              // ),
+              ElevatedButton(
+                onPressed: _navigateToMyInfoScreen,
+                child: const Text("내 정보"),
+              ),
             ],
           ),
         ),
         backgroundColor: Colors.red[100],
       ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: _navigateToLoginScreen,
-            child: const Text("로그인"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToStartScreen,
-            child: const Text("게임"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToRankingScreen,
-            child: const Text("랭킹"),
-          ),
-          ElevatedButton(
-            onPressed: _navigateToReportScreen,
-            child: const Text("신고"),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height*0.3,),
+            GestureDetector(
+              onTap: () {
+                _navigateToStartScreen();
+              },
+              onTapDown: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton2.png';
+                });
+              },
+              onTapUp: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton.png';
+                });
+              },
+
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(buttonsrc),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _navigateToRankingScreen,
+                  child: const Text("랭킹"),
+                ),
+                ElevatedButton(
+                  onPressed: _navigateToReportScreen,
+                  child: const Text("신고"),
+                ),
+                ElevatedButton(
+                  onPressed: _navigateToFriendScreen,
+                  child: const Text("친구"),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

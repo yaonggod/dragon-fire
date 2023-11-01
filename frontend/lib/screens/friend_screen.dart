@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/main_screen.dart';
-import 'package:frontend/screens/regist_screen.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
@@ -17,8 +14,49 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen> {
-  String nickname = "하이";
-  TextEditingController detailController = TextEditingController();
+  bool friendSelected = true;
+  late ScrollController scrollController;
+  bool isMaxHeightReached = false;
+  List<String> friendList = [
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+  ];
+
+  List<String> notificationList = [
+    'Alice',
+    'Bob',
+    'Charlie',
+    'David',
+    'Eve',
+  ];
 
   // 구글
   // 구글 로그인 여부
@@ -43,9 +81,29 @@ class _FriendScreenState extends State<FriendScreen> {
    */
   @override
   void initState() {
-    super.initState();
     // storage에 토큰을 확인하고 로그인 여부 불러오기
     _checkLoginStatus();
+    scrollController = ScrollController();
+    scrollController.addListener(() {
+      // maxheight에 도달했으면
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent) {
+        setState(() {
+          isMaxHeightReached = true;
+        });
+      } else {
+        setState(() {
+          isMaxHeightReached = false;
+        });
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
@@ -72,65 +130,6 @@ class _FriendScreenState extends State<FriendScreen> {
     print(_naverLoginStatus);
   }
 
-  Future<void> sendReport() async {
-    Map<String, String> tokens = await readToken();
-    final String nickname = detailController.text;
-    String otherId = "dcc39ca9-a96f-432c-b7da-41c8363a91b0";
-    if (tokens.isNotEmpty) {
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/report/new");
-      final response = await http.post(uri,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${tokens["Authorization"]!}',
-            'refreshToken': 'Bearer ${tokens["refreshToken"]!}',
-          },
-          body: jsonEncode({"suspect": otherId, "reportDetail": "hello"}));
-
-      if (response.statusCode == 200) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('등록 성공'),
-              content: Text('신고가 접수되었습니다'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MainScreen()),
-                            (route) => false);
-                  },
-                  child: Text('확인'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-      if (response.statusCode != 200) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('등록 실패'),
-              content: Text('다시 시도해주세요'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('확인'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
-
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
@@ -147,108 +146,290 @@ class _FriendScreenState extends State<FriendScreen> {
     return list;
   }
 
+  Future<bool> _deleteConfirmDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('삭제'),
+          content: Text('친구를 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _onDeleteCourse() async {}
+
+  Future<void> deleteFriend() async {
+    // final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/friend/disconnect'));
+    // if (response.statusCode == 200) {
+
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('신고',
+        title: const Text('호적수',
             style: TextStyle(
               fontWeight: FontWeight.bold,
             )),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '신고 회원',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    nickname,
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 15),
-              SizedBox(height: MediaQuery.of(context).size.height / 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '신고 사유',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
-              Container(
-                child: TextField(
-                  controller: detailController,
-                  minLines: 10, // 최소 라인 수 설정
-                  maxLines: 10, // 최대 라인 수 설정
-                  decoration: InputDecoration(
-                    alignLabelWithHint: true,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFF6766E),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
-                      ),
-                    ),
-                    isDense: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    contentPadding: const EdgeInsets.all(12),
-                    labelText: '신고 사유를 입력해주세요',
-                    labelStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
-              ElevatedButton(
-                onPressed: () {
-                  // print(widget.code);
-                  if (detailController.text.isEmpty) {
-                    // 경고 메시지 표시 로직
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("신고 사유는 필수사항입니다!")),
-                    );
-                  } else {
-                    sendReport();
-                  }
+      body: Stack(
+        children: [
+          if (friendSelected == true)
+            Positioned(
+              top: 70,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
+              right: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    friendSelected = false;
+                  });
                 },
-                child: const Text('등록'),
+                child: Image.asset(
+                  'lib/assets/icons/friendState1_1.png',
+                  fit: BoxFit.fill,
+                ),
               ),
-            ],
+            ),
+          if (friendSelected == true)
+            Positioned(
+              top: 58,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
+              left: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    friendSelected = true;
+                  });
+                },
+                child: Image.asset('lib/assets/icons/friendState1.png',
+                    fit: BoxFit.fill),
+              ),
+            ),
+          if (friendSelected == false)
+            Positioned(
+              top: 70,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
+              left: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    friendSelected = true;
+                  });
+                },
+                child: Image.asset('lib/assets/icons/friendState2_1.png',
+                    fit: BoxFit.fill),
+              ),
+            ),
+          if (friendSelected == false)
+            Positioned(
+              top: 58,
+              width: (MediaQuery
+                  .of(context)
+                  .size
+                  .width - 20.0) / 1.9,
+              right: 10.0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    friendSelected = false;
+                  });
+                },
+                child: Image.asset('lib/assets/icons/friendState2.png',
+                    fit: BoxFit.fill),
+              ),
+            ),
+          Positioned(
+            top: 58 +
+                (MediaQuery
+                    .of(context)
+                    .size
+                    .width - 20.0) / 1.9 * 136 / 642,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width - 20.0,
+            left: 10.0,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (friendSelected)
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.75,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      child: ListView.builder(
+                        itemCount: friendList.length,
+                        itemBuilder: (context, index) {
+                          return Slidable(
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              extentRatio: 0.15,
+                              closeThreshold: 0.01,
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  padding: EdgeInsets.only(right: 10),
+                                  icon: Icons.delete,
+                                  onPressed: (context) async {
+                                    bool confirmDelete = await _deleteConfirmDialog(context);
+                                    if (confirmDelete) {
+                                      _onDeleteCourse();
+                                    }
+                                  },
+                                ),
+                              ],
+                              openThreshold: 0.001,
+                            ),
+                            child: Card(
+                              color: Color.fromRGBO(0, 0, 0, 0.5),
+                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
+                                          radius: 30,
+                                        ),
+                                        SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${friendList[index]}',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              'Ranking',
+                                              style: TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      '전적',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                      },
+                                      child: Text(
+                                        '대결',
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    Container(
+                      color: Colors.white,
+                      padding: EdgeInsets.only(top: 10.0),
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.75,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      child: ListView.builder(
+                        itemCount: notificationList.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Color.fromRGBO(0, 0, 0, 0.5),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                      width: MediaQuery
+                                          .of(context)
+                                          .size
+                                          .width *
+                                          0.03),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${friendList[index]}가 친추했음',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          deleteFriend();
+                                        },
+                                        child: Text('삭제'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
