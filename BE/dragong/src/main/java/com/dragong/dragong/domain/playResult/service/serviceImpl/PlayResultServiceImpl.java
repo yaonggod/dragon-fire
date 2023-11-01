@@ -2,6 +2,9 @@ package com.dragong.dragong.domain.playResult.service.serviceImpl;
 
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.repository.MemberInfoRepository;
+import com.dragong.dragong.domain.playResult.dto.GetNicknameRequestDto;
+import com.dragong.dragong.domain.playResult.dto.GetNicknameResponseDto;
+import com.dragong.dragong.domain.playResult.entity.PlayResultEmpId;
 import com.dragong.dragong.domain.playResult.service.PlayResultService;
 import com.dragong.dragong.global.util.JwtUtil;
 import com.dragong.dragong.domain.playResult.dto.GetMyRankRequestDto;
@@ -129,7 +132,8 @@ public class PlayResultServiceImpl implements PlayResultService {
             String lose = loseList.get(i);
             String seasonMaxScore = seasonMaxScoreList.get(i);
 
-            GetRankRequestDto getRankRequestDto = new GetRankRequestDto(nickname, score, rank, win, lose, seasonMaxScore);
+            GetRankRequestDto getRankRequestDto = new GetRankRequestDto(nickname, score, rank, win,
+                lose, seasonMaxScore);
             ranking.add(getRankRequestDto);
         }
         return ranking;
@@ -164,6 +168,24 @@ public class PlayResultServiceImpl implements PlayResultService {
             }
         }
         return null;
+    }
+
+    @Override
+    public GetNicknameResponseDto getNicknameRank(GetNicknameRequestDto getNicknameRequestDto) {
+        String nickname = getNicknameRequestDto.getNickname();
+        MemberInfo memberInfo = memberInfoRepository.findByNickname(nickname).orElse(null);
+
+        // 복합키 만들어서 repository 만들어주기
+        PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, memberInfo.getMember());
+
+        // 닉네임에 해당하는 회원의 전적 가져오기
+        PlayResult playResult = playResultRepository.findById(playResultEmpId).orElse(null);
+
+        GetNicknameResponseDto getNicknameResponseDto = new GetNicknameResponseDto(nickname,
+            playResult.getLose(), playResult.getWin(), playResult.getScore(),
+            playResult.getSeasonMaxScore());
+
+        return getNicknameResponseDto;
     }
 
     @Override
