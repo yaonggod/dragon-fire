@@ -113,7 +113,9 @@ class _MainScreenState extends State<MainScreen> {
                   buttonsrc = 'lib/assets/icons/startButton.png';
                 });
               },
-
+              onTapCancel: () => setState(() {
+                buttonsrc = 'lib/assets/icons/startButton.png';
+              }),
               child: Container(
                 width: 100,
                 height: 100,
