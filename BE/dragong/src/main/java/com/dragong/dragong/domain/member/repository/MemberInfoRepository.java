@@ -12,4 +12,6 @@ public interface MemberInfoRepository extends JpaRepository<MemberInfo, UUID> {
     boolean existsByNicknameAndMember_QuitFlagIsFalse(String nickname);
 
     Optional<MemberInfo> findMemberInfoByMemberId(UUID memberId);
+
+    Optional<MemberInfo> findMemberInfoByNicknameAndMember_QuitFlagIsFalse(String nickname);
 }
