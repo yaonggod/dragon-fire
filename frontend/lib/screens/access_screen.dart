@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/access_screen2.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 class AccessScreen extends StatefulWidget {
@@ -57,8 +58,13 @@ class _AccessScreenState extends State<AccessScreen>
             onTap: () {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => MainScreen()),
-                (Route<dynamic> route) => false,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) =>
+                      AccessScreen2(),
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
+                ),
+                    (Route<dynamic> route) => false,
               );
             },
             child: Opacity(
@@ -78,9 +84,15 @@ class _AccessScreenState extends State<AccessScreen>
               builder: (context, child) {
                 return GestureDetector(
                   onTap: () {
+                    print(1);
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            AccessScreen2(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
                       (Route<dynamic> route) => false,
                     );
                   },
@@ -122,8 +134,13 @@ class _AccessScreenState extends State<AccessScreen>
               onTap: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => MainScreen()),
-                  (Route<dynamic> route) => false,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        AccessScreen2(),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ),
+                      (Route<dynamic> route) => false,
                 );
               },
               child: Opacity(
