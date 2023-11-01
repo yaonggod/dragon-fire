@@ -45,7 +45,6 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_svg: ^2.0.7
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -72,6 +71,10 @@ flutter:
     - lib/assets/lottie/
     - lib/assets/icons/
 
+  fonts:
+    - family: DungGeunMo
+      fonts:
+        - asset: lib/assets/fonts/DungGeunMo.ttf
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
