@@ -54,6 +54,7 @@ public class Member extends BaseTimeEntity {
             fetch = FetchType.LAZY)
     private RefreshToken refreshToken;
 
+
     // member 먼저 생성 후 memberInfo를 생성해야하므로 builder와 따로
     public void addMemberInfo(MemberInfo memberInfo) {
         this.memberInfo = memberInfo;
@@ -70,6 +71,14 @@ public class Member extends BaseTimeEntity {
     public void addRefreshToken(RefreshToken refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+
+    // FCM Token
+    @OneToOne(mappedBy = "member",
+            fetch = FetchType.LAZY)
+    private FcmToken fcmToken;
+
+    public void addFcmToken(FcmToken fcmToken) { this.fcmToken = fcmToken; }
 
     public void deleteMember() {
         this.quitFlag = true;

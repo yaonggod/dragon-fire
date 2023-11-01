@@ -11,4 +11,6 @@ public interface PlayResultService {
     List<GetRankRequestDto> getRank();
 
     GetMyRankRequestDto getMyRank(String accessToken);
+
+    int getSeason();
 }
