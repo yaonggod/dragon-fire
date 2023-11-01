@@ -1,3 +1,5 @@
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/screens/access_screen2.dart';
@@ -13,6 +15,7 @@ class _AccessScreenState extends State<AccessScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _controller2;
+  final player = AudioPlayer();
 
   bool _isLoggedIn= false;
 
@@ -41,8 +44,12 @@ class _AccessScreenState extends State<AccessScreen>
     return list;
   }
 
+
+
   @override
   void initState() {
+    player.setReleaseMode(ReleaseMode.loop);
+    player.play(AssetSource('dragonSong.wav'),mode: PlayerMode.lowLatency);
     _checkLoginStatus();
     _controller = AnimationController(
       vsync: this,
@@ -71,6 +78,8 @@ class _AccessScreenState extends State<AccessScreen>
   void dispose() {
     _controller.dispose();
     _controller2.dispose();
+    player.dispose();
+
     super.dispose();
   }
 
