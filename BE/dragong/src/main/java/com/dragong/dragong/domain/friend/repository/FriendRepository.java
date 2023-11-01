@@ -16,10 +16,10 @@ public interface FriendRepository extends JpaRepository<Friend, FriendPk> {
     // 칭구 == FRIEND
     // 메시지 == REQUESTCHECK, ACCEPTCHECK
     // WAITING은 검색했을 때 대기중... 이런 식으로 뜬다
-    List<Friend> findByFromMemberAndFriendStatusInOrderByCreatedTime(UUID fromMember, List<FriendStatus> friendStatusList);
+    List<Friend> findByFriendPkFromMemberAndFriendStatusInOrderByCreatedTime(UUID fromMember, List<FriendStatus> friendStatusList);
 
     // 나와 너의 친구 사이를 찾아주기
-    Optional<Friend> findByFromMemberAndToMember(UUID fromMember, UUID toMember);
+    Optional<Friend> findByFriendPkFromMemberAndFriendPkToMember(UUID fromMember, UUID toMember);
 
 
 

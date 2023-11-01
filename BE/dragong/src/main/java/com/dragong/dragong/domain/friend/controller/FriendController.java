@@ -20,94 +20,62 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @GetMapping("/{nickname}")
+    @GetMapping("/search/{nickname}")
     public ResponseEntity<?> getFriendStatus(@PathVariable("nickname") String nickname,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            return new ResponseEntity<>(friendService.getFriendStatus(accessToken, refreshToken, nickname), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(friendService.getFriendStatus(accessToken, refreshToken, nickname), HttpStatus.OK);
     }
 
     @PostMapping("/request")
     public ResponseEntity<?> requestFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            friendService.requestFriend(accessToken, refreshToken, friendRequestDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        friendService.requestFriend(accessToken, refreshToken, friendRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/accept")
     public ResponseEntity<?> acceptFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            friendService.acceptFriend(accessToken, refreshToken, friendRequestDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        friendService.acceptFriend(accessToken, refreshToken, friendRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/reject")
     public ResponseEntity<?> rejectFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            friendService.rejectFriend(accessToken, refreshToken, friendRequestDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        friendService.rejectFriend(accessToken, refreshToken, friendRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/check")
     public ResponseEntity<?> checkFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            friendService.checkFriend(accessToken, refreshToken, friendRequestDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        friendService.checkFriend(accessToken, refreshToken, friendRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/disconnect")
     public ResponseEntity<?> disconnectFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            friendService.disconnectFriend(accessToken, refreshToken, friendRequestDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        friendService.disconnectFriend(accessToken, refreshToken, friendRequestDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/friends")
     public ResponseEntity<?> getFriends(@RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            return new ResponseEntity<>(friendService.getFriends(accessToken, refreshToken), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(friendService.getFriends(accessToken, refreshToken), HttpStatus.OK);
     }
 
     @GetMapping("/messages")
     public ResponseEntity<?> getMessages(@RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken) {
-        try {
-            return new ResponseEntity<>(friendService.getMessages(accessToken, refreshToken), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(friendService.getMessages(accessToken, refreshToken), HttpStatus.OK);
     }
 }
