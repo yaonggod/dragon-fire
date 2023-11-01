@@ -43,6 +43,9 @@ class _RegistScreenState extends State<RegistScreen> {
         );
     if (response.statusCode == 200) {
       print("사용 가능");
+      setState((){
+        nicknameChecked = true;
+      });
       // 사용 가능 팝업 표시
       showDialog(
         context: context,
