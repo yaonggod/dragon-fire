@@ -301,7 +301,6 @@ public class FriendServiceImpl implements FriendService {
         // 내 친구들 불러모아~
         List<FriendStatus> friendStatusList = new ArrayList<>();
         friendStatusList.add(FriendStatus.FRIEND);
-        friendStatusList.add(FriendStatus.DISCONNECTED);
         List<Friend> friendList = friendRepository.findByFriendPkFromMemberAndFriendStatusInOrderByCreatedTime(fromMember, friendStatusList);
 
         // 친구들을 ResponseDto로 만들기
