@@ -2,7 +2,7 @@ name: frontend
 description: DragonBull - World Best Sse Sse Sse
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -31,21 +31,26 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   google_sign_in: ^6.1.5
   flutter_secure_storage: ^9.0.0
-  meta: ^1.4.0  # 최신 버전 사용 가능
+  flutter_naver_login: ^1.8.0
+  http: ^1.1.0
+  meta: ^1.4.0 # 최신 버전 사용 가능
   web_socket_channel: ^2.1.0
   stomp_dart_client: ^1.0.0
   lottie: ^2.2.0
+  flutter_dotenv: ^5.1.0
+  flutter_svg: ^2.0.7
+  flutter_slidable: 3.0.0
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.13.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -58,7 +63,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -67,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/assets/lottie/
+    - lib/assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

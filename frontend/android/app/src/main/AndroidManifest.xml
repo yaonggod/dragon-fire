@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="frontend"
+        android:label="드래곤 불"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -10,6 +10,7 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -29,5 +30,15 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- 네이버 로그인을 위한 필수값 -->
+        <meta-data
+            android:name="com.naver.sdk.clientId"
+            android:value="@string/client_id" />
+        <meta-data
+            android:name="com.naver.sdk.clientSecret"
+            android:value="@string/client_secret" />
+         <meta-data
+            android:name="com.naver.sdk.clientName"
+            android:value="@string/client_name" />
     </application>
 </manifest>

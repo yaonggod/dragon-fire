@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/access_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 void main() async{
@@ -16,10 +17,10 @@ class DragonG extends StatelessWidget {
     return MaterialApp(
       title: '드래곤 불',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.dark(),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const AccessScreen(),
     );
   }
 }
