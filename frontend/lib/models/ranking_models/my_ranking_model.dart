@@ -1,7 +1,7 @@
-class TotalRankingModel {
-  final String nickname, score, rank, win, lose, seasonMaxScore;
+class MyRankingModel {
+  String nickname, score, rank, win, lose, seasonMaxScore;
 
-  TotalRankingModel.fromJson(Map<String, dynamic> json)
+  MyRankingModel.fromJson(Map<String, dynamic> json)
       : nickname = json['nickname'],
         score = json['score'],
         rank = json['rank'],
