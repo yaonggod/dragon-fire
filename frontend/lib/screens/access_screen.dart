@@ -8,8 +8,8 @@ class AccessScreen extends StatefulWidget {
   _AccessScreenState createState() => _AccessScreenState();
 }
 
-class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMixin {
-
+class _AccessScreenState extends State<AccessScreen>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _controller2;
 
@@ -19,11 +19,11 @@ class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMix
       vsync: this,
       duration: Duration(seconds: 2),
     )..addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reset();
-        _controller.forward();
-      }
-    });
+        if (status == AnimationStatus.completed) {
+          _controller.reset();
+          _controller.forward();
+        }
+      });
 
     _controller.forward();
 
@@ -41,8 +41,10 @@ class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMix
   @override
   void dispose() {
     _controller.dispose();
+    _controller2.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,12 +53,21 @@ class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMix
           Container(
             color: Colors.black,
           ),
-          Opacity(
-            opacity: 0.5,
-            child: Image.asset(
-              'lib/assets/icons/fire.png',
-              height: MediaQuery.of(context).size.height,
-              fit: BoxFit.fitHeight,
+          GestureDetector(
+            onTap: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => MainScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+            child: Opacity(
+              opacity: 0.5,
+              child: Image.asset(
+                'lib/assets/icons/fire.png',
+                height: MediaQuery.of(context).size.height,
+                fit: BoxFit.fitHeight,
+              ),
             ),
           ),
           Positioned(
@@ -65,20 +76,39 @@ class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMix
             child: AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
-                return ShaderMask(
-                  shaderCallback: (Rect bounds) {
-                    return LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color.fromRGBO(255,255,255,0.6),Colors.white, Color.fromRGBO(255,255,255,0.6), Colors.white],
-                      stops: [0.0, _controller.value - 0.1, _controller.value, 1.0], // Change the 0.1 value for different effects
-                    ).createShader(bounds);
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainScreen()),
+                      (Route<dynamic> route) => false,
+                    );
                   },
-                  blendMode: BlendMode.modulate,
-                  child: Image.asset(
-                    'lib/assets/icons/mainMark2.png',
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
+                  child: ShaderMask(
+                    shaderCallback: (Rect bounds) {
+                      return LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color.fromRGBO(255, 255, 255, 0.6),
+                          Colors.white,
+                          Color.fromRGBO(255, 255, 255, 0.6),
+                          Colors.white
+                        ],
+                        stops: [
+                          0.0,
+                          _controller.value - 0.1,
+                          _controller.value,
+                          1.0
+                        ], // Change the 0.1 value for different effects
+                      ).createShader(bounds);
+                    },
+                    blendMode: BlendMode.modulate,
+                    child: Image.asset(
+                      'lib/assets/icons/mainMark2.png',
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 );
               },
@@ -87,13 +117,13 @@ class _AccessScreenState extends State<AccessScreen> with TickerProviderStateMix
           Positioned(
             top: MediaQuery.of(context).size.height * 8 / 12,
             width: MediaQuery.of(context).size.width * 6.6 / 10,
-            left: MediaQuery.of(context).size.width * 1.7/10,
+            left: MediaQuery.of(context).size.width * 1.7 / 10,
             child: GestureDetector(
               onTap: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => MainScreen()),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               },
               child: Opacity(
