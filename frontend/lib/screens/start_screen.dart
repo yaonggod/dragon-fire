@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/game_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // 이 임포트를 추가
 
@@ -7,9 +8,18 @@ class StartScreen extends StatelessWidget {
   final TextEditingController _nicknameController = TextEditingController();
 
   void startGame(BuildContext context) async {
-    final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
-    // final response = await http.get(Uri.parse('http://10.0.2.2:8080/wait'));
+    const storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     String nickname = _nicknameController.text;
+    //final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
+     final response = await http.get(
+         Uri.parse('http://10.0.2.2:8080/wait'),
+         headers: {
+           'Authorization': 'Bearer $accessToken',
+           'X-Nickname': nickname,
+         },
+     );
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
