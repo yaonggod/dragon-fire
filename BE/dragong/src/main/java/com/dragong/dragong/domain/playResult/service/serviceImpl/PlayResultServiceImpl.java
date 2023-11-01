@@ -64,10 +64,16 @@ public class PlayResultServiceImpl implements PlayResultService {
             // 레디스에 넣을 것은 UUID, 랭킹, 닉네임, 점수
             int score = playResult.getScore();
             UUID memberUUID = playResult.getPlayResultEmpId().getMember().getMemberId();
+
+            System.out.println(memberUUID.toString());
+
             MemberInfo memberInfo = memberInfoRepository.findById(memberUUID).orElse(null);
 
             String UUID = memberInfo.getMemberId().toString();
             String nickname = memberInfo.getNickname();
+            int win = playResult.getWin();
+            int lose = playResult.getLose();
+            int seasonMaxScore = playResult.getSeasonMaxScore();
 
             log.info("UUID는 " + UUID);
             log.info("nickname은 " + nickname);
@@ -78,6 +84,9 @@ public class PlayResultServiceImpl implements PlayResultService {
             listOperations.rightPush("UUID", UUID); // UUID는 필요 없다면 빼기 => 내 랭킹 찾을 때 사용해야함
             listOperations.rightPush("nickname", nickname);
             listOperations.rightPush("score", String.valueOf(score));
+            listOperations.rightPush("win", String.valueOf(win));
+            listOperations.rightPush("lose", String.valueOf(lose));
+            listOperations.rightPush("seasonMaxScore", String.valueOf(seasonMaxScore));
 
             if (lastNum == score) {
                 // 점수가 같은 사람임 => 랭킹도 같아야함
@@ -89,18 +98,13 @@ public class PlayResultServiceImpl implements PlayResultService {
             }
             // 만료는 5분 => 약간 더 빠르게 해야함.. expire 가 먼저 되고나서 값이 들어가야함
             // 그렇게 안하면 expire가 안되고 계속 값이 들어감
-//            redisTemplate.expire("UUID", 5, TimeUnit.MINUTES);
-//            redisTemplate.expire("nickname", 5, TimeUnit.MINUTES);
-//            redisTemplate.expire("score", 5, TimeUnit.MINUTES);
-//            redisTemplate.expire("rank", 5, TimeUnit.MINUTES);
-//            redisTemplate.expire("UUID", 1, TimeUnit.MINUTES);
-//            redisTemplate.expire("nickname", 1, TimeUnit.MINUTES);
-//            redisTemplate.expire("score", 1, TimeUnit.MINUTES);
-//            redisTemplate.expire("rank", 1, TimeUnit.MINUTES);
             redisTemplate.expire("UUID", 59, TimeUnit.SECONDS);
             redisTemplate.expire("nickname", 59, TimeUnit.SECONDS);
             redisTemplate.expire("score", 59, TimeUnit.SECONDS);
             redisTemplate.expire("rank", 59, TimeUnit.SECONDS);
+            redisTemplate.expire("win", 59, TimeUnit.SECONDS);
+            redisTemplate.expire("lose", 59, TimeUnit.SECONDS);
+            redisTemplate.expire("seasonMaxScore", 59, TimeUnit.SECONDS);
 
             lastNum = score;
             putCnt++;
@@ -113,13 +117,19 @@ public class PlayResultServiceImpl implements PlayResultService {
         List<String> nicknameList = redisTemplate.opsForList().range("nickname", 0, -1);
         List<String> scoreList = redisTemplate.opsForList().range("score", 0, -1);
         List<String> rankList = redisTemplate.opsForList().range("rank", 0, -1);
+        List<String> winList = redisTemplate.opsForList().range("win", 0, -1);
+        List<String> loseList = redisTemplate.opsForList().range("lose", 0, -1);
+        List<String> seasonMaxScoreList = redisTemplate.opsForList().range("seasonMaxScore", 0, -1);
 
         for (int i = 0; i < nicknameList.size(); i++) {
             String nickname = nicknameList.get(i);
             String score = scoreList.get(i);
             String rank = rankList.get(i);
+            String win = winList.get(i);
+            String lose = loseList.get(i);
+            String seasonMaxScore = seasonMaxScoreList.get(i);
 
-            GetRankRequestDto getRankRequestDto = new GetRankRequestDto(nickname, score, rank);
+            GetRankRequestDto getRankRequestDto = new GetRankRequestDto(nickname, score, rank, win, lose, seasonMaxScore);
             ranking.add(getRankRequestDto);
         }
         return ranking;
@@ -132,8 +142,12 @@ public class PlayResultServiceImpl implements PlayResultService {
         List<String> nicknameList = redisTemplate.opsForList().range("nickname", 0, -1);
         List<String> scoreList = redisTemplate.opsForList().range("score", 0, -1);
         List<String> rankList = redisTemplate.opsForList().range("rank", 0, -1);
+        List<String> winList = redisTemplate.opsForList().range("win", 0, -1);
+        List<String> loseList = redisTemplate.opsForList().range("lose", 0, -1);
+        List<String> seasonMaxScoreList = redisTemplate.opsForList().range("seasonMaxScore", 0, -1);
 
-        String myUUID = jwtUtil.extractMemberId(accessToken.substring(7)).toString(); // getUUID로 UUID 얻기
+        String myUUID = jwtUtil.extractMemberId(accessToken.substring(7))
+            .toString(); // getUUID로 UUID 얻기
 
         for (int i = 0; i < UUIDList.size(); i++) {
             String UUID = UUIDList.get(i);
@@ -142,8 +156,11 @@ public class PlayResultServiceImpl implements PlayResultService {
                 String nickname = nicknameList.get(i);
                 String score = scoreList.get(i);
                 String rank = rankList.get(i);
+                String win = winList.get(i);
+                String lose = loseList.get(i);
+                String seasonMaxScore = seasonMaxScoreList.get(i);
 
-                return new GetMyRankRequestDto(nickname, score, rank);
+                return new GetMyRankRequestDto(nickname, score, rank, win, lose, seasonMaxScore);
             }
         }
         return null;
