@@ -311,6 +311,10 @@ public class FriendServiceImpl implements FriendService {
             UUID toMember = f.getFriendPk().getToMember();
             Optional<Member> to = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(toMember);
 
+            if (to.isEmpty()) {
+                continue;
+            }
+
             // 친구 전적
             Optional<PlayResult> playResult = playResultRepository.findById(new PlayResultEmpId(season, to.get()));
             int score = 0;
@@ -359,6 +363,10 @@ public class FriendServiceImpl implements FriendService {
             // 친구 UUID
             UUID toMember = f.getFriendPk().getToMember();
             Optional<Member> to = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(toMember);
+
+            if (to.isEmpty()) {
+                continue;
+            }
 
             // 친구 전적
             Optional<PlayResult> playResult = playResultRepository.findById(new PlayResultEmpId(season, to.get()));
