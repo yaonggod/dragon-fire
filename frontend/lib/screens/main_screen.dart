@@ -127,32 +127,6 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Center(
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: [
-      //         Text(
-      //           '드래곤 불',
-      //           style: TextStyle(
-      //             fontWeight: FontWeight.w600,
-      //           ),
-      //         ),
-      //         // Text(
-      //         //   '천하제일 쎄쎄쎄',
-      //         //   style: TextStyle(
-      //         //     fontSize: 16,
-      //         //   ),
-      //         // ),
-      //         ElevatedButton(
-      //           onPressed: _navigateToMyInfoScreen,
-      //           child: const Text("내 정보"),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      //   backgroundColor: Colors.red[100],
-      // ),
       body: Stack(
         children: [
           slidingWidget(
@@ -169,7 +143,7 @@ class _MainScreenState extends State<MainScreen>
           Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.55,
               ),
               GestureDetector(
                 onTap: () {
@@ -189,8 +163,8 @@ class _MainScreenState extends State<MainScreen>
                   buttonsrc = 'lib/assets/icons/startButton.png';
                 }),
                 child: Container(
-                  width: 100,
-                  height: 100,
+                  width: MediaQuery.of(context).size.width *0.35,
+                  height:  MediaQuery.of(context).size.width *0.35,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(buttonsrc),
@@ -220,8 +194,8 @@ class _MainScreenState extends State<MainScreen>
                       buttonsrc1 = 'lib/assets/icons/rankingButton.png';
                     }),
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: MediaQuery.of(context).size.width *0.25,
+                      height:  MediaQuery.of(context).size.width *0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc1),
@@ -248,8 +222,8 @@ class _MainScreenState extends State<MainScreen>
                       buttonsrc2 = 'lib/assets/icons/reportButton.png';
                     }),
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: MediaQuery.of(context).size.width *0.25,
+                      height:  MediaQuery.of(context).size.width *0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc2),
@@ -276,8 +250,8 @@ class _MainScreenState extends State<MainScreen>
                       buttonsrc3 = 'lib/assets/icons/friendButton.png';
                     }),
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: MediaQuery.of(context).size.width *0.25,
+                      height:  MediaQuery.of(context).size.width *0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc3),
@@ -304,8 +278,8 @@ class _MainScreenState extends State<MainScreen>
                       buttonsrc4 = 'lib/assets/icons/myButton.png';
                     }),
                     child: Container(
-                      width: 100,
-                      height: 100,
+                      width: MediaQuery.of(context).size.width *0.25,
+                      height:  MediaQuery.of(context).size.width *0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc4),
