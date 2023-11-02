@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:frontend/models/ranking_models/my_ranking_model.dart';
+import 'package:frontend/utils/token_control.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/models/ranking_models/total_ranking_model.dart';
@@ -29,15 +30,14 @@ class RankingApiServices {
   }
 
   // 내 랭킹 정보 가져오기
-  static Future<MyRankingModel?> getMyRanking({
-    required String token,
-  }) async {
+  static Future<MyRankingModel?> getMyRanking() async {
+    Map<String, String> token = await TokenControl.readToken();
     try {
       final url = Uri.parse('$baseUrl/rank/my');
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer ${token['Authorization']}',
       });
       if (response.statusCode == 200 && response.contentLength != 0) {
         var jsonString = utf8.decode(response.bodyBytes);
