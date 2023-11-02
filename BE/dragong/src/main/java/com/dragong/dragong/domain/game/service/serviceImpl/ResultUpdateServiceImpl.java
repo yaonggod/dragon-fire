@@ -38,9 +38,10 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         log.info("member를 출력합니다" + member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-
+        String result = "";
         if (playResult == null) {
             //playResult에 정보를 추가해줘야한다.
+
             playResult = new PlayResult();
             playResult.setLose(0);
             playResult.setWin(1);
@@ -48,6 +49,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             playResult.setSeasonMaxScore(1020);
             playResult.setScore(1020);
             resultUpdateRepository.save(playResult);
+
         } else {
             //이미 정보가 있는 상태입니다.
             int nowScore = playResult.getScore();
@@ -57,6 +59,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             if (nowScore + 20 > nowMaxScore) {
                 playResult.setSeasonMaxScore(nowScore + 20);
             }
+
         }
 
 
@@ -71,7 +74,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         Member member = memberRepository.findById(myUUID).orElse(null);
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-
+        String result = "";
         if (playResult == null) {
             //playResult에 정보를 추가해줘야한다.
             playResult = new PlayResult();
@@ -81,6 +84,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             playResult.setSeasonMaxScore(980);
             playResult.setScore(980);
             resultUpdateRepository.save(playResult);
+
         } else {
             //이미 정보가 있는 상태입니다.
             int nowScore = playResult.getScore();
@@ -93,6 +97,26 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
         }
 
-
     }
+
+    @Override
+    public String getWinnerInfo(String accessToken) {
+        UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
+        log.info("uuid 출력" + String.valueOf(myUUID));
+        Member member = memberRepository.findById(myUUID).orElse(null);
+        PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
+        PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
+        return null;
+    }
+
+    @Override
+    public String getLoserInfo(String accessToken) {
+        UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
+        log.info("uuid 출력" + String.valueOf(myUUID));
+        Member member = memberRepository.findById(myUUID).orElse(null);
+        PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
+        PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
+        return null;
+    }
+
 }
