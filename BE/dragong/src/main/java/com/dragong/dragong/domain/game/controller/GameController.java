@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,7 +31,8 @@ public class GameController {
     private ResultUpdateService resultUpdateService;
 
     @GetMapping("/wait")
-    public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestHeader("X-Nickname") String nickname) {
+    public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestBody Map<String, String> requestBody) {
+        String nickname = requestBody.get("nickname");
         log.info("받아온 nickname : " + nickname);
         log.info("받아온 accessToken : " + accessToken);
         log.info("대기방에 입장합니다.");
@@ -249,10 +251,11 @@ public class GameController {
         if(gameService.evenReturn(roomId)%2==1){
             String result = gameService.winnerAndLoserToken(roomId, winner);
             String[] parts = result.split(":");
-            log.info(parts[1]);
-            log.info(parts[0]);
+            log.info(parts[1]); // 이게 승자의 accessToken
+            log.info(parts[0]); // 이게 패자의 accessToken
             resultUpdateService.updateWinner(parts[0]);
             resultUpdateService.updateLoser(parts[1]);
+
         }
         gameService.cleanList(roomId);
 
