@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyInfoScreen extends StatefulWidget {
   const MyInfoScreen({super.key});
@@ -31,6 +32,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
 
+  String? nickname;
+
   @override
   void initState() {
     _checkLoginStatus();
@@ -40,6 +43,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
+    nickname = await getNickname();
+    print(nickname);
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty && tokens['socialType'] == "GOOGLE") {
       setState(() {
@@ -81,6 +86,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
+        removeNickname();
         print("로그아웃 완료");
         Navigator.pushAndRemoveUntil(
           context,
@@ -115,6 +121,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
+        removeNickname();
         print("탈퇴 완료");
         Navigator.pushAndRemoveUntil(
           context,
@@ -132,6 +139,21 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     await storage.write(key: 'accessToken', value: accessToken);
     await storage.write(key: 'refreshToken', value: refreshToken);
     await storage.write(key: 'socialType', value: socialType);
+  }
+
+  saveNickname(String nickname) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('nickname', nickname);
+  }
+
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+  removeNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('nickname');
   }
 
   Future<Map<String, String>> readToken() async {
@@ -176,9 +198,12 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Center(
+                child: Text(style: TextStyle(fontSize: 50),nickname!),
+              ),
               SizedBox(height: MediaQuery.of(context).size.height / 3),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
 
+              SizedBox(height: MediaQuery.of(context).size.height / 100),
               if (_naverLoginStatus == true || _googleLoggedIn == true)
                 MaterialButton(
                   color: Colors.red,
@@ -199,28 +224,28 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     print('닉네임변경 버튼 클릭.');
                   },
                 ),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '로그아웃',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _logout();
-                    print('Logout button pressed.');
-                  },
+              MaterialButton(
+                color: Colors.red,
+                child: const Text(
+                  '로그아웃',
+                  style: TextStyle(color: Colors.white),
                 ),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '회원탈퇴',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _out();
-                    print('회원탈퇴.');
-                  },
-                )
+                onPressed: () {
+                  _logout();
+                  print('Logout button pressed.');
+                },
+              ),
+              MaterialButton(
+                color: Colors.red,
+                child: const Text(
+                  '회원탈퇴',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _out();
+                  print('회원탈퇴.');
+                },
+              )
             ],
           ),
         ),
