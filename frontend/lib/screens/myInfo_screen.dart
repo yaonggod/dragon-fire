@@ -55,6 +55,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
     print(_googleLoggedIn);
     print(_naverLoginStatus);
+    print(tokens['Authorization']);
+    print(tokens['refreshToken']);
   }
 
   _logout() async {
@@ -178,7 +180,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             children: [
               SizedBox(height: MediaQuery.of(context).size.height / 3),
               SizedBox(height: MediaQuery.of(context).size.height / 100),
-
               if (_naverLoginStatus == true || _googleLoggedIn == true)
                 MaterialButton(
                   color: Colors.red,
@@ -191,7 +192,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
-                            MyInfoUpdateScreen(),
+                            const MyInfoUpdateScreen(),
                         transitionDuration: Duration.zero,
                         reverseTransitionDuration: Duration.zero,
                       ),
@@ -199,28 +200,28 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     print('닉네임변경 버튼 클릭.');
                   },
                 ),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '로그아웃',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _logout();
-                    print('Logout button pressed.');
-                  },
+              MaterialButton(
+                color: Colors.red,
+                child: const Text(
+                  '로그아웃',
+                  style: TextStyle(color: Colors.white),
                 ),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '회원탈퇴',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    _out();
-                    print('회원탈퇴.');
-                  },
-                )
+                onPressed: () {
+                  _logout();
+                  print('Logout button pressed.');
+                },
+              ),
+              MaterialButton(
+                color: Colors.red,
+                child: const Text(
+                  '회원탈퇴',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  _out();
+                  print('회원탈퇴.');
+                },
+              )
             ],
           ),
         ),

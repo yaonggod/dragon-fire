@@ -1,4 +1,3 @@
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -17,12 +16,12 @@ class _AccessScreenState extends State<AccessScreen>
   late AnimationController _controller2;
   final player = AudioPlayer();
 
-  bool _isLoggedIn= false;
+  bool _isLoggedIn = false;
 
   Future<void> _checkLoginStatus() async {
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty) {
-      setState((){
+      setState(() {
         _isLoggedIn = true;
       });
     }
@@ -44,16 +43,14 @@ class _AccessScreenState extends State<AccessScreen>
     return list;
   }
 
-
-
   @override
   void initState() {
     player.setReleaseMode(ReleaseMode.loop);
-    player.play(AssetSource('dragonSong.wav'),mode: PlayerMode.lowLatency);
+    // player.play(AssetSource('dragonSong.wav'),mode: PlayerMode.lowLatency);
     _checkLoginStatus();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           _controller.reset();
@@ -65,7 +62,7 @@ class _AccessScreenState extends State<AccessScreen>
 
     _controller2 = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
     _controller2.addListener(() {
       setState(() {});
@@ -101,7 +98,7 @@ class _AccessScreenState extends State<AccessScreen>
                   transitionDuration: Duration.zero,
                   reverseTransitionDuration: Duration.zero,
                 ),
-                    (Route<dynamic> route) => false,
+                (Route<dynamic> route) => false,
               );
             },
             child: Opacity(
@@ -138,7 +135,7 @@ class _AccessScreenState extends State<AccessScreen>
                       return LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
+                        colors: const [
                           Color.fromRGBO(255, 255, 255, 0.6),
                           Colors.white,
                           Color.fromRGBO(255, 255, 255, 0.6),
@@ -177,7 +174,7 @@ class _AccessScreenState extends State<AccessScreen>
                     transitionDuration: Duration.zero,
                     reverseTransitionDuration: Duration.zero,
                   ),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               },
               child: Opacity(

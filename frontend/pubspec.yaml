@@ -72,7 +72,7 @@ flutter:
   assets:
     - lib/assets/lottie/
     - lib/assets/icons/
-    - lib/assets/bgm/
+    # - lib/assets/bgm/
     - assets/
 
   fonts:

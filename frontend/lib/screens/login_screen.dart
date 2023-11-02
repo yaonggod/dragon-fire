@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const MainScreen()),
-            (route) => false,
+        (route) => false,
       );
     }
 
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> googleLogin() async {
-    _googleSignIn.disconnect();
+    // _googleSignIn.disconnect();
     GoogleSignInAccount? account = await _googleSignIn.signIn();
 
     final accessToken =
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
-              (route) => false,
+          (route) => false,
         );
       }
     }
@@ -116,6 +116,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // 그럼 네이버에서 토큰을 주는데, 성공했을 경우에는 토큰 문자열이 오지만 실패하면 빈 문자열이 옴
     NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
+
+    print("AT ${token.accessToken}");
 
     if (token.accessToken != "") {
       // 네이버 AT를 보내서 백엔드에서 로그인하고, 서비스 AT와 RT를 받아오기
@@ -153,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
-                (route) => false,
+            (route) => false,
           );
         }
       }
@@ -180,6 +182,8 @@ class _LoginScreenState extends State<LoginScreen> {
           'refreshToken': 'Bearer ${list['refreshToken']!}'
         },
       );
+
+      print("상태 코드 ${response.statusCode}");
 
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -284,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? GestureDetector(
                       onTap: naverLogin,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           boxShadow: [
                             BoxShadow(
                               color: Color.fromRGBO(0, 0, 0, 0.15),
@@ -306,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? GestureDetector(
                       onTap: googleLogin,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           boxShadow: [
                             BoxShadow(
                               color: Color.fromRGBO(0, 0, 0, 0.15),

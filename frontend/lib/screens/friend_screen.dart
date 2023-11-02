@@ -1,5 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:frontend/models/friend_models/search_result_model.dart';
+import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
+import 'package:frontend/widgets/friend_widgets/message_widget.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -14,43 +19,80 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen> {
+  // String baseUrl = dotenv.get("base_url");
+
+  // 검색할 닉네임
+  String? searchNickname;
+  // 검색 결과 상태: 검색 안함(NONE), 검색 결과 없음(FAIL), 검색 결과 있음(SUCCESS)
+  String searched = "SUCCESS";
+  // 검색 결과
+  // SearchResultModel? searchResult;
+  SearchResultModel searchResult = SearchResultModel(
+      toMember: "123", toNickname: "yaong", friendStatus: "FRIEND");
+
+  // 검색해서 SearchResult setState하기
+  Future<void> search() async {}
+
+  Widget searchResultWidget() {
+    if (searched == "NONE") {
+      return Container();
+    } else if (searched == "FAIL") {
+      return const Text(
+        "존재하지 않는 유저입니다.",
+        style: TextStyle(color: Colors.red),
+      );
+    } else {
+      // 검색 결과 카드
+      return Container(
+        child: Column(children: [
+          Text(searchResult.toNickname),
+          Text(searchResult.friendStatus)
+        ]),
+      );
+    }
+  }
+
   bool friendSelected = true;
+
+  // 친구 불러오기
+  Future<void> getMyFriends() async {}
+
   late ScrollController scrollController;
   bool isMaxHeightReached = false;
   List<String> friendList = [
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
+    'Alice1',
+    'Bob2',
+    'Charlie3',
+    'David4',
+    'Eve5',
+    'Alice6',
+    'Bob7',
+    'Charlie8',
+    'David9',
+    'Eve10',
+    'Alice11',
+    'Bob12',
+    'Charlie13',
+    'David14',
+    'Eve15',
+    'Alice16',
+    'Bob17',
+    'Charlie18',
+    'David19',
+    'Eve20',
+    'Alice21',
+    'Bob22',
+    'Charlie23',
+    'David24',
+    'Eve25',
+    'Alice26',
+    'Bob27',
+    'Charlie28',
+    'David29',
+    'Eve30',
   ];
 
-  List<String> notificationList = [
+  List<String> messageList = [
     'Alice',
     'Bob',
     'Charlie',
@@ -146,32 +188,6 @@ class _FriendScreenState extends State<FriendScreen> {
     return list;
   }
 
-  Future<bool> _deleteConfirmDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('삭제'),
-          content: Text('친구를 삭제하시겠습니까?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _onDeleteCourse() async {}
 
   Future<void> deleteFriend() async {
@@ -191,245 +207,124 @@ class _FriendScreenState extends State<FriendScreen> {
             )),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          if (friendSelected == true)
-            Positioned(
-              top: 70,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
-              right: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = false;
-                  });
-                },
-                child: Image.asset(
-                  'lib/assets/icons/friendState1_1.png',
-                  fit: BoxFit.fill,
-                ),
-              ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
             ),
-          if (friendSelected == true)
-            Positioned(
-              top: 58,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
-              left: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = true;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState1.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          if (friendSelected == false)
-            Positioned(
-              top: 70,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
-              left: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = true;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState2_1.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          if (friendSelected == false)
-            Positioned(
-              top: 58,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
-              right: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = false;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState2.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          Positioned(
-            top: 58 +
-                (MediaQuery
-                    .of(context)
-                    .size
-                    .width - 20.0) / 1.9 * 136 / 642,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width - 20.0,
-            left: 10.0,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (friendSelected)
-                    Container(
-                      color: Colors.white,
-                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.75,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      child: ListView.builder(
-                        itemCount: friendList.length,
-                        itemBuilder: (context, index) {
-                          return Slidable(
-                            endActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              extentRatio: 0.15,
-                              closeThreshold: 0.01,
-                              children: [
-                                SlidableAction(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  padding: EdgeInsets.only(right: 10),
-                                  icon: Icons.delete,
-                                  onPressed: (context) async {
-                                    bool confirmDelete = await _deleteConfirmDialog(context);
-                                    if (confirmDelete) {
-                                      _onDeleteCourse();
-                                    }
-                                  },
-                                ),
-                              ],
-                              openThreshold: 0.001,
-                            ),
-                            child: Card(
-                              color: Color.fromRGBO(0, 0, 0, 0.5),
-                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
-                                          radius: 30,
-                                        ),
-                                        SizedBox(width: MediaQuery.of(context).size.width * 0.03),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${friendList[index]}',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              'Ranking',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      '전적',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                      },
-                                      child: Text(
-                                        '대결',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        searchNickname = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "닉네임으로 검색하기",
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderSide: BorderSide(width: 1, color: Colors.black),
                       ),
-                    )
-                  else
-                    Container(
-                      color: Colors.white,
-                      padding: EdgeInsets.only(top: 10.0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.75,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      child: ListView.builder(
-                        itemCount: notificationList.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Color.fromRGBO(0, 0, 0, 0.5),
-                            margin: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                      width: MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width *
-                                          0.03),
-                                  Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${friendList[index]}가 친추했음',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          deleteFriend();
-                                        },
-                                        child: Text('삭제'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderSide: BorderSide(width: 1, color: Colors.black),
                       ),
                     ),
-                ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: search,
+                  child: const Icon(
+                    Icons.search,
+                    size: 40,
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            searchResultWidget(),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // 친구 불러오는 api 쏘기
+                        friendSelected = true;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                          color: !friendSelected ? Colors.white : Colors.red,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10))),
+                      child: const Text(
+                        "나의 호적수",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        friendSelected = false;
+                      });
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                            color: !friendSelected ? Colors.red : Colors.white,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10))),
+                        child: const Text(
+                          "메시지",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        )),
+                  ),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.red)),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount:
+                        friendSelected ? friendList.length : messageList.length,
+                    itemBuilder: (context, index) {
+                      if (friendSelected) {
+                        return FriendWidget(nickname: friendList[index]);
+                      }
+                      return MessageWidget(nickname: messageList[index]);
+                    }),
               ),
             ),
-          ),
-        ],
+            const SizedBox(
+              height: 10,
+            )
+          ],
+        ),
       ),
     );
   }
