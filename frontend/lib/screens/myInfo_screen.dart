@@ -171,7 +171,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
