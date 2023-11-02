@@ -260,7 +260,7 @@ public class GameService {
                 } else {
                     // 원기옥
                     gi2 -= 3;
-                    answer += player2;
+                    answer += "비겼습니다";
                 }
 
             } else {

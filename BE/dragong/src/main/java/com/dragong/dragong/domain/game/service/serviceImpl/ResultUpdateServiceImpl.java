@@ -33,20 +33,32 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     public void updateWinner(String accessToken) {
         log.info("impl에서 updateWinnder 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
-        log.info("uuid 출력"+String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
-        log.info(member.toString());
+        log.info(String.valueOf(member.getMemberId()));
+        log.info("member를 출력합니다" + member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-        int winCount = playResult.getWin();
 
-        int nowScore = playResult.getScore();
-        int maxScore = playResult.getSeasonMaxScore();
-        playResult.setWin(winCount + 1);
-        playResult.setScore(nowScore + 20);
-        if (nowScore + 20 > maxScore) {
-            playResult.setSeasonMaxScore(nowScore + 20);
+        if (playResult == null) {
+            //playResult에 정보를 추가해줘야한다.
+            playResult = new PlayResult();
+            playResult.setLose(0);
+            playResult.setWin(1);
+            playResult.setPlayResultEmpId(playResultEmpId);
+            playResult.setSeasonMaxScore(1020);
+            playResult.setScore(1020);
+            resultUpdateRepository.save(playResult);
+        } else {
+            //이미 정보가 있는 상태입니다.
+            int nowScore = playResult.getScore();
+            int nowMaxScore = playResult.getSeasonMaxScore();
+            playResult.setWin(playResult.getWin() + 1);
+            playResult.setScore(nowScore + 20);
+            if (nowScore + 20 > nowMaxScore) {
+                playResult.setSeasonMaxScore(nowScore + 20);
+            }
         }
+
 
     }
 
@@ -55,32 +67,32 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     public void updateLoser(String accessToken) {
         log.info("impl에서 updateLoser 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
-        log.info("uuid 출력"+String.valueOf(myUUID));
+        log.info("uuid 출력" + String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
-        log.info(member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-        int loseCount = playResult.getLose();
-        int nowScore = playResult.getScore();
-        playResult.setLose(loseCount + 1);
-        playResult.setScore(nowScore - 20);
+
+        if (playResult == null) {
+            //playResult에 정보를 추가해줘야한다.
+            playResult = new PlayResult();
+            playResult.setLose(1);
+            playResult.setWin(0);
+            playResult.setPlayResultEmpId(playResultEmpId);
+            playResult.setSeasonMaxScore(980);
+            playResult.setScore(980);
+            resultUpdateRepository.save(playResult);
+        } else {
+            //이미 정보가 있는 상태입니다.
+            int nowScore = playResult.getScore();
+            playResult.setLose(playResult.getLose() + 1);
+            if (nowScore - 20 < 0) {
+                playResult.setScore(0);
+            } else {
+                playResult.setScore(nowScore - 20);
+            }
+
+        }
+
 
     }
-//    @Override
-//    @Transactional
-//    public void testing() {
-//        String uuidString = "2452fece-2846-47c1-be38-5e7be4e9d152";
-//        try {
-//            UUID uuid = UUID.fromString(uuidString);
-//            System.out.println("Parsed UUID: " + uuid);
-//            Member member = memberRepository.findById(uuid).orElse(null);
-//            PlayResultEmpId playResultEmpId = new PlayResultEmpId(season,member);
-//            PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-//            playResult.setLose(150);
-//        } catch (IllegalArgumentException e) {
-//            System.err.println("Invalid UUID string: " + uuidString);
-//        }
-//    }
-
-
 }

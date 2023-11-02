@@ -30,10 +30,9 @@ public class GameController {
     private ResultUpdateService resultUpdateService;
 
     @GetMapping("/wait")
-    public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String authorizationHeader, @RequestHeader("X-Nickname") String nickname) {
-        String accessToken = authorizationHeader.substring(7); // accessToken을 받아온다.
-        log.info("받아온 accessToken : " + accessToken);
+    public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestHeader("X-Nickname") String nickname) {
         log.info("받아온 nickname : " + nickname);
+        log.info("받아온 accessToken : " + accessToken);
         log.info("대기방에 입장합니다.");
         int nowNumber = gameService.enter(); // 몇 번째로 들어온 사람인지 확인한다.
         // 내가 반환해야 하는 숫자는 nowNumber + 1 / 2를 반환해야합니다.
@@ -250,10 +249,10 @@ public class GameController {
         if(gameService.evenReturn(roomId)%2==1){
             String result = gameService.winnerAndLoserToken(roomId, winner);
             String[] parts = result.split(":");
-            log.info(parts[0]);
             log.info(parts[1]);
+            log.info(parts[0]);
             resultUpdateService.updateWinner(parts[0]);
-            resultUpdateService.updateWinner(parts[1]);
+            resultUpdateService.updateLoser(parts[1]);
         }
         gameService.cleanList(roomId);
 

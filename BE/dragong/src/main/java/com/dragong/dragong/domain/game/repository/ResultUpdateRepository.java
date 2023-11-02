@@ -13,4 +13,6 @@ public interface ResultUpdateRepository extends JpaRepository<PlayResult, PlayRe
 
     Optional<PlayResult> findByPlayResultEmpId(PlayResultEmpId playResultEmpId);
 
+
+
 }
