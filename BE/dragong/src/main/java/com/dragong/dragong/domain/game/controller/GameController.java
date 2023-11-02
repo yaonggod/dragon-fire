@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.HashMap;
@@ -30,7 +27,7 @@ public class GameController {
     @Autowired
     private ResultUpdateService resultUpdateService;
 
-    @GetMapping("/wait")
+    @PostMapping ("/wait")
     public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
         log.info("받아온 nickname : " + nickname);
