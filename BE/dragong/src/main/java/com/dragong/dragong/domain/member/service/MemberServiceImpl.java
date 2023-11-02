@@ -4,6 +4,7 @@ import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
 import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
+import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
 import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.Role;
@@ -247,7 +248,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
+    public NicknameUpdateResponseDto update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
         MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken,
@@ -258,6 +259,11 @@ public class MemberServiceImpl implements MemberService {
         log.info("회원정보 수정 완료: ");
         log.info("  UUID: " + memberInfo.getMemberId());
         log.info("  닉네임: " + memberInfo.getNickname());
+
+        NicknameUpdateResponseDto responseDto = NicknameUpdateResponseDto.builder()
+                .nickname(memberInfo.getNickname()).build();
+
+        return responseDto;
     }
 
     @Override
