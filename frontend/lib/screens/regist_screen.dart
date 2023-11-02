@@ -188,6 +188,7 @@ class _RegistScreenState extends State<RegistScreen> {
               SizedBox(height: MediaQuery.of(context).size.height / 100),
               TextField(
                   controller: nicknameController,
+                  maxLength: 8,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
