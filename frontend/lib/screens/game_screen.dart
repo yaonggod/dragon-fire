@@ -5,6 +5,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
+import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class GameScreen extends StatefulWidget {
   final int roomId;
@@ -421,6 +422,19 @@ class _GameScreenState extends State<GameScreen> {
         destination: '/pub/${widget.roomId}/checkNum',
         body: widget.nickname,
         headers: {});
+
+    Timer.periodic(Duration(seconds: 10), (timer) {
+      if (isWaiting) {
+        stompClient.send(
+            destination: '/pub/${widget.roomId}/stillConnect',
+            body: '',
+            headers: {});
+      } else {
+        // isWaiting이 false인 경우 타이머 중지
+        timer.cancel();
+      }
+    });
+
   }
 
   void sendMessage(String message, String nickname) {
