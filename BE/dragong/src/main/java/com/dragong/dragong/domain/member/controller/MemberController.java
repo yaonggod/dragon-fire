@@ -2,6 +2,7 @@ package com.dragong.dragong.domain.member.controller;
 
 
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
 import com.dragong.dragong.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class MemberController {
             @RequestHeader("refreshToken") String refreshToken,
             HttpServletResponse httpServletResponse) {
         try {
-            memberService.update(updateRequestDto, accessToken, refreshToken, httpServletResponse);
-            return new ResponseEntity<>(HttpStatus.OK);
+            NicknameUpdateResponseDto responseDto = memberService.update(updateRequestDto, accessToken, refreshToken, httpServletResponse);
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
