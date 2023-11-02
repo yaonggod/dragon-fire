@@ -274,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              color: Color.fromRGBO(0, 0, 0, 0.25),
                               offset: Offset(0, 3),
                               blurRadius: 5,
                               spreadRadius: 0,
@@ -301,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     )
                   : Container(),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
+              SizedBox(height: MediaQuery.of(context).size.height / 60),
               (_naverLoginStatus != true && !_googleLoggedIn)
                   ? GestureDetector(
                       onTap: googleLogin,
