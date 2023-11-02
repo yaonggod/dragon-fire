@@ -20,6 +20,7 @@ class RegistScreen extends StatefulWidget {
 class _RegistScreenState extends State<RegistScreen> {
   TextEditingController nicknameController = TextEditingController();
   bool nicknameChecked = false;
+  String? nicknameTemp;
 
   Future<List<String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -34,17 +35,22 @@ class _RegistScreenState extends State<RegistScreen> {
     return list;
   }
 
+  bool containsWhitespace(String text) {
+    return text.contains(' ');
+  }
+
   Future<void> nicknameCheck() async {
-    String nickname = nicknameController.text;
+    String nicknameCur = nicknameController.text;
 
     final response = await http.get(Uri.parse(
-            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nickname')
+            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nicknameCur')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
         );
     if (response.statusCode == 200) {
       print("사용 가능");
-      setState((){
+      setState(() {
         nicknameChecked = true;
+        nicknameTemp = nicknameCur;
       });
       // 사용 가능 팝업 표시
       showDialog(
@@ -87,26 +93,68 @@ class _RegistScreenState extends State<RegistScreen> {
   }
 
   void sendDataToServer() async {
-    final String nickname = nicknameController.text;
 
-    final response = await http.post(
-        Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
-        // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(
-            {'accessToken': widget.accessToken, 'nickname': nickname}));
+    final String nicknameCur = nicknameController.text;
+    if(nicknameCur == nicknameTemp){
 
-    if (response.statusCode == 200) {
-      print("Successfully sent data to server");
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-        (Route<dynamic> route) => false,
+      final response = await http.post(
+          Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
+          // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(
+              {'accessToken': widget.accessToken, 'nickname': nicknameCur}));
+
+      if (response.statusCode == 200) {
+        print("Successfully sent data to server");
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+              (Route<dynamic> route) => false,
+        );
+      } else {
+        print("Failed to send data to server");
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('알림'),
+              content: Text('다시 시도해주세요'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }else{
+      setState((){
+        nicknameChecked = false;
+      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('알림'),
+            content: Text('닉네임 중복체크를 해주세요.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
       );
-    } else {
-      print("Failed to send data to server");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,44 +211,51 @@ class _RegistScreenState extends State<RegistScreen> {
                   )),
               ElevatedButton(
                 onPressed: () {
-                  nicknameCheck();
+                  if (nicknameController.text.isEmpty) {
+                    // 경고 메시지 표시 로직
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
+                    );
+                  } else if (containsWhitespace(nicknameController.text)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
+                    );
+                  } else {
+                    nicknameCheck();
+                  }
                 },
                 child: const Text('중복체크'),
               ),
               ElevatedButton(
                 onPressed: () {
                   // print(widget.code);
-                  if (nicknameController.text.isEmpty) {
-                    // 경고 메시지 표시 로직
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
+                  if (nicknameChecked == false) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('알림'),
+                          content: Text('닉네임 중복체크를 해주세요.'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('확인'),
+                            ),
+                          ],
+                        );
+                      },
                     );
                   } else {
-                    if(nicknameChecked == false){
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('알림'),
-                            content: Text('닉네임 중복체크를 해주세요.'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('확인'),
-                              ),
-                            ],
-                          );
-                        },
+                    if (containsWhitespace(nicknameController.text)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
                       );
-                    }else{
+                    } else {
                       sendDataToServer();
                     }
-
                   }
-
-                  // '등록하기' 버튼이 눌렸을 때 수행할 로직
                 },
                 child: const Text('등록'),
               ),
