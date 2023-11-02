@@ -257,6 +257,10 @@ public class GameController {
         gameService.cleanList(roomId);
 
     }
+    @MessageMapping("/{roomId}/stillConnect")
+    public void checkConnection(){
+        log.info("여전히 연결되어있습니다");
+    }
 //    @GetMapping("/test")
 //    public String testing() {
 //        resultUpdateService.testing();
