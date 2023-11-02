@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyInfoUpdateScreen extends StatefulWidget {
   const MyInfoUpdateScreen({super.key});
@@ -31,6 +32,12 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   String? nicknameTemp;
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
+
+  String? nickname;
+
+  bool containsWhitespace(String text) {
+    return text.contains(' ');
+  }
 
   @override
   void initState() {
@@ -84,17 +91,17 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   }
 
   Future<void> nicknameCheck() async {
-    String nickname = nicknameController.text;
+    String nicknameCur = nicknameController.text;
 
     final response = await http.get(Uri.parse(
-            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nickname')
+            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nicknameCur')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
         );
     if (response.statusCode == 200) {
       print("사용 가능");
       setState(() {
         nicknameChecked = true;
-        nicknameTemp = nickname;
+        nicknameTemp = nicknameCur;
       });
       // 사용 가능 팝업 표시
       showDialog(
@@ -135,12 +142,26 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
       );
     }
   }
+  saveNickname(String nickname) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('nickname', nickname);
+  }
+
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+  removeNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('nickname');
+  }
 
   void sendDataToServer() async {
     Map<String, String> list = await readToken();
 
-    final String nickname = nicknameController.text;
-    if(nickname == nicknameTemp){
+    final String nicknameCur = nicknameController.text;
+    if(nicknameCur == nicknameTemp){
 
       final response = await http.put(
           Uri.parse('https://k9a209.p.ssafy.io/api/member/nickname-modify'),
@@ -149,10 +170,13 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             'Authorization': 'Bearer ${list["Authorization"]!}',
             'refreshToken': 'Bearer ${list['refreshToken']!}'
           },
-          body: jsonEncode({'nickname': nickname}));
+          body: jsonEncode({'nickname': nicknameCur}));
 
       if (response.statusCode == 200) {
         print("Successfully sent data to server");
+        nickname = jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+        removeNickname();
+        saveNickname(nickname!);
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -223,7 +247,7 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('회원가입',
+        title: const Text('닉네임 수정',
             style: TextStyle(
               fontWeight: FontWeight.bold,
             )),
@@ -274,43 +298,50 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                   )),
               ElevatedButton(
                 onPressed: () {
-                  nicknameCheck();
-                },
-                child: const Text('중복체크'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // print(widget.code);
                   if (nicknameController.text.isEmpty) {
                     // 경고 메시지 표시 로직
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
                     );
+                  } else if (containsWhitespace(nicknameController.text)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
+                    );
                   } else {
-                    if (nicknameChecked == false) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('알림'),
-                            content: Text('닉네임 중복체크를 해주세요.'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('확인'),
-                              ),
-                            ],
-                          );
-                        },
+                    nicknameCheck();
+                  }
+                },
+                child: const Text('중복체크'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (nicknameChecked == false) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('알림'),
+                          content: Text('닉네임 중복체크를 해주세요.'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('확인'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    if (containsWhitespace(nicknameController.text)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
                       );
                     } else {
                       sendDataToServer();
                     }
                   }
-
-                  // '등록하기' 버튼이 눌렸을 때 수행할 로직
                 },
                 child: const Text('등록'),
               ),
