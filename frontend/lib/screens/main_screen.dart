@@ -13,6 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  String buttonsrc = 'lib/assets/icons/startButton.png';
   void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
@@ -32,11 +33,18 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _navigateToRankingScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RankingScreen(),
-      ),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(10),
+          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: RankingScreen(),
+        );
+      },
     );
   }
 
@@ -44,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ReportScreen(),
+        builder: (context) => const ReportScreen(),
       ),
     );
   }
@@ -90,12 +98,33 @@ class _MainScreenState extends State<MainScreen> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height*0.5,),
-            InkWell(
-              onTap: _navigateToStartScreen,
-              child: Image.asset(
-                'lib/assets/icons/startButton.png',
+            SizedBox(height: MediaQuery.of(context).size.height*0.3,),
+            GestureDetector(
+              onTap: () {
+                _navigateToStartScreen();
+              },
+              onTapDown: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton2.png';
+                });
+              },
+              onTapUp: (_) {
+                setState(() {
+                  buttonsrc = 'lib/assets/icons/startButton.png';
+                });
+              },
+              onTapCancel: () => setState(() {
+                buttonsrc = 'lib/assets/icons/startButton.png';
+              }),
+              child: Container(
                 width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(buttonsrc),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
               ),
             ),
             Row(

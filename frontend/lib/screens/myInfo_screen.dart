@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/myInfoUpdate_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -182,6 +183,25 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                 MaterialButton(
                   color: Colors.red,
                   child: const Text(
+                    '닉네임 변경',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            MyInfoUpdateScreen(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    );
+                    print('닉네임변경 버튼 클릭.');
+                  },
+                ),
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
                     '로그아웃',
                     style: TextStyle(color: Colors.white),
                   ),
@@ -190,7 +210,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     print('Logout button pressed.');
                   },
                 ),
-              if (_naverLoginStatus == true || _googleLoggedIn == true)
                 MaterialButton(
                   color: Colors.red,
                   child: const Text(

@@ -91,7 +91,7 @@ class _ReportScreenState extends State<ReportScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('등록 성공'),
+              title: Text('알림'),
               content: Text('신고가 접수되었습니다'),
               actions: <Widget>[
                 TextButton(
@@ -114,7 +114,7 @@ class _ReportScreenState extends State<ReportScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('등록 실패'),
+              title: Text('알'),
               content: Text('다시 시도해주세요'),
               actions: <Widget>[
                 TextButton(
