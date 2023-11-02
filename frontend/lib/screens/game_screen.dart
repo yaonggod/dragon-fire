@@ -5,7 +5,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class GameScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
@@ -45,6 +45,8 @@ class _GameScreenState extends State<GameScreen> {
 
   int giCnt = 0;
   int round = 0; // 몇번 째 라운드인지를 판단해야한다.
+
+
 
   void onConnect(StompFrame frame) {
     setState(() {
@@ -114,6 +116,7 @@ class _GameScreenState extends State<GameScreen> {
             isTel = false; // 텔레포트
             isBomb = false; // 원기옥
           });
+          sendResult(winner);
         }
       },
     );
@@ -371,9 +374,12 @@ class _GameScreenState extends State<GameScreen> {
             isBomb = false; // 원기옥
             isTie = true;
           });
+
+          // dispose();
         } else {
           // 승자를 표시하고 게임을 끝내야함
           winner = comparing;
+
           setState(() {
             showTemp = false;
             isGameStart = false;
@@ -384,6 +390,8 @@ class _GameScreenState extends State<GameScreen> {
             isTel = false; // 텔레포트
             isBomb = false; // 원기옥
           });
+          // dispose();
+          sendResult(winner);
         }
       },
     );
@@ -431,6 +439,14 @@ class _GameScreenState extends State<GameScreen> {
         headers: {});
   }
 
+  void sendResult(String message) {
+    // 최종적으로 게임이 끝이 났을 때, 결과를 DB에 저장하기 위해 호출
+    stompClient.send(
+        destination: '/pub/${widget.roomId}/updateRecord',
+        body: message,
+        headers: {});
+  }
+
   void startGame() {
     // setState(() {
     //   print('setstate 실행');
@@ -457,7 +473,7 @@ class _GameScreenState extends State<GameScreen> {
     stompClient = StompClient(
       config: StompConfig(
         url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));

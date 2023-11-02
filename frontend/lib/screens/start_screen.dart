@@ -1,15 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/game_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // 이 임포트를 추가
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart'; // 이 임포트를 추가
 
 class StartScreen extends StatelessWidget {
-  final TextEditingController _nicknameController = TextEditingController();
-
+  String? nickname;
   void startGame(BuildContext context) async {
-    final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
-    // final response = await http.get(Uri.parse('http://10.0.2.2:8080/wait'));
-    String nickname = _nicknameController.text;
+    nickname = await getNickname();
+    const storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+    // String nickname = _nicknameController.text;
+    // //final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
+    final response = await http.get(
+      Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+        'X-Nickname': nickname!,
+      },
+    );
+     // final response = await http.get(
+     //     Uri.parse('http://10.0.2.2:8080/wait'),
+     //     headers: {
+     //       'Content-Type': 'application/json',
+     //       'Accept': 'application/json',
+     //       'Authorization': 'Bearer $accessToken',
+     //       'X-Nickname': nickname!,
+     //     },
+     //
+     //
+     // );
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
@@ -20,7 +45,7 @@ class StartScreen extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => GameScreen(roomId: roomId,nickname:nickname), // 이건 game.dart에 있다.
+            builder: (context) => GameScreen(roomId: roomId,nickname:nickname!), // 이건 game.dart에 있다.
           ),
         );
       } else {
@@ -31,6 +56,12 @@ class StartScreen extends StatelessWidget {
     }
   }
 
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,11 +71,8 @@ class StartScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: _nicknameController,
-              decoration: InputDecoration(labelText: '닉네임'), // 입력 필드 레이블
-            ),
+          children: [
+
             ElevatedButton(
               onPressed: () {
                 startGame(context);
