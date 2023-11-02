@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
 
+  String? nickname;
+
   @override
   void initState() {
     _checkLoginStatus();
@@ -40,6 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
+    nickname = await getNickname();
+
     Map<String, String> tokens = await readToken();
     print(tokens.toString());
     print(tokens.isNotEmpty);
@@ -74,6 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final accessToken =
         (await _googleSignIn.currentUser!.authentication).accessToken!;
 
+    print('GOOGLE $accessToken');
+
     Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
     // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
     final response = await http.post(uri,
@@ -95,12 +102,13 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       String? accessToken1 = response.headers['authorization'];
       String? refreshToken1 = response.headers['refreshtoken'];
+      String? nickname =
+          jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
 
-      if (accessToken1 != null && refreshToken1 != null) {
-        print(accessToken1.substring(7));
-        print(refreshToken1.substring(7));
+      if (accessToken1 != null && refreshToken1 != null && nickname != null) {
         saveToken(
             accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
+        saveNickname(nickname);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -117,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // 그럼 네이버에서 토큰을 주는데, 성공했을 경우에는 토큰 문자열이 오지만 실패하면 빈 문자열이 옴
     NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
 
-    print("AT ${token.accessToken}");
+    print("NAVER ${token.accessToken}");
 
     if (token.accessToken != "") {
       // 네이버 AT를 보내서 백엔드에서 로그인하고, 서비스 AT와 RT를 받아오기
@@ -148,10 +156,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         String? accessToken1 = response.headers['authorization'];
         String? refreshToken1 = response.headers['refreshtoken'];
+        String? nickname =
+            jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
 
-        if (accessToken1 != null && refreshToken1 != null) {
+        if (accessToken1 != null && refreshToken1 != null && nickname != null) {
           saveToken(
               accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
+          saveNickname(nickname);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -188,6 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
+        removeNickname();
         print("로그아웃 완료");
         Navigator.pushAndRemoveUntil(
           context,
@@ -222,6 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
+        removeNickname();
         print("탈퇴 완료");
         Navigator.pushAndRemoveUntil(
           context,
@@ -239,6 +252,21 @@ class _LoginScreenState extends State<LoginScreen> {
     await storage.write(key: 'accessToken', value: accessToken);
     await storage.write(key: 'refreshToken', value: refreshToken);
     await storage.write(key: 'socialType', value: socialType);
+  }
+
+  saveNickname(String nickname) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('nickname', nickname);
+  }
+
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+  removeNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('nickname');
   }
 
   Future<Map<String, String>> readToken() async {
@@ -278,7 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -291,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: const BoxDecoration(
                           boxShadow: [
                             BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              color: Color.fromRGBO(0, 0, 0, 0.25),
                               offset: Offset(0, 3),
                               blurRadius: 5,
                               spreadRadius: 0,
@@ -305,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     )
                   : Container(),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
+              SizedBox(height: MediaQuery.of(context).size.height / 60),
               (_naverLoginStatus != true && !_googleLoggedIn)
                   ? GestureDetector(
                       onTap: googleLogin,

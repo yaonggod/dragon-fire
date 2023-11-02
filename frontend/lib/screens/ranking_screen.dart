@@ -5,11 +5,11 @@ import 'package:frontend/services/ranking_api_services.dart';
 
 class RankingScreen extends StatelessWidget {
   RankingScreen({super.key});
+
   final Future<List<TotalRankingModel>?> allRankings =
       RankingApiServices.getCurrentSeasonTotalRanking();
-  final Future<MyRankingModel?> myRanking = RankingApiServices.getMyRanking(
-    token: '',
-  );
+
+  final Future<MyRankingModel?> myRanking = RankingApiServices.getMyRanking();
 
   @override
   Widget build(BuildContext context) {
@@ -108,10 +108,10 @@ class RankingScreen extends StatelessWidget {
                       ),
                       child: const Center(
                         child: Text(
-                          '로그인이 필요합니다',
+                          '[등록 정보 없음]',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 35,
+                            fontSize: 30,
                           ),
                         ),
                       ),

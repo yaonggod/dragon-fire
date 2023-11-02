@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:frontend/models/friend_models/search_result_model.dart';
 import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
 import 'package:frontend/widgets/friend_widgets/message_widget.dart';
+import 'package:frontend/widgets/friend_widgets/search_result_widget.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -22,16 +24,42 @@ class _FriendScreenState extends State<FriendScreen> {
   // String baseUrl = dotenv.get("base_url");
 
   // 검색할 닉네임
-  String? searchNickname;
+  String searchNickname = "";
   // 검색 결과 상태: 검색 안함(NONE), 검색 결과 없음(FAIL), 검색 결과 있음(SUCCESS)
-  String searched = "SUCCESS";
+  String searched = "NONE";
   // 검색 결과
-  // SearchResultModel? searchResult;
-  SearchResultModel searchResult = SearchResultModel(
-      toMember: "123", toNickname: "yaong", friendStatus: "FRIEND");
+  SearchResultModel? searchResult;
 
   // 검색해서 SearchResult setState하기
-  Future<void> search() async {}
+  Future<void> search() async {
+    Map<String, String> list = await readToken();
+    if (searchNickname.trim() != "") {
+      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/friend/search/$searchNickname");
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var jsonString = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+        SearchResultModel result = SearchResultModel.fromJson(jsonMap);
+        setState(() {
+          searchResult = result;
+          searched = "SUCCESS";
+        });
+      } else {
+        setState(() {
+          searched = "FAIL";
+        });
+      }
+    }
+
+  }
 
   Widget searchResultWidget() {
     if (searched == "NONE") {
@@ -43,12 +71,7 @@ class _FriendScreenState extends State<FriendScreen> {
       );
     } else {
       // 검색 결과 카드
-      return Container(
-        child: Column(children: [
-          Text(searchResult.toNickname),
-          Text(searchResult.friendStatus)
-        ]),
-      );
+      return SearchResultWidget(searchResult: searchResult!,);
     }
   }
 
