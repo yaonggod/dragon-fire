@@ -6,35 +6,72 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart'; // 이 임포트를 추가
 
-class StartScreen extends StatelessWidget {
+class StartScreen extends StatefulWidget {
+
+  const StartScreen({super.key});
+
+  @override
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+
   String? nickname;
-  void startGame(BuildContext context) async {
+  String? accessToken;
+  String? refreshToken;
+  @override
+  void initState() {
+    _checkLoginStatus();
+    super.initState();
+  }
+
+
+  Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    print(refreshToken);
+  }
+
+  Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
     String? accessToken = await storage.read(key: 'accessToken');
-    // String nickname = _nicknameController.text;
-    // //final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
-    // final response = await http.get(
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
+  void startGame() async {
+
+    // final response = await http.post(
     //   Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
     //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json; charset=UTF-8',
     //     'Authorization': 'Bearer $accessToken',
-    //     'X-Nickname': nickname!,
     //   },
+    //     body: jsonEncode({"nickname": nickname!}),
+    //
     // );
-     final response = await http.get(
-         Uri.parse('http://10.0.2.2:8080/wait'),
-         headers: {
-           'Content-Type': 'application/json',
-           'Accept': 'application/json',
-           'Authorization': 'Bearer $accessToken',
-           'X-Nickname': nickname!,
-         },
 
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8080/wait'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken',
+      },
+      body: jsonEncode({"nickname": nickname!}),
 
-
-     );
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -57,6 +94,7 @@ class StartScreen extends StatelessWidget {
     }
   }
 
+
   Future<String?> getNickname() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('nickname');
@@ -67,7 +105,8 @@ class StartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Start Game Example'),
+        title: Text('게임 매칭'),
+        centerTitle: true,
       ),
       body: Center(
         child: Column(
@@ -76,9 +115,9 @@ class StartScreen extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                startGame(context);
+                startGame();
               },
-              child: Text('Start Game'),
+              child: Text('게임 매칭'),
             ),
           ],
         ),

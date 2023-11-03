@@ -139,7 +139,6 @@ class _AccessScreen2State extends State<AccessScreen2>
             begin: Offset(MediaQuery.of(context).size.width * 1.7 / 10,
                 MediaQuery.of(context).size.height * 8 / 12),
             end: Offset(MediaQuery.of(context).size.width * 1.7 / 10,MediaQuery.of(context).size.height),
-
           ),
         ],
       ),
