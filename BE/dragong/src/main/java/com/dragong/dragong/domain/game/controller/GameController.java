@@ -27,7 +27,7 @@ public class GameController {
     @Autowired
     private ResultUpdateService resultUpdateService;
 
-    @PostMapping ("/wait")
+    @PostMapping("/wait")
     public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
         log.info("받아온 nickname : " + nickname);
@@ -243,22 +243,27 @@ public class GameController {
     public void updateRecord(@DestinationVariable String roomId, String winner) {
         // 이제 결과를 받아올건데
         System.out.println("마지막 결과를 반환합니다: " + winner);
-        gameService.messageInsert(roomId,winner);
+        gameService.messageInsert(roomId, winner);
 
-        if(gameService.evenReturn(roomId)%2==1){
+        if (gameService.evenReturn(roomId) % 2 == 1) {
             String result = gameService.winnerAndLoserToken(roomId, winner);
             String[] parts = result.split(":");
             log.info(parts[1]); // 이게 승자의 accessToken
             log.info(parts[0]); // 이게 패자의 accessToken
             resultUpdateService.updateWinner(parts[0]);
             resultUpdateService.updateLoser(parts[1]);
-
+            log.info("여기까지 실행됨");
+            String info = "";
+            info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+            log.info("최종 결과를 도출합니다" + info);
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
         }
         gameService.cleanList(roomId);
 
     }
+
     @MessageMapping("/{roomId}/stillConnect")
-    public void checkConnection(){
+    public void checkConnection() {
         log.info("여전히 연결되어있습니다");
     }
 //    @GetMapping("/test")
