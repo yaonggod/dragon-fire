@@ -5,6 +5,7 @@ import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
 import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
+import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
 import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.SocialType;
@@ -18,7 +19,7 @@ public interface MemberService {
     LoginResponseDto login(LoginRequestDto loginRequestDto,
             HttpServletResponse httpServletResponse);
 
-    void update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
+    NicknameUpdateResponseDto update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse);
 
     void nicknameCheck(String nickname);
