@@ -1,18 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 class GameScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
-
   const GameScreen({
     super.key,
     required this.roomId,
@@ -53,8 +50,8 @@ class _GameScreenState extends State<GameScreen> {
   String? nickname;
   String? accessToken;
   String? refreshToken;
-
   @override
+
   Future<void> _checkLoginStatus() async {
     Map<String, String> tokens = await readToken();
     accessToken = tokens['Authorization'];
@@ -77,6 +74,8 @@ class _GameScreenState extends State<GameScreen> {
 
     return list;
   }
+
+
 
   void onConnect(StompFrame frame) {
     setState(() {
@@ -462,17 +461,18 @@ class _GameScreenState extends State<GameScreen> {
         String part4 = parts[3];
         String part5 = parts[4];
         String part6 = parts[5];
-        if (frame.body != null) {
-          if (winner == widget.nickname) {
+        if(frame.body!=null){
+          if(winner == widget.nickname ){
             // 내가 승자인 경우
-            print("승자의 승: " + part1);
-            print("승자의 패: " + part2);
-            print("승자의 점수: " + part3);
-          } else {
+            print("승자의 승: "+ part1 );
+            print("승자의 패: "+ part2 );
+            print("승자의 점수: "+part3);
+
+          }else{
             // 내가 패자인 경우
-            print("패자의 승: " + part4);
-            print("패자의 패: " + part5);
-            print("패자의 점수: " + part6);
+            print("패자의 승: "+ part4 );
+            print("패자의 패: "+ part5 );
+            print("패자의 점수: "+part6);
           }
           print(frame.body);
           dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
@@ -485,7 +485,7 @@ class _GameScreenState extends State<GameScreen> {
         body: widget.nickname,
         headers: {});
 
-    Timer.periodic(const Duration(seconds: 10), (timer) {
+    Timer.periodic(Duration(seconds: 10), (timer) {
       if (isWaiting) {
         stompClient.send(
             destination: '/pub/${widget.roomId}/stillConnect',
@@ -496,6 +496,7 @@ class _GameScreenState extends State<GameScreen> {
         timer.cancel();
       }
     });
+
   }
 
   void sendMessage(String message, String nickname) {
@@ -546,12 +547,10 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     _checkLoginStatus();
     super.initState();
-    String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
-        // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -575,24 +574,20 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          Positioned(
-              top: MediaQuery.of(context).size.height * 0.2,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Text('Room ID: ${widget.roomId}')),
-
-          if (showTemp)
-            Positioned(
-              top:0,
-              child: Column(
+      appBar: AppBar(
+        title: const Text('Game Screen'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Room ID: ${widget.roomId}'), // roomId를 화면에 표시
+            if (showTemp)
+              Column(
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                    height: MediaQuery.of(context).size.height*0.5, // 원하는 높이 값으로 설정
+                    width: 200, // 원하는 너비 값으로 설정
+                    height: 200, // 원하는 높이 값으로 설정
                     child: Lottie.asset(
                       'lib/assets/lottie/$youPick.json',
                       repeat: true,
@@ -604,8 +599,8 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                    height: MediaQuery.of(context).size.height*0.5, // 원하는 높이 값으로 설정
+                    width: 200, // 원하는 너비 값으로 설정
+                    height: 200, // 원하는 높이 값으로 설정
                     child: Lottie.asset(
                       'lib/assets/lottie/$mePick.json',
                       repeat: true,
@@ -618,73 +613,27 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
-            ),
-          if (isWaiting)
-            Container(
-              color: Colors.black.withOpacity(0.6),
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: Dialog(
-                  insetPadding: const EdgeInsets.all(10),
-                  backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            if (isWaiting)
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      sendMessage('대기 화면 입니다', widget.nickname);
+                    },
+                    child: const Text('이건 연결 테스트용 버튼'),
                   ),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '게임 대기중',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.15,
-                          ),
-                          CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                  const Text('대기 화면 입니다'), // 조건이 참일 때 추가
+                ],
               ),
-            ),
-          // Column(
-          //   children: [
-          //     ElevatedButton(
-          //       onPressed: () {
-          //         sendMessage('대기 화면 입니다', widget.nickname);
-          //       },
-          //       child: const Text('이건 연결 테스트용 버튼'),
-          //     ),
-          //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
-          //   ],
-          // ),
-          if (showResult)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.4,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
+            if (showResult)
+              Column(
                 children: [
                   if (!isTie) const Text('승자는!!'), // 조건이 참일 때 추가
                   Text(winner)
                 ],
               ),
-            ),
-
-          if (isGameStart)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.5,
-              left: MediaQuery.of(context).size.width * 0.3,
-              child: Column(
+            if (isGameStart)
+              Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -707,12 +656,8 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
-            ),
-          if (isGi || isPa || isBlock || isTel || isBomb)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.6,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
+            if (isGi || isPa || isBlock || isTel || isBomb)
+              Column(
                 children: [
                   ElevatedButton(
                     onPressed: () {
@@ -779,9 +724,8 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                 ],
               ),
-            ),
-          // ),
-        ],
+          ],
+        ),
       ),
     );
   }
