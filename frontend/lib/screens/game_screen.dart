@@ -547,8 +547,8 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     stompClient = StompClient(
       config: StompConfig(
-        //url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
