@@ -57,6 +57,8 @@ class _StartScreenState extends State<StartScreen> {
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+
       },
         body: jsonEncode({"nickname": nickname!}),
 
