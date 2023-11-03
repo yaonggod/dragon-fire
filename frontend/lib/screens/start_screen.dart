@@ -58,24 +58,23 @@ class _StartScreenState extends State<StartScreen> {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accessToken',
         'refreshToken': 'Bearer $refreshToken'
-
       },
         body: jsonEncode({"nickname": nickname!}),
 
     );
 
-     // final response = await http.get(
-     //     Uri.parse('http://10.0.2.2:8080/wait'),
-     //     headers: {
-     //       'Content-Type': 'application/json',
-     //       'Accept': 'application/json',
-     //       'Authorization': 'Bearer $accessToken',
-     //       'X-Nickname': nickname!,
-     //     },
-     //
-     //
-    //  // );
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/wait'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
     //
+    //   },
+    //   body: jsonEncode({"nickname": nickname!}),
+    //
+    // );
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
