@@ -32,6 +32,10 @@ public class PlayResultServiceImpl implements PlayResultService {
     // 랭킹을 초기화 할 때마다, 시즌이 하나씩 증가함
     static int season = 1;
 
+    static List<UUID> UUID1st;
+    static List<UUID> UUID2nd;
+    static List<UUID> UUID3rd;
+
     @Autowired
     PlayResultRepository playResultRepository;
 
@@ -47,6 +51,10 @@ public class PlayResultServiceImpl implements PlayResultService {
     @Override
     @Transactional
     public void putRank() {
+        UUID1st = new ArrayList<>();
+        UUID2nd = new ArrayList<>();
+        UUID3rd = new ArrayList<>();
+
         ListOperations<String, String> listOperations = redisTemplate.opsForList();
 
         List<PlayResult> listPlayResult = playResultRepository.findByPlayResultEmpIdSeason(season)
@@ -67,9 +75,6 @@ public class PlayResultServiceImpl implements PlayResultService {
             // 레디스에 넣을 것은 UUID, 랭킹, 닉네임, 점수
             int score = playResult.getScore();
             UUID memberUUID = playResult.getPlayResultEmpId().getMember().getMemberId();
-
-            System.out.println(memberUUID.toString());
-
             MemberInfo memberInfo = memberInfoRepository.findById(memberUUID).orElse(null);
 
             String UUID = memberInfo.getMemberId().toString();
@@ -99,6 +104,15 @@ public class PlayResultServiceImpl implements PlayResultService {
                 listOperations.rightPush("rank", String.valueOf(putCnt));
                 rank = putCnt;
             }
+
+            if (rank == 1) {
+                UUID1st.add(memberUUID);
+            } else if (rank == 2) {
+                UUID2nd.add(memberUUID);
+            } else if (rank == 3) {
+                UUID3rd.add(memberUUID);
+            }
+
             // 만료는 5분 => 약간 더 빠르게 해야함.. expire 가 먼저 되고나서 값이 들어가야함
             // 그렇게 안하면 expire가 안되고 계속 값이 들어감
             redisTemplate.expire("UUID", 59, TimeUnit.SECONDS);
@@ -193,11 +207,47 @@ public class PlayResultServiceImpl implements PlayResultService {
         return season;
     }
 
-//    @Scheduled(cron = "0 0 0 * * ?")
+    public void reward() {
+        for (UUID uuid : UUID1st) {
+            MemberInfo memberInfo = memberInfoRepository.findById(uuid).orElse(null);
+
+            if (memberInfo == null) {
+                continue;
+            }
+
+            memberInfo.updateCoin(300);
+            memberInfoRepository.save(memberInfo);
+        }
+
+        for (UUID uuid : UUID2nd) {
+            MemberInfo memberInfo = memberInfoRepository.findById(uuid).orElse(null);
+
+            if (memberInfo == null) {
+                continue;
+            }
+
+            memberInfo.updateCoin(200);
+            memberInfoRepository.save(memberInfo);
+        }
+
+        for (UUID uuid : UUID3rd) {
+            MemberInfo memberInfo = memberInfoRepository.findById(uuid).orElse(null);
+
+            if (memberInfo == null) {
+                continue;
+            }
+
+            memberInfo.updateCoin(100);
+            memberInfoRepository.save(memberInfo);
+        }
+    }
+
+    //    @Scheduled(cron = "0 0 0 * * ?")
     @Async
     public void updateSeason() {
         // 매주 월요일마다 시즌 초기화
         // cron의 시간이 겹치면, 먼저 선언된 메소드 부터 실행이됨 => 그래서 시즌 초기화를 먼저 실행시킴
+        reward();
         season += 1;
     }
 
