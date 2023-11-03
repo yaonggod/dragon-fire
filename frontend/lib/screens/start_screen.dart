@@ -52,28 +52,28 @@ class _StartScreenState extends State<StartScreen> {
 
   void startGame() async {
 
-    final response = await http.post(
-      Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accessToken',
-        'refreshToken': 'Bearer $refreshToken'
-      },
-        body: jsonEncode({"nickname": nickname!}),
-
-    );
-
     // final response = await http.post(
-    //   Uri.parse('http://10.0.2.2:8080/wait'),
+    //   Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
     //   headers: {
     //     'Content-Type': 'application/json; charset=UTF-8',
     //     'Authorization': 'Bearer $accessToken',
     //     'refreshToken': 'Bearer $refreshToken'
-    //
     //   },
-    //   body: jsonEncode({"nickname": nickname!}),
+    //     body: jsonEncode({"nickname": nickname!}),
     //
     // );
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8080/wait'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+
+      },
+      body: jsonEncode({"nickname": nickname!}),
+
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
