@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/screens/friend_screen.dart';
+import 'package:frontend/screens/game_screen.dart';
 import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
-import 'package:frontend/screens/start_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,12 +22,89 @@ class _MainScreenState extends State<MainScreen>
   with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  String? nickname;
+  String? accessToken;
+  String? refreshToken;
   String buttonsrc = 'lib/assets/icons/startButton.png';
   String buttonsrc1 = 'lib/assets/icons/rankingButton.png';
   String buttonsrc2 = 'lib/assets/icons/reportButton.png';
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
 
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+  Future<void> _checkLoginStatus() async {
+    nickname = await getNickname();
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    print(refreshToken);
+  }
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
+  Future<void> startGame() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/wait'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"nickname": nickname!}),
+
+    );
+
+    // final response = await http.get(
+    //     Uri.parse('http://10.0.2.2:8080/wait'),
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Accept': 'application/json',
+    //       'Authorization': 'Bearer $accessToken',
+    //       'X-Nickname': nickname!,
+    //     },
+    //
+    //
+    //  // );
+    //
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data.containsKey("roomId")) {
+        int roomId = data["roomId"];
+        print('roomId: $roomId');
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameScreen(roomId: roomId,nickname:nickname!), // 이건 game.dart에 있다.
+          ),
+        );
+      } else {
+        print('서버 응답에 roomId가 없음');
+      }
+    } else {
+      print('요청 실패: ${response.statusCode}');
+    }
+  }
   void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
@@ -32,12 +115,7 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void _navigateToStartScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StartScreen(),
-      ),
-    );
+    startGame();
   }
 
   void _navigateToRankingScreen() {
@@ -90,8 +168,13 @@ class _MainScreenState extends State<MainScreen>
 
       _controller.forward().whenComplete(() {
     });
-
+    init();
     super.initState();
+
+  }
+
+  Future<void> init() async {
+    await _checkLoginStatus();
   }
 
   @override
