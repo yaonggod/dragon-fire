@@ -27,6 +27,12 @@ public class MemberInfo extends BaseTimeEntity {
     @Column
     private String nickname;
 
+    @Column(columnDefinition = "int default 0")
+    private int coin;
+
+    @Column(columnDefinition = "int default 0")
+    private int tower;
+
     @Builder
     public MemberInfo(Member member, String nickname) {
         this.member = member;
@@ -36,5 +42,10 @@ public class MemberInfo extends BaseTimeEntity {
     @Builder(builderMethodName = "updateNicknameBuilder")
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    @Builder
+    public void updateCoin(int coin) {
+        this.coin += coin;
     }
 }
