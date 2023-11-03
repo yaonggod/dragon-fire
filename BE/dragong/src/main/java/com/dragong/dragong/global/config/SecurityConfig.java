@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(new AntPathRequestMatcher("/oauth/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/member/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/ws/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/ws")).permitAll()
 //                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                         .anyRequest().authenticated()
                 )
