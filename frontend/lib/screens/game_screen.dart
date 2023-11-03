@@ -47,6 +47,34 @@ class _GameScreenState extends State<GameScreen> {
   int giCnt = 0;
   int round = 0; // 몇번 째 라운드인지를 판단해야한다.
 
+  String? nickname;
+  String? accessToken;
+  String? refreshToken;
+  @override
+
+  Future<void> _checkLoginStatus() async {
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    print(refreshToken);
+  }
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
 
 
   void onConnect(StompFrame frame) {
@@ -362,7 +390,6 @@ class _GameScreenState extends State<GameScreen> {
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
           winner = "무효입니다";
-
           // winner = frame.body ?? '0';
           setState(() {
             showTemp = false;
@@ -414,6 +441,39 @@ class _GameScreenState extends State<GameScreen> {
           giCnt = int.parse(part2);
         } else if (widget.nickname == part3) {
           giCnt = int.parse(part4);
+        }
+      },
+    );
+
+    stompClient.subscribe(
+      // 카운트 다운 도중 한쪽 이상에서 응답이 없는 경우
+      destination: '/sub/${widget.roomId}/finalInfo',
+      callback: (frame) {
+        // 원하는 작업 수행
+        String frameBody = ' ${frame.body}';
+        List<String> part = frameBody.split(' ');
+        List<String> parts = part[1].split(':');
+        String part1 = parts[0];
+        String part2 = parts[1];
+        String part3 = parts[2];
+        String part4 = parts[3];
+        String part5 = parts[4];
+        String part6 = parts[5];
+        if(frame.body!=null){
+          if(winner == widget.nickname ){
+            // 내가 승자인 경우
+            print("승자의 승: "+ part1 );
+            print("승자의 패: "+ part2 );
+            print("승자의 점수: "+part3);
+
+          }else{
+            // 내가 패자인 경우
+            print("패자의 승: "+ part4 );
+            print("패자의 패: "+ part5 );
+            print("패자의 점수: "+part6);
+          }
+          print(frame.body);
+          dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
       },
     );
@@ -483,11 +543,12 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void initState() {
+    _checkLoginStatus();
     super.initState();
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
