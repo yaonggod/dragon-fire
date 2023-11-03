@@ -39,6 +39,7 @@ public class GameService {
         log.info("현재 accessToken의 사이즈는?"+ accessTokenRoom[roomId].size());
     }
 
+
     public void deleteAccessToken(String roomId){
         log.info(roomId+"의 accessToken값을 초기화합니다");
         accessTokenRoom[Integer.parseInt(roomId)].clear();
