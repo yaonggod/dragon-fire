@@ -151,20 +151,20 @@ class _FriendScreenState extends State<FriendScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('삭제'),
-          content: Text('친구를 삭제하시겠습니까?'),
+          title: const Text('삭제'),
+          content: const Text('친구를 삭제하시겠습니까?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: Text('취소'),
+              child: const Text('취소'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: Text('확인'),
+              child: const Text('확인'),
             ),
           ],
         );
@@ -174,12 +174,7 @@ class _FriendScreenState extends State<FriendScreen> {
 
   Future<void> _onDeleteCourse() async {}
 
-  Future<void> deleteFriend() async {
-    // final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/friend/disconnect'));
-    // if (response.statusCode == 200) {
-
-    // }
-  }
+  Future<void> deleteFriend() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -196,10 +191,7 @@ class _FriendScreenState extends State<FriendScreen> {
           if (friendSelected == true)
             Positioned(
               top: 70,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
+              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
               right: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -216,10 +208,7 @@ class _FriendScreenState extends State<FriendScreen> {
           if (friendSelected == true)
             Positioned(
               top: 58,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
+              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
               left: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -234,10 +223,7 @@ class _FriendScreenState extends State<FriendScreen> {
           if (friendSelected == false)
             Positioned(
               top: 70,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
+              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
               left: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -252,10 +238,7 @@ class _FriendScreenState extends State<FriendScreen> {
           if (friendSelected == false)
             Positioned(
               top: 58,
-              width: (MediaQuery
-                  .of(context)
-                  .size
-                  .width - 20.0) / 1.9,
+              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
               right: 10.0,
               child: GestureDetector(
                 onTap: () {
@@ -269,14 +252,8 @@ class _FriendScreenState extends State<FriendScreen> {
             ),
           Positioned(
             top: 58 +
-                (MediaQuery
-                    .of(context)
-                    .size
-                    .width - 20.0) / 1.9 * 136 / 642,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width - 20.0,
+                (MediaQuery.of(context).size.width - 20.0) / 1.9 * 136 / 642,
+            width: MediaQuery.of(context).size.width - 20.0,
             left: 10.0,
             child: SingleChildScrollView(
               child: Column(
@@ -284,15 +261,9 @@ class _FriendScreenState extends State<FriendScreen> {
                   if (friendSelected)
                     Container(
                       color: Colors.white,
-                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.75,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      height: MediaQuery.of(context).size.height * 0.75,
+                      width: MediaQuery.of(context).size.width,
                       child: ListView.builder(
                         itemCount: friendList.length,
                         itemBuilder: (context, index) {
@@ -301,44 +272,54 @@ class _FriendScreenState extends State<FriendScreen> {
                               motion: const DrawerMotion(),
                               extentRatio: 0.15,
                               closeThreshold: 0.01,
+                              openThreshold: 0.001,
                               children: [
                                 SlidableAction(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  padding: EdgeInsets.only(right: 10),
+                                  padding: const EdgeInsets.only(right: 10),
                                   icon: Icons.delete,
                                   onPressed: (context) async {
-                                    bool confirmDelete = await _deleteConfirmDialog(context);
+                                    bool confirmDelete =
+                                        await _deleteConfirmDialog(context);
                                     if (confirmDelete) {
                                       _onDeleteCourse();
                                     }
                                   },
                                 ),
                               ],
-                              openThreshold: 0.001,
                             ),
                             child: Card(
-                              color: Color.fromRGBO(0, 0, 0, 0.5),
-                              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              color: const Color.fromRGBO(0, 0, 0, 0.5),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
+                                        const CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              "lib/assets/icons/appIcon.png"),
                                           radius: 30,
                                         ),
-                                        SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                                        SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.03),
                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '${friendList[index]}',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              friendList[index],
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold),
                                             ),
-                                            Text(
+                                            const Text(
                                               'Ranking',
                                               style: TextStyle(fontSize: 12),
                                             ),
@@ -346,16 +327,17 @@ class _FriendScreenState extends State<FriendScreen> {
                                         ),
                                       ],
                                     ),
-                                    Text(
+                                    const Text(
                                       '전적',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {
-                                      },
-                                      child: Text(
+                                      onPressed: () {},
+                                      child: const Text(
                                         '대결',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
@@ -369,21 +351,15 @@ class _FriendScreenState extends State<FriendScreen> {
                   else
                     Container(
                       color: Colors.white,
-                      padding: EdgeInsets.only(top: 10.0),
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height * 0.75,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      padding: const EdgeInsets.only(top: 10.0),
+                      height: MediaQuery.of(context).size.height * 0.75,
+                      width: MediaQuery.of(context).size.width,
                       child: ListView.builder(
                         itemCount: notificationList.length,
                         itemBuilder: (context, index) {
                           return Card(
-                            color: Color.fromRGBO(0, 0, 0, 0.5),
-                            margin: EdgeInsets.symmetric(
+                            color: const Color.fromRGBO(0, 0, 0, 0.5),
+                            margin: const EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 10),
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -391,18 +367,15 @@ class _FriendScreenState extends State<FriendScreen> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   SizedBox(
-                                      width: MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width *
+                                      width: MediaQuery.of(context).size.width *
                                           0.03),
                                   Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${friendList[index]}가 친추했음',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ],
@@ -414,7 +387,7 @@ class _FriendScreenState extends State<FriendScreen> {
                                         onPressed: () {
                                           deleteFriend();
                                         },
-                                        child: Text('삭제'),
+                                        child: const Text('삭제'),
                                       ),
                                     ),
                                   ),
