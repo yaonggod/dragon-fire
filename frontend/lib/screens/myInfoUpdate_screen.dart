@@ -92,9 +92,9 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
 
   Future<void> nicknameCheck() async {
     String nicknameCur = nicknameController.text;
-
+    String baseUrl = dotenv.env['BASE_URL']!;
     final response = await http.get(Uri.parse(
-            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nicknameCur')
+            '$baseUrl/api/member/nickname-duplicate/$nicknameCur')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
         );
     if (response.statusCode == 200) {
@@ -159,12 +159,12 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
 
   void sendDataToServer() async {
     Map<String, String> list = await readToken();
-
+    String baseUrl = dotenv.env['BASE_URL']!;
     final String nicknameCur = nicknameController.text;
     if(nicknameCur == nicknameTemp){
 
       final response = await http.put(
-          Uri.parse('https://k9a209.p.ssafy.io/api/member/nickname-modify'),
+          Uri.parse('$baseUrl/api/member/nickname-modify'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ${list["Authorization"]!}',
