@@ -44,7 +44,6 @@ public class MemberInfo extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    @Builder
     public void updateCoin(int coin) {
         this.coin += coin;
     }
