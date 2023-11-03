@@ -75,9 +75,10 @@ class _ReportScreenState extends State<ReportScreen> {
   Future<void> sendReport() async {
     Map<String, String> tokens = await readToken();
     final String nickname = detailController.text;
-    String otherId = "dcc39ca9-a96f-432c-b7da-41c8363a91b0";
+    String otherId = "";
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (tokens.isNotEmpty) {
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/report/new");
+      Uri uri = Uri.parse("$baseUrl/api/report/new");
       final response = await http.post(uri,
           headers: {
             'Content-Type': 'application/json',
