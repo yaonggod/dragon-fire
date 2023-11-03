@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class GameScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
@@ -74,8 +76,6 @@ class _GameScreenState extends State<GameScreen> {
 
     return list;
   }
-
-
 
   void onConnect(StompFrame frame) {
     setState(() {
@@ -483,7 +483,7 @@ class _GameScreenState extends State<GameScreen> {
         body: widget.nickname,
         headers: {});
 
-    Timer.periodic(Duration(seconds: 10), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       if (isWaiting) {
         stompClient.send(
             destination: '/pub/${widget.roomId}/stillConnect',
@@ -494,7 +494,6 @@ class _GameScreenState extends State<GameScreen> {
         timer.cancel();
       }
     });
-
   }
 
   void sendMessage(String message, String nickname) {
@@ -545,9 +544,10 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     _checkLoginStatus();
     super.initState();
+    String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        url: socketUrl, // STOMP 서버 URL로 변경
         //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {

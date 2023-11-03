@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const MainScreen()),
-            (route) => false,
+        (route) => false,
       );
     }
 
@@ -78,8 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final accessToken =
         (await _googleSignIn.currentUser!.authentication).accessToken!;
-
-    Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+    String baseUrl = dotenv.env['BASE_URL']!;
+    Uri uri = Uri.parse("$baseUrl/api/oauth/login");
     // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
     final response = await http.post(uri,
         headers: {
@@ -100,7 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       String? accessToken1 = response.headers['authorization'];
       String? refreshToken1 = response.headers['refreshtoken'];
-      String? nickname = jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+      String? nickname =
+          jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
 
       if (accessToken1 != null && refreshToken1 != null && nickname != null) {
         saveToken(
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
-              (route) => false,
+          (route) => false,
         );
       }
     }
@@ -124,8 +125,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (token.accessToken != "") {
       // 네이버 AT를 보내서 백엔드에서 로그인하고, 서비스 AT와 RT를 받아오기
-
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+      String baseUrl = dotenv.env['BASE_URL']!;
+      Uri uri = Uri.parse("$baseUrl/api/oauth/login");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(uri,
           headers: {
@@ -151,7 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200) {
         String? accessToken1 = response.headers['authorization'];
         String? refreshToken1 = response.headers['refreshtoken'];
-        String? nickname = jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+        String? nickname =
+            jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
 
         if (accessToken1 != null && refreshToken1 != null && nickname != null) {
           saveToken(
@@ -160,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
-                (route) => false,
+            (route) => false,
           );
         }
       }
@@ -169,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _logout() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -177,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
 
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/logout");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(
         uri,
@@ -205,6 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _out() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -212,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_naverLoginStatus == true) {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/out");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
       final response = await http.delete(
         uri,
@@ -261,7 +265,6 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs.remove('nickname');
   }
 
-
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
@@ -309,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? GestureDetector(
                       onTap: naverLogin,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           boxShadow: [
                             BoxShadow(
                               color: Color.fromRGBO(0, 0, 0, 0.25),
@@ -331,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? GestureDetector(
                       onTap: googleLogin,
                       child: Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           boxShadow: [
                             BoxShadow(
                               color: Color.fromRGBO(0, 0, 0, 0.15),

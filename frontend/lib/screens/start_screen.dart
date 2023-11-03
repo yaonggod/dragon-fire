@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/game_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -51,9 +52,9 @@ class _StartScreenState extends State<StartScreen> {
   }
 
   void startGame() async {
-
+    String baseUrl = dotenv.env['BASE_URL']!;
     final response = await http.post(
-      Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
+      Uri.parse('$baseUrl/api/wait'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accessToken',
@@ -63,18 +64,18 @@ class _StartScreenState extends State<StartScreen> {
 
     );
 
-    // final response = await http.post(
-    //   Uri.parse('http://10.0.2.2:8080/wait'),
-    //   headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     'Authorization': 'Bearer $accessToken',
-    //     'refreshToken': 'Bearer $refreshToken'
+     // final response = await http.get(
+     //     Uri.parse('http://10.0.2.2:8080/wait'),
+     //     headers: {
+     //       'Content-Type': 'application/json',
+     //       'Accept': 'application/json',
+     //       'Authorization': 'Bearer $accessToken',
+     //       'X-Nickname': nickname!,
+     //     },
+     //
+     //
+    //  // );
     //
-    //   },
-    //   body: jsonEncode({"nickname": nickname!}),
-    //
-    // );
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 

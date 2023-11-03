@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/access_screen.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
-void main() async {
+Future main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   Timer(const Duration(seconds: 2), () => FlutterNativeSplash.remove());
+  await dotenv.load(fileName: ".env");
   runApp(const DragonG());
 }
 
