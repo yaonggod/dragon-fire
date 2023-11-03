@@ -102,21 +102,39 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     @Override
     public String getWinnerInfo(String accessToken) {
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
+        log.info("승자의 정보를 가져옵니다");
         log.info("uuid 출력" + String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-        return null;
+        String answer = "";
+        int win = playResult.getWin();
+        int lose = playResult.getLose();
+        int score = playResult.getScore();
+        log.info("승"+win);
+        log.info("패"+lose);
+        log.info("점수"+score);
+        answer += Integer.toString(win) + ":" + Integer.toString(lose) + ":" + Integer.toString(score);
+        return answer;
     }
 
     @Override
     public String getLoserInfo(String accessToken) {
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
+        log.info("패자의 정보를 가져옵니다");
         log.info("uuid 출력" + String.valueOf(myUUID));
         Member member = memberRepository.findById(myUUID).orElse(null);
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
         PlayResult playResult = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId).orElse(null);
-        return null;
+        String answer = "";
+        int win = playResult.getWin();
+        int lose = playResult.getLose();
+        int score = playResult.getScore();
+        log.info("승"+win);
+        log.info("패"+lose);
+        log.info("점수"+score);
+        answer += Integer.toString(win) + ":" + Integer.toString(lose) + ":" + Integer.toString(score);
+        return answer;
     }
 
 }
