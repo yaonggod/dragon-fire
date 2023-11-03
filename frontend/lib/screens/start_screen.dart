@@ -14,26 +14,27 @@ class StartScreen extends StatelessWidget {
     String? accessToken = await storage.read(key: 'accessToken');
     // String nickname = _nicknameController.text;
     // //final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/wait'));
-    final response = await http.get(
-      Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-        'X-Nickname': nickname!,
-      },
-    );
-     // final response = await http.get(
-     //     Uri.parse('http://10.0.2.2:8080/wait'),
-     //     headers: {
-     //       'Content-Type': 'application/json',
-     //       'Accept': 'application/json',
-     //       'Authorization': 'Bearer $accessToken',
-     //       'X-Nickname': nickname!,
-     //     },
-     //
-     //
-     // );
+    // final response = await http.get(
+    //   Uri.parse('https://k9a209.p.ssafy.io/api/wait'),
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Accept': 'application/json',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'X-Nickname': nickname!,
+    //   },
+    // );
+     final response = await http.get(
+         Uri.parse('http://10.0.2.2:8080/wait'),
+         headers: {
+           'Content-Type': 'application/json',
+           'Accept': 'application/json',
+           'Authorization': 'Bearer $accessToken',
+           'X-Nickname': nickname!,
+         },
+
+
+
+     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
