@@ -67,7 +67,6 @@ public class GameController {
         // 이건 socket 연결이 되자마자 자동적으로 보내는 것이다.
         log.info("현재 몇명이 접속했는지 확인하기 위해 실행합니다");
         log.info("받아온 닉네임은? " + nickname);
-
         int standard = gameService.giInit(roomId, nickname) % 2;
         // return 하는 값이 1 이라면 아직 방에 1명만 들어가 있다는 말
         // return 하는 값이 0 이라면 방에 2명이 들어간 상황이라는 말

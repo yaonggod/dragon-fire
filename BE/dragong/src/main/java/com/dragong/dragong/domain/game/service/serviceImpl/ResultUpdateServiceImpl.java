@@ -3,6 +3,8 @@ package com.dragong.dragong.domain.game.service.serviceImpl;
 import com.dragong.dragong.domain.game.repository.ResultUpdateRepository;
 import com.dragong.dragong.domain.game.service.ResultUpdateService;
 import com.dragong.dragong.domain.member.entity.Member;
+import com.dragong.dragong.domain.member.entity.MemberInfo;
+import com.dragong.dragong.domain.member.repository.MemberInfoRepository;
 import com.dragong.dragong.domain.member.repository.MemberRepository;
 import com.dragong.dragong.domain.playResult.entity.PlayResult;
 import com.dragong.dragong.domain.playResult.entity.PlayResultEmpId;
@@ -26,6 +28,9 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     MemberRepository memberRepository;
 
     @Autowired
+    MemberInfoRepository memberInfoRepository;
+
+    @Autowired
     ResultUpdateRepository resultUpdateRepository;
 
     @Override
@@ -34,6 +39,9 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         log.info("impl에서 updateWinnder 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
         Member member = memberRepository.findById(myUUID).orElse(null);
+        MemberInfo memberInfo = memberInfoRepository.findById(myUUID).orElse(null);
+        memberInfo.updateCoin(10);
+        memberInfoRepository.save(memberInfo);
         log.info(String.valueOf(member.getMemberId()));
         log.info("member를 출력합니다" + member.toString());
         PlayResultEmpId playResultEmpId = new PlayResultEmpId(season, member);
