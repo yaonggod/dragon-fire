@@ -14,6 +14,8 @@ public class MessageListDto {
     private String toNickname;
     private FriendStatus friendStatus;
     private String fcmToken;
+
+    // 이 사람의 전적
     private int score;
     private int win;
     private int lose;
