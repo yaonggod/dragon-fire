@@ -3,6 +3,8 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:frontend/models/friend_models/friend_model.dart';
+import 'package:frontend/models/friend_models/message_model.dart';
 import 'package:frontend/models/friend_models/search_result_model.dart';
 import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
 import 'package:frontend/widgets/friend_widgets/message_widget.dart';
@@ -21,12 +23,20 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen> {
-  // String baseUrl = dotenv.get("base_url");
+  String baseUrl = "http://10.0.2.2:8080";
+  // String baseUrl = "https://k9a209.p.ssafy.io/api";
+  // String? baseUrl = dotenv.env["BASE_URL"];
 
   // 검색할 닉네임
   String searchNickname = "";
   // 검색 결과 상태: 검색 안함(NONE), 검색 결과 없음(FAIL), 검색 결과 있음(SUCCESS)
   String searched = "NONE";
+  void showSearch() {
+    setState(() {
+      searched = "NONE";
+    });
+    print(searched);
+  }
   // 검색 결과
   SearchResultModel? searchResult;
 
@@ -34,7 +44,7 @@ class _FriendScreenState extends State<FriendScreen> {
   Future<void> search() async {
     Map<String, String> list = await readToken();
     if (searchNickname.trim() != "") {
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/friend/search/$searchNickname");
+      Uri uri = Uri.parse("$baseUrl/friend/search/$searchNickname");
       final response = await http.get(
         uri,
         headers: {
@@ -57,71 +67,93 @@ class _FriendScreenState extends State<FriendScreen> {
           searched = "FAIL";
         });
       }
+      print(searched);
+      print(searchResult!.toNickname);
     }
 
   }
 
-  Widget searchResultWidget() {
-    if (searched == "NONE") {
-      return Container();
-    } else if (searched == "FAIL") {
-      return const Text(
-        "존재하지 않는 유저입니다.",
-        style: TextStyle(color: Colors.red),
-      );
-    } else {
-      // 검색 결과 카드
-      return SearchResultWidget(searchResult: searchResult!,);
-    }
-  }
+  // Widget searchResultWidget() {
+  //   if (searched == "NONE") {
+  //     return Container();
+  //   } else if (searched == "FAIL") {
+  //     return const Text(
+  //       "존재하지 않는 유저입니다.",
+  //       style: TextStyle(color: Colors.red),
+  //     );
+  //   } else {
+  //     // 검색 결과 카드
+  //     return SearchResultWidget(searchResult: searchResult!, onEvent: showSearch);
+  //   }
+  // }
 
   bool friendSelected = true;
 
+  // 내 친구
+  List<FriendModel> friendList = [];
+
   // 친구 불러오기
-  Future<void> getMyFriends() async {}
+  Future<void> getMyFriends() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/friends");
+    final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+    );
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      List<dynamic> jsonMap = jsonDecode(jsonString);
+      List<FriendModel> friends = [];
+      for (var f in jsonMap) {
+        final friend = FriendModel.fromJson(f);
+        friends.add(friend);
+      }
+      setState(() {
+        friendList = friends;
+      });
+    }
+  }
+
+  // 내 메시지
+  List<MessageModel> messageList = [];
+  int messageCount = 0;
+
+  // 메시지 불러오기
+  Future<void> getMyMessages() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/messages");
+    final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+    );
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      List<dynamic> jsonMap = jsonDecode(jsonString);
+      List<MessageModel> messages = [];
+      for (var m in jsonMap) {
+        final message = MessageModel.fromJson(m);
+        messages.add(message);
+      }
+      setState(() {
+        messageList = messages;
+        messageCount = messageList.length;
+      });
+    }
+  }
 
   late ScrollController scrollController;
   bool isMaxHeightReached = false;
-  List<String> friendList = [
-    'Alice1',
-    'Bob2',
-    'Charlie3',
-    'David4',
-    'Eve5',
-    'Alice6',
-    'Bob7',
-    'Charlie8',
-    'David9',
-    'Eve10',
-    'Alice11',
-    'Bob12',
-    'Charlie13',
-    'David14',
-    'Eve15',
-    'Alice16',
-    'Bob17',
-    'Charlie18',
-    'David19',
-    'Eve20',
-    'Alice21',
-    'Bob22',
-    'Charlie23',
-    'David24',
-    'Eve25',
-    'Alice26',
-    'Bob27',
-    'Charlie28',
-    'David29',
-    'Eve30',
-  ];
 
-  List<String> messageList = [
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-  ];
+
+
 
   // 구글
   // 구글 로그인 여부
@@ -162,6 +194,8 @@ class _FriendScreenState extends State<FriendScreen> {
         });
       }
     });
+    getMyFriends();
+    getMyMessages();
     super.initState();
   }
 
@@ -211,17 +245,22 @@ class _FriendScreenState extends State<FriendScreen> {
     return list;
   }
 
-  Future<void> _onDeleteCourse() async {}
-
-  Future<void> deleteFriend() async {
-    // final response = await http.get(Uri.parse('https://k9a209.p.ssafy.io/api/friend/disconnect'));
-    // if (response.statusCode == 200) {
-
-    // }
-  }
-
   @override
   Widget build(BuildContext context) {
+    Widget searchResultWidget() {
+      if (searched == "NONE") {
+        return const Text("없음");
+      } else if (searched == "FAIL") {
+        return const Text(
+          "존재하지 않는 유저입니다.",
+          style: TextStyle(color: Colors.red),
+        );
+      } else {
+        // 검색 결과 카드
+        return SearchResultWidget(searchResult: searchResult!, onEvent: showSearch);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('호적수',
@@ -274,7 +313,11 @@ class _FriendScreenState extends State<FriendScreen> {
             const SizedBox(
               height: 10,
             ),
-            searchResultWidget(),
+            searched == "FAIL" ? const Text(
+              "존재하지 않는 유저입니다.",
+              style: TextStyle(color: Colors.red),
+            ) : Container(),
+            searched == "SUCCESS" ? SearchResultWidget(searchResult: searchResult!, onEvent: showSearch) : Container(),
             const SizedBox(
               height: 10,
             ),
@@ -285,6 +328,7 @@ class _FriendScreenState extends State<FriendScreen> {
                     onTap: () {
                       setState(() {
                         // 친구 불러오는 api 쏘기
+                        getMyFriends();
                         friendSelected = true;
                       });
                     },
@@ -307,6 +351,7 @@ class _FriendScreenState extends State<FriendScreen> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
+                        getMyMessages();
                         friendSelected = false;
                       });
                     },
@@ -337,9 +382,9 @@ class _FriendScreenState extends State<FriendScreen> {
                         friendSelected ? friendList.length : messageList.length,
                     itemBuilder: (context, index) {
                       if (friendSelected) {
-                        return FriendWidget(nickname: friendList[index]);
+                        return FriendWidget(friend: friendList[index]);
                       }
-                      return MessageWidget(nickname: messageList[index]);
+                      return MessageWidget(message: messageList[index]);
                     }),
               ),
             ),

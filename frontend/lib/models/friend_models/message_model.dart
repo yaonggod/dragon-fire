@@ -15,7 +15,7 @@ class MessageModel {
   MessageModel.fromJson(Map<String, dynamic> json)
       : toMember = json['toMember'],
         toNickname = json['toNickname'],
-        friendStatus = json['friendStauts'],
+        friendStatus = json['friendStatus'],
         fcmToken = json['fcmToken'],
         score = json['score'],
         win = json['win'],

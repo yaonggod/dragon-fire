@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/models/friend_models/search_result_model.dart';
 
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class SearchResultWidget extends StatefulWidget {
   final SearchResultModel searchResult;
+  final VoidCallback onEvent;
 
-  const SearchResultWidget({super.key, required this.searchResult});
+  const SearchResultWidget({super.key, required this.searchResult, required this.onEvent});
 
   @override
   State<SearchResultWidget> createState() => _SearchResultWidgetState();
@@ -13,18 +19,114 @@ class SearchResultWidget extends StatefulWidget {
 class _SearchResultWidgetState extends State<SearchResultWidget> {
   bool visible = true;
 
-  Widget showButton() {
+  String baseUrl = "http://10.0.2.2:8080";
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
+  Widget showButton(context) {
     if (widget.searchResult.friendStatus == "NONE" || widget.searchResult.friendStatus == "DISCONNECTED") {
-      return Text("친구 신청하기");
-    } else if (widget.searchResult.friendStatus == "ACCEPTCHECK") {
-      return Text("확인");
-    } else if (widget.searchResult.friendStatus == "FRIEND") {
-      return Container();
+      return GestureDetector(
+          onTap: () async {
+                bool result = await requestFriend();
+
+                _requestResultDialog(context, result);
+                widget.onEvent;
+            },
+
+          child: Text("친구 신청하기"));
     } else if (widget.searchResult.friendStatus == "WAITING") {
       return Text("수락 대기중");
     }
 
     return Container();
+  }
+
+  Future<bool> _requestDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            '${widget.searchResult.toNickname}님께 친구 신청을 하시겠습니까?',
+            style: const TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _requestResultDialog(BuildContext context, bool result) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            result ?
+            '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다' :
+            "친구 요청에 실패했습니다.",
+            style: const TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> requestFriend() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/request");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode(
+            {"toMember": widget.searchResult.toMember}));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -48,17 +150,15 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.searchResult.toNickname, style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(widget.searchResult.friendStatus, style: TextStyle(fontWeight: FontWeight.bold)),
-                    const Text(
-                      '지존 210점',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                    // Text(widget.searchResult.toNickname, style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패"),
+                    widget.searchResult.friendStatus == "FRIEND" ? Text("상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패") : Container(),
                   ],
                 ),
-                showButton(),
+
               ],
             ),
+            showButton(context),
           ],
         ),
       ),

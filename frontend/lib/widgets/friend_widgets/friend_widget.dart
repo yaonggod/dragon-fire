@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:frontend/models/friend_models/friend_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class FriendWidget extends StatefulWidget {
-  final String nickname;
+  final FriendModel friend;
 
-  const FriendWidget({super.key, required this.nickname});
+  const FriendWidget({super.key, required this.friend});
 
   @override
   State<FriendWidget> createState() => _FriendWidgetState();
@@ -14,6 +19,23 @@ class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
   String buttonsrc = 'lib/assets/icons/friendButton.png';
 
+  String baseUrl = "http://10.0.2.2:8080";
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
   Future<bool> _deleteConfirmDialog(BuildContext context) async {
     return await showDialog(
       context: context,
@@ -21,7 +43,7 @@ class _FriendWidgetState extends State<FriendWidget> {
         return AlertDialog(
           title: const Text('친구 삭제'),
           content: Text(
-            '${widget.nickname}님을 삭제하시겠습니까?',
+            '${widget.friend.toNickname}님을 삭제하시겠습니까?',
             style: const TextStyle(fontSize: 18),
           ),
           actions: <Widget>[
@@ -43,12 +65,46 @@ class _FriendWidgetState extends State<FriendWidget> {
     );
   }
 
-  void deleteFriend() {
+  Future<bool> _deleteResultDialog(BuildContext context, bool result) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('친구 삭제'),
+          content: Text(
+            result ? '${widget.friend.toNickname}님을 삭제했습니다.' : '친구 삭제에 실패했습니다.',
+            style: const TextStyle(fontSize: 18),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('닫기'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> deleteFriend() async {
     // 친삭 api 쏘고
-    // 친구 안보이게 하기
-    setState(() {
-      visible = false;
-    });
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/disconnect");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode(
+            {"toMember": widget.friend.toMember}));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+
   }
 
   @override
@@ -67,14 +123,16 @@ class _FriendWidgetState extends State<FriendWidget> {
                   padding: const EdgeInsets.only(right: 10),
                   icon: Icons.delete,
                   onPressed: (context) async {
-                    bool confirmDelete = await _deleteConfirmDialog(context);
-                    if (confirmDelete) {
-                      deleteFriend();
-                    }
-                  },
+                      bool result = await deleteFriend();
+                      if (result) {
+                        setState(() {
+                          visible = false;
+                        });
+                      }
+                      _deleteResultDialog(context, result);
+                    },)
+                  ],
                 ),
-              ],
-            ),
             child: Card(
               color: const Color.fromRGBO(0, 0, 0, 0.5),
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -96,16 +154,16 @@ class _FriendWidgetState extends State<FriendWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.nickname,
+                              widget.friend.toNickname,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            const Text(
-                              '지존 210점',
+                            Text(
+                              '지존 ${widget.friend.score}점',
                               style: TextStyle(fontSize: 12),
                             ),
-                            const Text(
-                              '상대 전적 5승 3패',
+                            Text(
+                              '상대 전적 ${widget.friend.friendWin}승 ${widget.friend.friendLose}패',
                               style: TextStyle(fontSize: 12),
                             ),
                           ],

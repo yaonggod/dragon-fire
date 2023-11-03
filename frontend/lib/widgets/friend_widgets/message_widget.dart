@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/models/friend_models/message_model.dart';
+import 'package:http/http.dart' as http;
 
 class MessageWidget extends StatefulWidget {
-  final String nickname;
+  final MessageModel message;
 
-  const MessageWidget({super.key, required this.nickname});
+  const MessageWidget({super.key, required this.message});
 
   @override
   State<MessageWidget> createState() => _MessageWidgetState();
@@ -12,7 +17,114 @@ class MessageWidget extends StatefulWidget {
 class _MessageWidgetState extends State<MessageWidget> {
   bool visible = true;
 
-  void acceptFriend() {}
+  String baseUrl = "http://10.0.2.2:8080";
+
+  String messageText = "";
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
+  Widget acceptButton() {
+    return GestureDetector(
+      onTap: () async {
+        bool result = await acceptFriend();
+        if (result) {
+          await _acceptDialog(context);
+          setState(() {
+            visible = false;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(5)),
+        child: const Icon(Icons.check),
+      ),
+    );
+  }
+
+  Widget rejectButton() {
+    return GestureDetector(
+      onTap: () async {
+        bool result = await rejectFriend();
+        if (result) {
+          await _rejectDialog(context);
+          setState(() {
+            visible = false;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(5)),
+        child: const Icon(Icons.close_outlined),
+      ),
+    );
+  }
+
+  Widget checkButton() {
+    return GestureDetector(
+      onTap: () async {
+        bool result = await checkFriend();
+        if (result) {
+          setState(() {
+            visible = false;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(5)),
+        child: const Icon(Icons.close_outlined),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    setState(() {
+      messageText = widget.message.friendStatus == "REQUESTCHECK" ?
+      "${widget.message.toNickname}님이 친구를 신청했습니다. 수락하시겠습니까?" :
+      "${widget.message.toNickname}님이 친구 신청을 수락했습니다.";
+    });
+    super.initState();
+  }
+
+  Future<bool> acceptFriend() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/accept");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode(
+            {"toMember": widget.message.toMember}));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
 
   Future<void> _acceptDialog(BuildContext context) async {
     return await showDialog(
@@ -20,7 +132,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            '${widget.nickname}님과 친구가 되었습니다.',
+            '${widget.message.toNickname}님과 친구가 되었습니다.',
             style: const TextStyle(fontSize: 18),
           ),
           actions: <Widget>[
@@ -36,7 +148,22 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
 
-  void rejectFriend() {}
+  Future<bool> rejectFriend() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/reject");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode(
+            {"toMember": widget.message.toMember}));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
 
   Future<void> _rejectDialog(BuildContext context) async {
     return await showDialog(
@@ -44,7 +171,7 @@ class _MessageWidgetState extends State<MessageWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            '${widget.nickname}님의 친구 신청을 거절했습니다.',
+            '${widget.message.toNickname}님의 친구 신청을 거절했습니다.',
             style: const TextStyle(fontSize: 18),
           ),
           actions: <Widget>[
@@ -60,7 +187,22 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
 
-  void checkFriend() {}
+  Future<bool> checkFriend() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/check");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode(
+            {"toMember": widget.message.toMember}));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +220,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                   ),
                   Expanded(
                     child: Text(
-                      '${widget.nickname}님이 친구를 신청했습니다. 수락하시겠습니까?',
+                      messageText,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                       overflow: TextOverflow.clip,
                     ),
@@ -86,42 +228,12 @@ class _MessageWidgetState extends State<MessageWidget> {
                   const SizedBox(
                     width: 10,
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      acceptFriend();
-                      await _acceptDialog(context);
-
-                      setState(() {
-                        visible = false;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: const Icon(Icons.check),
-                    ),
-                  ),
-                  const SizedBox(
+                  widget.message.friendStatus == "REQUESTCHECK" ? acceptButton() : Container(),
+                  widget.message.friendStatus == "REQUESTCHECK" ? const SizedBox(
                     width: 5,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      rejectFriend();
-                      await _rejectDialog(context);
-                      setState(() {
-                        visible = false;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: const Icon(Icons.close_outlined),
-                    ),
-                  ),
+                  ) : Container(),
+                  widget.message.friendStatus == "REQUESTCHECK" ? rejectButton() : Container(),
+                  widget.message.friendStatus != "REQUESTCHECK" ? checkButton() : Container(),
                 ],
               ),
             ),
