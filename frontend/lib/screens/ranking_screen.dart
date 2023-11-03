@@ -201,20 +201,26 @@ class RankingScreen extends StatelessWidget {
                     ),
                   );
                 } else {
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 2,
-                      ),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 10,
                     ),
-                    child: const Center(
-                      child: Text(
-                        '정보가 없습니다!',
-                        style: TextStyle(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        border: Border.all(
                           color: Colors.white,
-                          fontSize: 40,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '정보가 없습니다!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 40,
+                          ),
                         ),
                       ),
                     ),
