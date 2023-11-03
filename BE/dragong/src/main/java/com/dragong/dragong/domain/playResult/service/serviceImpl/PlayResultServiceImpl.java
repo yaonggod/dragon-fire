@@ -193,7 +193,7 @@ public class PlayResultServiceImpl implements PlayResultService {
         return season;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
     @Async
     public void updateSeason() {
         // 매주 월요일마다 시즌 초기화
