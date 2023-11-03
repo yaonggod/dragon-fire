@@ -61,7 +61,6 @@ public class FriendServiceImpl implements FriendService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-
         FcmToken fcmToken = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(toMember).get()
                 .getFcmToken();
 
@@ -73,16 +72,39 @@ public class FriendServiceImpl implements FriendService {
             friendStatusResponseDto.setFcmToken(fcmToken.getFcmToken());
         }
 
+        int season = playResultService.getSeason();
+        Optional<Member> to = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(toMember);
+        Optional<PlayResult> playResult = playResultRepository.findById(new PlayResultEmpId(season, to.get()));
+
+        int score = 0;
+        int win = 0;
+        int lose = 0;
+        if (playResult.isPresent()) {
+            score = playResult.get().getScore();
+            win = playResult.get().getWin();
+            lose = playResult.get().getLose();
+        }
+
+        // 이사람의 전적
+        friendStatusResponseDto.setWin(win);
+        friendStatusResponseDto.setLose(lose);
+        friendStatusResponseDto.setScore(score);
+
+
         // 관계 찾기
         Optional<Friend> friendResult = friendRepository.findByFriendPkFromMemberAndFriendPkToMember(fromMember, toMember);
         if (friendResult.isEmpty()) {
             // 엔티티가 없어요
             friendStatusResponseDto.setFriendStatus(FriendStatus.NONE);
+            friendStatusResponseDto.setFriendWin(0);
+            friendStatusResponseDto.setFriendLose(0);
         } else {
             // 기존의 관계가 존재해요
             friendStatusResponseDto.setFriendStatus(friendResult.get().getFriendStatus());
+            // 상대 전적
+            friendStatusResponseDto.setFriendWin(friendResult.get().getWin());
+            friendStatusResponseDto.setFriendLose(friendResult.get().getLose());
         }
-        System.out.println(friendStatusResponseDto.getFriendStatus().toString());
         return friendStatusResponseDto;
     }
 
@@ -281,6 +303,18 @@ public class FriendServiceImpl implements FriendService {
 
             friendRepository.save(fromFriend);
             friendRepository.save(toFriend);
+        } else if (fromFriend.getFriendStatus().equals(FriendStatus.FRIEND) && toFriend.getFriendStatus().equals(FriendStatus.ACCEPTCHECK)) {
+            fromFriend.updateFriendStatus(FriendStatus.DISCONNECTED);
+            toFriend.updateFriendStatus(FriendStatus.DISCONNECTED);
+
+            friendRepository.save(fromFriend);
+            friendRepository.save(toFriend);
+        } else if (fromFriend.getFriendStatus().equals(FriendStatus.ACCEPTCHECK) && toFriend.getFriendStatus().equals(FriendStatus.FRIEND)) {
+            fromFriend.updateFriendStatus(FriendStatus.DISCONNECTED);
+            toFriend.updateFriendStatus(FriendStatus.DISCONNECTED);
+
+            friendRepository.save(fromFriend);
+            friendRepository.save(toFriend);
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -330,6 +364,7 @@ public class FriendServiceImpl implements FriendService {
                     .toMember(toMember)
                     .toNickname(memberInfoRepository.findMemberInfoByMemberId(toMember).get().getNickname())
                     .score(score).win(win).lose(lose)
+                    .friendWin(f.getWin()).friendLose(f.getLose())
                     .build();
             friendListDtoList.add(friendListDto);
         }
