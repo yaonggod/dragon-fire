@@ -680,7 +680,7 @@ class _GameScreenState extends State<GameScreen> {
                 right: 0,
                 child: Center(
                   child:
-                      Text('적수: ' + contender!, style: TextStyle(fontSize: 20)),
+                      Text('적수:\n' + contender!, style: TextStyle(fontSize: 20,), textAlign: TextAlign.center),
                 ),
               ),
             if (showTemp)

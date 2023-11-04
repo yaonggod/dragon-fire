@@ -33,6 +33,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
 
+  bool isButtonDisabled = false;
+
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
 
@@ -245,21 +247,34 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 ),
                 GestureDetector(
                   onTap: () {
-                    _navigateToStartScreen();
+                    if (!isButtonDisabled) {
+                      _navigateToStartScreen();
+                      setState(() {
+                        isButtonDisabled = true;
+                      });
+                    }
                   },
                   onTapDown: (_) {
-                    setState(() {
-                      buttonsrc = 'lib/assets/icons/startButton2.png';
-                    });
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton2.png';
+                      });
+                    }
                   },
                   onTapUp: (_) {
-                    setState(() {
-                      buttonsrc = 'lib/assets/icons/startButton.png';
-                    });
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton.png';
+                      });
+                    }
                   },
-                  onTapCancel: () => setState(() {
-                    buttonsrc = 'lib/assets/icons/startButton.png';
-                  }),
+                  onTapCancel: () {
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton.png';
+                      });
+                    }
+                  },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.35,
                     height: MediaQuery.of(context).size.width * 0.35,
