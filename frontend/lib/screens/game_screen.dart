@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/screens/gameResult_screen.dart';
+import 'package:frontend/screens/main_screen.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
@@ -27,7 +29,7 @@ class _GameScreenState extends State<GameScreen> {
   late final StompClient stompClient;
   String countdown = '';
   String winner = '';
-
+  DateTime? backPressed;
   String youPick = '';
   String mePick = '';
   bool isWaiting = false; // 대기 화면 보여주기
@@ -53,6 +55,52 @@ class _GameScreenState extends State<GameScreen> {
   String? nickname;
   String? accessToken;
   String? refreshToken;
+
+  Future<bool> endApp() async {
+    DateTime curTime = DateTime.now();
+
+    if (backPressed == null ||
+        curTime.difference(backPressed!) > const Duration(seconds: 2)) {
+      backPressed = curTime;
+
+      bool exit = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: Text(
+              isWaiting
+                  ? '게임 대기열에서 나가시겠습니까?'
+                  : '게임에서 나가시겠습니까?\n(※ 퇴장시 패배 처리됩니다)',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('취소'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+      if (exit == true) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (route) => false,
+        );
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   Future<void> _checkLoginStatus() async {
@@ -472,6 +520,16 @@ class _GameScreenState extends State<GameScreen> {
             print("패자의 패: " + part5);
             print("패자의 점수: " + part6);
           }
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) =>
+                  GameResultScreen(roomId: widget.roomId, nickname: winner),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
+            ),
+                (Route<dynamic> route) => false,
+          );
           print(frame.body);
           dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
@@ -573,202 +631,236 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          Positioned(
-              top: MediaQuery.of(context).size.height * 0.2,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Text('Room ID: ${widget.roomId}')),
-
-          if (showTemp)
+      body: WillPopScope(
+        onWillPop: endApp,
+        child: Stack(
+          children: [
+            // Center(
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
             Positioned(
-              top:0,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                    height: MediaQuery.of(context).size.height*0.5, // 원하는 높이 값으로 설정
-                    child: Lottie.asset(
-                      'lib/assets/lottie/$youPick.json',
-                      repeat: true,
-                      onLoaded: (composition) {
-                        Timer(const Duration(milliseconds: 1200), () {
-                          // 여기에 콜백 코드를 넣으세요
-                        });
-                      },
+                top: MediaQuery.of(context).size.height * 0.2,
+                left: MediaQuery.of(context).size.width * 0.4,
+                child: Text('Room ID: ${widget.roomId}')),
+
+            if (showTemp)
+              Positioned(
+                top: 0,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // 원하는 높이 값으로 설정
+                      child: Lottie.asset(
+                        'lib/assets/lottie/$youPick.json',
+                        repeat: true,
+                        onLoaded: (composition) {
+                          Timer(const Duration(milliseconds: 1200), () {
+                            // 여기에 콜백 코드를 넣으세요
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                    height: MediaQuery.of(context).size.height*0.5, // 원하는 높이 값으로 설정
-                    child: Lottie.asset(
-                      'lib/assets/lottie/$mePick.json',
-                      repeat: true,
-                      onLoaded: (composition) {
-                        Timer(const Duration(milliseconds: 2000), () {
-                          // 여기에 콜백 코드를 넣으세요
-                        });
-                      },
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // 원하는 높이 값으로 설정
+                      child: Lottie.asset(
+                        'lib/assets/lottie/$mePick.json',
+                        repeat: true,
+                        onLoaded: (composition) {
+                          Timer(const Duration(milliseconds: 2000), () {
+                            // 여기에 콜백 코드를 넣으세요
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          if (isWaiting)
-            Container(
-              color: Colors.black.withOpacity(0.6),
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: Dialog(
-                  insetPadding: const EdgeInsets.all(10),
-                  backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '게임 대기중',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.15,
-                          ),
-                          CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                        ],
+            if (isWaiting)
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '게임 대기중',
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.15,
+                            ),
+                            CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.05,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          // Column(
-          //   children: [
-          //     ElevatedButton(
-          //       onPressed: () {
-          //         sendMessage('대기 화면 입니다', widget.nickname);
-          //       },
-          //       child: const Text('이건 연결 테스트용 버튼'),
-          //     ),
-          //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
-          //   ],
-          // ),
-          if (showResult)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.4,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
-                children: [
-                  if (!isTie) const Text('승자는!!'), // 조건이 참일 때 추가
-                  Text(winner)
-                ],
+            if (isConnected)
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '매칭 성공',
+                              style:
+                              TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.15,
+                            ),
+                            CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.05,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            // Column(
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: () {
+            //         sendMessage('대기 화면 입니다', widget.nickname);
+            //       },
+            //       child: const Text('이건 연결 테스트용 버튼'),
+            //     ),
+            //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
+            //   ],
+            // ),
 
-          if (isGameStart)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.5,
-              left: MediaQuery.of(context).size.width * 0.3,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Countdown: $countdown',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+            if (isGameStart)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.5,
+                left: MediaQuery.of(context).size.width * 0.3,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Countdown: $countdown',
+                        style: const TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          if (isGi || isPa || isBlock || isTel || isBomb)
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.6,
-              left: MediaQuery.of(context).size.width * 0.4,
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // 가위를 선택한 경우
-                      sendMessage('기', widget.nickname);
-                      isGi = false;
-                      isPa = false;
-                      isBlock = false;
-                      isTel = false;
-                      isBomb = false;
-                    },
-                    child: const Text('기'),
-                  ),
-                  if (giCnt >= 1)
+            if (isGi || isPa || isBlock || isTel || isBomb)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.6,
+                left: MediaQuery.of(context).size.width * 0.4,
+                child: Column(
+                  children: [
                     ElevatedButton(
                       onPressed: () {
-                        // 바위를 선택한 경우
-                        sendMessage('파', widget.nickname);
+                        // 가위를 선택한 경우
+                        sendMessage('기', widget.nickname);
                         isGi = false;
                         isPa = false;
                         isBlock = false;
                         isTel = false;
                         isBomb = false;
                       },
-                      child: const Text('파'),
+                      child: const Text('기'),
                     ),
-                  ElevatedButton(
-                    onPressed: () {
-                      //막기를 선택 하는 경우
-                      sendMessage('막기', widget.nickname);
-                      isGi = false;
-                      isPa = false;
-                      isBlock = false;
-                      isTel = false;
-                      isBomb = false;
-                    },
-                    child: const Text('막기'),
-                  ),
-                  if (giCnt >= 1)
+                    if (giCnt >= 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 바위를 선택한 경우
+                          sendMessage('파', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('파'),
+                      ),
                     ElevatedButton(
                       onPressed: () {
-                        // 순간이동을 하는 경우
-                        sendMessage('순간이동', widget.nickname);
+                        //막기를 선택 하는 경우
+                        sendMessage('막기', widget.nickname);
                         isGi = false;
                         isPa = false;
                         isBlock = false;
                         isTel = false;
                         isBomb = false;
                       },
-                      child: const Text('순간이동'),
+                      child: const Text('막기'),
                     ),
-                  if (giCnt >= 3)
-                    ElevatedButton(
-                      onPressed: () {
-                        // 원기옥을 선택하는 경우
-                        sendMessage('원기옥', widget.nickname);
-                        isGi = false;
-                        isPa = false;
-                        isBlock = false;
-                        isTel = false;
-                        isBomb = false;
-                      },
-                      child: const Text('원기옥'),
-                    ),
-                ],
+                    if (giCnt >= 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 순간이동을 하는 경우
+                          sendMessage('순간이동', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('순간이동'),
+                      ),
+                    if (giCnt >= 3)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 원기옥을 선택하는 경우
+                          sendMessage('원기옥', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('원기옥'),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          // ),
-        ],
+            // ),
+          ],
+        ),
       ),
     );
   }
