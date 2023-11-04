@@ -33,6 +33,7 @@ class _GameScreenState extends State<GameScreen> {
   String youPick = '';
   String mePick = '';
   bool isWaiting = false; // 대기 화면 보여주기
+  bool isConnected = false;
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
@@ -141,9 +142,16 @@ class _GameScreenState extends State<GameScreen> {
       callback: (frame) {
         // 원하는 작업 수행
         if (frame.body == '0') {
-          solo = 'false';
-          startGame();
-          round += 1;
+          setState(() {
+            isWaiting = false;
+            isConnected = true;
+          });
+
+          Timer(Duration(seconds:1), () {
+            solo = 'false';
+            startGame();
+            round += 1;
+          });
         }
       },
     );
@@ -161,6 +169,7 @@ class _GameScreenState extends State<GameScreen> {
               mePick = '';
               showTemp = false;
               isWaiting = false;
+              isConnected = false;
               isGameStart = true;
               isGi = true;
               isPa = true;
@@ -592,6 +601,9 @@ class _GameScreenState extends State<GameScreen> {
     //   isTel = true;
     //   isBomb =true;
     // });
+    setState(() {
+      isConnected = false;
+    });
     stompClient.send(
         destination: '/pub/${widget.roomId}/Count',
         body: '${widget.nickname}:$round',
@@ -737,19 +749,18 @@ class _GameScreenState extends State<GameScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              '매칭 성공',
+                              '적수 등장',
                               style:
                               TextStyle(fontSize: 24, color: Colors.white),
                             ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.15,
+                            FractionallySizedBox(
+                              widthFactor: 0.41,
+                              child: Image.asset(
+                                'lib/assets/icons/connected.png',
+                                fit: BoxFit.contain,
+                              ),
                             ),
-                            CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.05,
-                            ),
+
                           ],
                         ),
                       ),
