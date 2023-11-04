@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_digit/animated_digit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/screens/main_screen.dart';
@@ -8,21 +9,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GameResultScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
+  final String win;
+  final String lose;
+  final int point;
 
   const GameResultScreen({
     super.key,
     required this.roomId,
     required this.nickname,
+    required this.win,
+    required this.lose,
+    required this.point,
   });
 
   @override
   State<GameResultScreen> createState() => _GameResultScreenState();
 }
 
-class _GameResultScreenState extends State<GameResultScreen> {
+class _GameResultScreenState extends State<GameResultScreen>
+    with SingleTickerProviderStateMixin {
+  // late AnimationController _controller;
+  int? point;
+  AnimatedDigitController? _controller2;
+  int _currentValue = 0;
+
   DateTime? currentBackPressTime;
   Future<String?>? nicknameFuture;
-
 
   Future<String?> getNickname() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -31,12 +43,37 @@ class _GameResultScreenState extends State<GameResultScreen> {
 
   @override
   void initState() {
-    super.initState();
     nicknameFuture = getNickname();
+    point = widget.point;
+    super.initState();
+
+    _controller2 = AnimatedDigitController(point!);
+
+    // _controller = AnimationController(
+    //   vsync: this,
+    //   duration: Duration(seconds: 2),
+    // );
+
+    // final Animation<int> _animation = IntTween(begin: 0, end: widget.point).animate(
+    //   CurvedAnimation(
+    //     parent: _controller,
+    //     curve: Curves.fastEaseInToSlowEaseOut,
+    //   ),
+    // );
+    //
+    // _controller.forward();
+    //
+    // _animation.addListener(() {
+    //   setState(() {
+    //     _currentValue = _animation.value;
+    //   });
+    // });
   }
 
   @override
   void dispose() {
+    // _controller.dispose();
+    _controller2!.dispose();
     super.dispose();
   }
 
@@ -48,7 +85,7 @@ class _GameResultScreenState extends State<GameResultScreen> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => MainScreen()),
-                (route) => false,
+            (route) => false,
           );
           return true;
         },
@@ -72,26 +109,67 @@ class _GameResultScreenState extends State<GameResultScreen> {
                         ),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.5,
-                          height: MediaQuery.of(context).size.width * 0.5,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  widget.nickname == nickname ?
-                                  '승리': '패배',
-                                  style: TextStyle(fontSize: 34, color: Colors.white),
+                          height: MediaQuery.of(context).size.width * 0.6,
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const MainScreen()),
+                                        (Route<dynamic> route) => false,
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      'lib/assets/icons/close.png',
+                                      width: 25,
+                                      height: 25,
+                                    ),
+                                  ),
                                 ),
-                                SizedBox(
-                                  height: MediaQuery.of(context).size.width * 0.15,
+                              ),
+                              Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      widget.nickname == nickname ? '승리' : '패배',
+                                      style: TextStyle(
+                                          fontSize: 34, color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                              0.15,
+                                    ),
+                                    Text(
+                                      widget.nickname == nickname
+                                          ? '+20'
+                                          : '-20',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    ),
+                                    // Text(
+                                    //   '랭킹 점수: $_currentValue',
+                                    //   style: TextStyle(
+                                    //       fontSize: 25, color: Colors.white),
+                                    // ),
+                                    AnimatedDigitWidget(
+                                      controller: _controller2,
+                                      textStyle: TextStyle(
+                                          color: Colors.white, fontSize: 30),
+                                      enableSeparator: true,
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  widget.nickname == nickname ?
-                                  '+10': '-10',
-                                  style: TextStyle(fontSize: 20, color: Colors.white),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

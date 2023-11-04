@@ -37,7 +37,7 @@ class _GameScreenState extends State<GameScreen> {
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
-
+  String? contender;
   bool isGi = false; // 기
   bool isPa = false; // 파
   bool isBlock = false; // 막기
@@ -147,7 +147,7 @@ class _GameScreenState extends State<GameScreen> {
             isConnected = true;
           });
 
-          Timer(Duration(seconds:1), () {
+          Timer(Duration(seconds: 1), () {
             solo = 'false';
             startGame();
             round += 1;
@@ -496,8 +496,10 @@ class _GameScreenState extends State<GameScreen> {
         String part4 = parts[4];
 
         if (widget.nickname == part1) {
+          contender = part3;
           giCnt = int.parse(part2);
         } else if (widget.nickname == part3) {
+          contender = part1;
           giCnt = int.parse(part4);
         }
       },
@@ -520,25 +522,45 @@ class _GameScreenState extends State<GameScreen> {
         if (frame.body != null) {
           if (winner == widget.nickname) {
             // 내가 승자인 경우
-            print("승자의 승: " + part1);
-            print("승자의 패: " + part2);
-            print("승자의 점수: " + part3);
+            print("승자의 승: " + part4);
+            print("승자의 패: " + part5);
+            print("승자의 점수: " + part6);
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    GameResultScreen(
+                        roomId: widget.roomId,
+                        nickname: winner,
+                        win: part4,
+                        lose: part5,
+                        point: int.parse(part6)),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (Route<dynamic> route) => false,
+            );
           } else {
             // 내가 패자인 경우
-            print("패자의 승: " + part4);
-            print("패자의 패: " + part5);
-            print("패자의 점수: " + part6);
+            print("패자의 승: " + part1);
+            print("패자의 패: " + part2);
+            print("패자의 점수: " + part3);
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    GameResultScreen(
+                        roomId: widget.roomId,
+                        nickname: winner,
+                        win: part1,
+                        lose: part2,
+                        point: int.parse(part3)),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (Route<dynamic> route) => false,
+            );
           }
-          Navigator.pushAndRemoveUntil(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation1, animation2) =>
-                  GameResultScreen(roomId: widget.roomId, nickname: winner),
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-            ),
-                (Route<dynamic> route) => false,
-          );
           print(frame.body);
           dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
@@ -650,11 +672,17 @@ class _GameScreenState extends State<GameScreen> {
             // Center(
             //   child: Column(
             //     mainAxisAlignment: MainAxisAlignment.center,
-            Positioned(
-                top: MediaQuery.of(context).size.height * 0.2,
-                left: MediaQuery.of(context).size.width * 0.4,
-                child: Text('Room ID: ${widget.roomId}')),
 
+            if (contender != null)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.1,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child:
+                      Text('적수: ' + contender!, style: TextStyle(fontSize: 20)),
+                ),
+              ),
             if (showTemp)
               Positioned(
                 top: 0,
@@ -751,7 +779,7 @@ class _GameScreenState extends State<GameScreen> {
                             Text(
                               '적수 등장',
                               style:
-                              TextStyle(fontSize: 24, color: Colors.white),
+                                  TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             FractionallySizedBox(
                               widthFactor: 0.41,
@@ -760,7 +788,6 @@ class _GameScreenState extends State<GameScreen> {
                                 fit: BoxFit.contain,
                               ),
                             ),
-
                           ],
                         ),
                       ),
@@ -782,25 +809,29 @@ class _GameScreenState extends State<GameScreen> {
 
             if (isGameStart)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.5,
-                left: MediaQuery.of(context).size.width * 0.3,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Countdown: $countdown',
-                        style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                top: MediaQuery.of(context).size.height * 0.45,
+                left:0,
+                right:0,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          '$countdown',
+                          style: const TextStyle(
+                              fontSize: 60, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             if (isGi || isPa || isBlock || isTel || isBomb)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.6,
-                left: MediaQuery.of(context).size.width * 0.4,
+                top: MediaQuery.of(context).size.height * 0.65,
+                left: 0,
+                right: 0,
                 child: Column(
                   children: [
                     ElevatedButton(
