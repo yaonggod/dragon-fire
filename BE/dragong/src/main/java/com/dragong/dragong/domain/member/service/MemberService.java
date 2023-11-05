@@ -1,6 +1,7 @@
 package com.dragong.dragong.domain.member.service;
 
 
+import com.dragong.dragong.domain.member.dto.request.FcmTokenRequestDto;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
@@ -33,5 +34,7 @@ public interface MemberService {
 
     Member getMyMember(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse);
+
+    void updateFcmToken(String accessToken, String refreshToken, FcmTokenRequestDto fcmTokenRequestDto);
 
 }

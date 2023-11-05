@@ -1,10 +1,12 @@
 package com.dragong.dragong.domain.member.service;
 
+import com.dragong.dragong.domain.member.dto.request.FcmTokenRequestDto;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
 import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
+import com.dragong.dragong.domain.member.entity.FcmToken;
 import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.entity.Role;
@@ -12,6 +14,7 @@ import com.dragong.dragong.domain.member.entity.SocialType;
 import com.dragong.dragong.domain.member.entity.auth.GoogleAuth;
 import com.dragong.dragong.domain.member.entity.auth.NaverAuth;
 import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
+import com.dragong.dragong.domain.member.repository.FcmTokenRepository;
 import com.dragong.dragong.domain.member.repository.GoogleAuthRepository;
 import com.dragong.dragong.domain.member.repository.MemberInfoRepository;
 import com.dragong.dragong.domain.member.repository.MemberRepository;
@@ -39,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
     private final NaverAuthRepository naverAuthRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuthService oAuthService;
-
+    private final FcmTokenRepository fcmTokenRepository;
 
     @Override
     @Transactional
@@ -327,6 +330,35 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new NoSuchElementException());
 
         return member;
+    }
+
+    @Override
+    public void updateFcmToken(String accessToken, String refreshToken,
+            FcmTokenRequestDto fcmTokenRequestDto) {
+
+        // 토큰으로 멤버를 찾읍시다
+        UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
+        Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        FcmToken fcmToken = member.getFcmToken();
+
+        if (fcmToken == null) {
+            // 없으면 새로 빌드해줍시다
+            FcmToken newFcmToken = FcmToken.builder()
+                    .fcmToken(fcmTokenRequestDto.getFcmToken())
+                    .member(member)
+                    .build();
+            member.addFcmToken(newFcmToken);
+            fcmTokenRepository.save(newFcmToken);
+        } else {
+            // 있으면 대조해보고~
+            if (!fcmToken.getFcmToken().equals(fcmTokenRequestDto.getFcmToken())) {
+                fcmToken.updateFcmToken(fcmTokenRequestDto.getFcmToken());
+                fcmTokenRepository.save(fcmToken);
+            }
+        }
+
     }
 
 
