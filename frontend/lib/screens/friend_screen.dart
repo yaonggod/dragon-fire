@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:frontend/models/friend_models/friend_model.dart';
+import 'package:frontend/models/friend_models/message_model.dart';
+import 'package:frontend/models/friend_models/search_result_model.dart';
+import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
+import 'package:frontend/widgets/friend_widgets/message_widget.dart';
+import 'package:frontend/widgets/friend_widgets/search_result_widget.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({super.key});
@@ -14,63 +18,118 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen> {
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "https://k9a209.p.ssafy.io/api";
+  // String? baseUrl = dotenv.env["BASE_URL"];
+
+  // 검색할 닉네임
+  String searchNickname = "";
+  // 검색 결과 상태: 검색 안함(NONE), 검색 결과 없음(FAIL), 검색 결과 있음(SUCCESS)
+  String searched = "NONE";
+  void showSearch() {
+    setState(() {
+      searched = "NONE";
+    });
+    print(searched);
+  }
+  // 검색 결과
+  SearchResultModel? searchResult;
+
+  // 검색해서 SearchResult setState하기
+  Future<void> search() async {
+    Map<String, String> list = await readToken();
+    if (searchNickname.trim() != "") {
+      Uri uri = Uri.parse("$baseUrl/friend/search/$searchNickname");
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+      );
+      if (response.statusCode == 200) {
+        var jsonString = utf8.decode(response.bodyBytes);
+        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+        SearchResultModel result = SearchResultModel.fromJson(jsonMap);
+        setState(() {
+          searchResult = result;
+          searched = "SUCCESS";
+        });
+      } else {
+        setState(() {
+          searched = "FAIL";
+        });
+      }
+    }
+
+  }
+
   bool friendSelected = true;
+
+  // 내 친구
+  List<FriendModel> friendList = [];
+
+  // 친구 불러오기
+  Future<void> getMyFriends() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/friends");
+    final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+    );
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      List<dynamic> jsonMap = jsonDecode(jsonString);
+      List<FriendModel> friends = [];
+      for (var f in jsonMap) {
+        final friend = FriendModel.fromJson(f);
+        friends.add(friend);
+      }
+      setState(() {
+        friendList = friends;
+      });
+    }
+  }
+
+  // 내 메시지
+  List<MessageModel> messageList = [];
+  int messageCount = 0;
+
+  // 메시지 불러오기
+  Future<void> getMyMessages() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend/messages");
+    final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        }
+    );
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      List<dynamic> jsonMap = jsonDecode(jsonString);
+      List<MessageModel> messages = [];
+      for (var m in jsonMap) {
+        final message = MessageModel.fromJson(m);
+        messages.add(message);
+      }
+      setState(() {
+        messageList = messages;
+        messageCount = messageList.length;
+      });
+    }
+  }
+
   late ScrollController scrollController;
   bool isMaxHeightReached = false;
-  List<String> friendList = [
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-  ];
 
-  List<String> notificationList = [
-    'Alice',
-    'Bob',
-    'Charlie',
-    'David',
-    'Eve',
-  ];
-
-  // 구글
-  // 구글 로그인 여부
-  bool _googleLoggedIn = false;
-
-  // 구글 로그인 객체
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  // 네이버
-  // 네이버 로그인 결과 객체: loggedIn, cancelledByUser, error
-  bool _naverLoginStatus = false;
-
-  // 네이버 로그인 객체
-  NaverLoginResult? _naverLoginResult;
 
   /*
   * 대전전적의 각 전적의 신고버튼으로 이 화면으로 올 수 있음
@@ -82,7 +141,6 @@ class _FriendScreenState extends State<FriendScreen> {
   @override
   void initState() {
     // storage에 토큰을 확인하고 로그인 여부 불러오기
-    _checkLoginStatus();
     scrollController = ScrollController();
     scrollController.addListener(() {
       // maxheight에 도달했으면
@@ -97,6 +155,8 @@ class _FriendScreenState extends State<FriendScreen> {
         });
       }
     });
+    getMyFriends();
+    getMyMessages();
     super.initState();
   }
 
@@ -104,30 +164,6 @@ class _FriendScreenState extends State<FriendScreen> {
   void dispose() {
     scrollController.dispose();
     super.dispose();
-  }
-
-  // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
-  Future<void> _checkLoginStatus() async {
-    Map<String, String> tokens = await readToken();
-    print(tokens.toString());
-    print(tokens.isNotEmpty);
-    print(tokens);
-    if (tokens.isNotEmpty && tokens['socialType'] == "GOOGLE") {
-      print(1);
-      setState(() {
-        // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
-        _googleLoggedIn = true;
-      });
-    } else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
-      print(2);
-      setState(() {
-        // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
-        _naverLoginStatus = true;
-      });
-    }
-
-    print(_googleLoggedIn);
-    print(_naverLoginStatus);
   }
 
   Future<Map<String, String>> readToken() async {
@@ -146,36 +182,6 @@ class _FriendScreenState extends State<FriendScreen> {
     return list;
   }
 
-  Future<bool> _deleteConfirmDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('삭제'),
-          content: const Text('친구를 삭제하시겠습니까?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _onDeleteCourse() async {}
-
-  Future<void> deleteFriend() async {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,223 +192,130 @@ class _FriendScreenState extends State<FriendScreen> {
             )),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          if (friendSelected == true)
-            Positioned(
-              top: 70,
-              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
-              right: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = false;
-                  });
-                },
-                child: Image.asset(
-                  'lib/assets/icons/friendState1_1.png',
-                  fit: BoxFit.fill,
-                ),
-              ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
             ),
-          if (friendSelected == true)
-            Positioned(
-              top: 58,
-              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
-              left: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = true;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState1.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          if (friendSelected == false)
-            Positioned(
-              top: 70,
-              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
-              left: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = true;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState2_1.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          if (friendSelected == false)
-            Positioned(
-              top: 58,
-              width: (MediaQuery.of(context).size.width - 20.0) / 1.9,
-              right: 10.0,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    friendSelected = false;
-                  });
-                },
-                child: Image.asset('lib/assets/icons/friendState2.png',
-                    fit: BoxFit.fill),
-              ),
-            ),
-          Positioned(
-            top: 58 +
-                (MediaQuery.of(context).size.width - 20.0) / 1.9 * 136 / 642,
-            width: MediaQuery.of(context).size.width - 20.0,
-            left: 10.0,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (friendSelected)
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        itemCount: friendList.length,
-                        itemBuilder: (context, index) {
-                          return Slidable(
-                            endActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              extentRatio: 0.15,
-                              closeThreshold: 0.01,
-                              openThreshold: 0.001,
-                              children: [
-                                SlidableAction(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  padding: const EdgeInsets.only(right: 10),
-                                  icon: Icons.delete,
-                                  onPressed: (context) async {
-                                    bool confirmDelete =
-                                        await _deleteConfirmDialog(context);
-                                    if (confirmDelete) {
-                                      _onDeleteCourse();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                            child: Card(
-                              color: const Color.fromRGBO(0, 0, 0, 0.5),
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const CircleAvatar(
-                                          backgroundImage: AssetImage(
-                                              "lib/assets/icons/appIcon.png"),
-                                          radius: 30,
-                                        ),
-                                        SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.03),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              friendList[index],
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            const Text(
-                                              'Ranking',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const Text(
-                                      '전적',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text(
-                                        '대결',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        searchNickname = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "닉네임으로 검색하기",
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderSide: BorderSide(width: 1, color: Colors.black),
                       ),
-                    )
-                  else
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.only(top: 10.0),
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        itemCount: notificationList.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: const Color.fromRGBO(0, 0, 0, 0.5),
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.03),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${friendList[index]}가 친추했음',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          deleteFriend();
-                                        },
-                                        child: const Text('삭제'),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        borderSide: BorderSide(width: 1, color: Colors.black),
                       ),
                     ),
-                ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: search,
+                  child: const Icon(
+                    Icons.search,
+                    size: 40,
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            searched == "FAIL" ? const Text(
+              "존재하지 않는 유저입니다.",
+              style: TextStyle(color: Colors.red),
+            ) : Container(),
+            searched == "SUCCESS" ? SearchResultWidget(searchResult: searchResult!, onEvent: showSearch) : Container(),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // 친구 불러오는 api 쏘기
+                        getMyFriends();
+                        friendSelected = true;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                          color: !friendSelected ? Colors.white : Colors.red,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10))),
+                      child: const Text(
+                        "나의 호적수",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        getMyMessages();
+                        friendSelected = false;
+                      });
+                    },
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                            color: !friendSelected ? Colors.red : Colors.white,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10))),
+                        child: const Text(
+                          "메시지",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20),
+                        )),
+                  ),
+                )
+              ],
+            ),
+            Expanded(
+              child: Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.red)),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount:
+                        friendSelected ? friendList.length : messageList.length,
+                    itemBuilder: (context, index) {
+                      if (friendSelected) {
+                        return FriendWidget(friend: friendList[index]);
+                      }
+                      return MessageWidget(message: messageList[index]);
+                    }),
               ),
             ),
-          ),
-        ],
+            const SizedBox(
+              height: 10,
+            )
+          ],
+        ),
       ),
     );
   }
