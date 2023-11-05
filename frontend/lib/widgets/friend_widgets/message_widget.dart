@@ -17,7 +17,8 @@ class MessageWidget extends StatefulWidget {
 class _MessageWidgetState extends State<MessageWidget> {
   bool visible = true;
 
-  String baseUrl = "http://10.0.2.2:8080";
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "https://k9a209.p.ssafy.io/api";
 
   String messageText = "";
 
@@ -94,7 +95,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         decoration: BoxDecoration(
             color: Colors.red,
             borderRadius: BorderRadius.circular(5)),
-        child: const Icon(Icons.close_outlined),
+        child: const Icon(Icons.check),
       ),
     );
   }

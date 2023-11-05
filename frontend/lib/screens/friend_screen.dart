@@ -1,19 +1,14 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:frontend/models/friend_models/friend_model.dart';
 import 'package:frontend/models/friend_models/message_model.dart';
 import 'package:frontend/models/friend_models/search_result_model.dart';
 import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
 import 'package:frontend/widgets/friend_widgets/message_widget.dart';
 import 'package:frontend/widgets/friend_widgets/search_result_widget.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({super.key});
@@ -23,8 +18,8 @@ class FriendScreen extends StatefulWidget {
 }
 
 class _FriendScreenState extends State<FriendScreen> {
-  String baseUrl = "http://10.0.2.2:8080";
-  // String baseUrl = "https://k9a209.p.ssafy.io/api";
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "https://k9a209.p.ssafy.io/api";
   // String? baseUrl = dotenv.env["BASE_URL"];
 
   // 검색할 닉네임
@@ -53,7 +48,6 @@ class _FriendScreenState extends State<FriendScreen> {
           'refreshToken': 'Bearer ${list['refreshToken']!}'
         }
       );
-      print(response.statusCode);
       if (response.statusCode == 200) {
         var jsonString = utf8.decode(response.bodyBytes);
         Map<String, dynamic> jsonMap = jsonDecode(jsonString);
@@ -67,25 +61,9 @@ class _FriendScreenState extends State<FriendScreen> {
           searched = "FAIL";
         });
       }
-      print(searched);
-      print(searchResult!.toNickname);
     }
 
   }
-
-  // Widget searchResultWidget() {
-  //   if (searched == "NONE") {
-  //     return Container();
-  //   } else if (searched == "FAIL") {
-  //     return const Text(
-  //       "존재하지 않는 유저입니다.",
-  //       style: TextStyle(color: Colors.red),
-  //     );
-  //   } else {
-  //     // 검색 결과 카드
-  //     return SearchResultWidget(searchResult: searchResult!, onEvent: showSearch);
-  //   }
-  // }
 
   bool friendSelected = true;
 
@@ -153,22 +131,6 @@ class _FriendScreenState extends State<FriendScreen> {
   bool isMaxHeightReached = false;
 
 
-
-
-  // 구글
-  // 구글 로그인 여부
-  bool _googleLoggedIn = false;
-
-  // 구글 로그인 객체
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  // 네이버
-  // 네이버 로그인 결과 객체: loggedIn, cancelledByUser, error
-  bool _naverLoginStatus = false;
-
-  // 네이버 로그인 객체
-  NaverLoginResult? _naverLoginResult;
-
   /*
   * 대전전적의 각 전적의 신고버튼으로 이 화면으로 올 수 있음
   *
@@ -179,7 +141,6 @@ class _FriendScreenState extends State<FriendScreen> {
   @override
   void initState() {
     // storage에 토큰을 확인하고 로그인 여부 불러오기
-    _checkLoginStatus();
     scrollController = ScrollController();
     scrollController.addListener(() {
       // maxheight에 도달했으면
@@ -205,30 +166,6 @@ class _FriendScreenState extends State<FriendScreen> {
     super.dispose();
   }
 
-  // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
-  Future<void> _checkLoginStatus() async {
-    Map<String, String> tokens = await readToken();
-    print(tokens.toString());
-    print(tokens.isNotEmpty);
-    print(tokens);
-    if (tokens.isNotEmpty && tokens['socialType'] == "GOOGLE") {
-      print(1);
-      setState(() {
-        // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
-        _googleLoggedIn = true;
-      });
-    } else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
-      print(2);
-      setState(() {
-        // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
-        _naverLoginStatus = true;
-      });
-    }
-
-    print(_googleLoggedIn);
-    print(_naverLoginStatus);
-  }
-
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
@@ -247,20 +184,6 @@ class _FriendScreenState extends State<FriendScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget searchResultWidget() {
-      if (searched == "NONE") {
-        return const Text("없음");
-      } else if (searched == "FAIL") {
-        return const Text(
-          "존재하지 않는 유저입니다.",
-          style: TextStyle(color: Colors.red),
-        );
-      } else {
-        // 검색 결과 카드
-        return SearchResultWidget(searchResult: searchResult!, onEvent: showSearch);
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('호적수',

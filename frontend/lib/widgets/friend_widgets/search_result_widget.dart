@@ -17,9 +17,9 @@ class SearchResultWidget extends StatefulWidget {
 }
 
 class _SearchResultWidgetState extends State<SearchResultWidget> {
-  bool visible = true;
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "https://k9a209.p.ssafy.io/api";
 
-  String baseUrl = "http://10.0.2.2:8080";
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
@@ -40,46 +40,16 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
     if (widget.searchResult.friendStatus == "NONE" || widget.searchResult.friendStatus == "DISCONNECTED") {
       return GestureDetector(
           onTap: () async {
-                bool result = await requestFriend();
 
-                _requestResultDialog(context, result);
-                widget.onEvent;
-            },
+            bool result = await requestFriend();
+            widget.onEvent();
+            _requestResultDialog(context, result);
+          },
 
           child: Text("친구 신청하기"));
-    } else if (widget.searchResult.friendStatus == "WAITING") {
-      return Text("수락 대기중");
     }
 
     return Container();
-  }
-
-  Future<bool> _requestDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            '${widget.searchResult.toNickname}님께 친구 신청을 하시겠습니까?',
-            style: const TextStyle(fontSize: 18),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _requestResultDialog(BuildContext context, bool result) async {
@@ -89,7 +59,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
         return AlertDialog(
           title: Text(
             result ?
-            '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다' :
+            '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다.' :
             "친구 요청에 실패했습니다.",
             style: const TextStyle(fontSize: 18),
           ),
@@ -97,6 +67,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
+
               },
               child: const Text('확인'),
             ),
@@ -131,7 +102,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return !visible ? Container() : Card(
+    return Card(
       color: const Color.fromRGBO(0, 0, 0, 0.5),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -150,7 +121,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Text(widget.searchResult.toNickname, style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(widget.searchResult.toNickname, style: TextStyle(fontWeight: FontWeight.bold)),
                     Text("${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패"),
                     widget.searchResult.friendStatus == "FRIEND" ? Text("상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패") : Container(),
                   ],

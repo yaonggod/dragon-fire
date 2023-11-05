@@ -19,7 +19,9 @@ class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
   String buttonsrc = 'lib/assets/icons/friendButton.png';
 
-  String baseUrl = "http://10.0.2.2:8080";
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "https://k9a209.p.ssafy.io/api";
+
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
@@ -34,35 +36,6 @@ class _FriendWidgetState extends State<FriendWidget> {
     }
 
     return list;
-  }
-
-  Future<bool> _deleteConfirmDialog(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('친구 삭제'),
-          content: Text(
-            '${widget.friend.toNickname}님을 삭제하시겠습니까?',
-            style: const TextStyle(fontSize: 18),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('확인'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<bool> _deleteResultDialog(BuildContext context, bool result) async {
