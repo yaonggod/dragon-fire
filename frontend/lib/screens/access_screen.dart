@@ -2,6 +2,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frontend/screens/access_screen2.dart';
 
 class AccessScreen extends StatefulWidget {
@@ -16,8 +17,6 @@ class _AccessScreenState extends State<AccessScreen>
   late AnimationController _controller;
   late AnimationController _controller2;
   final player = AudioPlayer();
-
-  bool _isLoggedIn = false;
   DateTime? backPressed;
   bool _isLoggedIn = false;
 
