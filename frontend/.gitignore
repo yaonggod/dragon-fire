@@ -395,4 +395,6 @@ hs_err_pid*
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+proguard-rules.pro
+
 # End of https://www.toptal.com/developers/gitignore/api/dart,intellij,flutter,visualstudiocode,androidstudio

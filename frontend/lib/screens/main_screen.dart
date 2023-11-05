@@ -1,9 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frontend/screens/friend_screen.dart';
+import 'package:frontend/screens/game_screen.dart';
 import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
-import 'package:frontend/screens/start_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,15 +20,107 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen>
-  with TickerProviderStateMixin {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  DateTime? backPressed;
+  String? nickname;
+  String? accessToken;
+  String? refreshToken;
   String buttonsrc = 'lib/assets/icons/startButton.png';
   String buttonsrc1 = 'lib/assets/icons/rankingButton.png';
   String buttonsrc2 = 'lib/assets/icons/reportButton.png';
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
+
+  bool isButtonDisabled = false;
+
+  Future<bool> endApp() async {
+    DateTime curTime = DateTime.now();
+
+    if (backPressed == null ||
+        curTime.difference(backPressed!) > const Duration(seconds: 2)) {
+      backPressed = curTime;
+      Fluttertoast.showToast(msg: "'뒤로'버튼 한번 더 누르시면 종료됩니다.");
+      return false;
+    }
+    return true;
+  }
+
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
+  }
+
+  Future<void> _checkLoginStatus() async {
+    nickname = await getNickname();
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    print(refreshToken);
+  }
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
+
+  Future<void> startGame() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/wait'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"nickname": nickname!}),
+    );
+
+    // final response = await http.get(
+    //     Uri.parse('http://10.0.2.2:8080/wait'),
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Accept': 'application/json',
+    //       'Authorization': 'Bearer $accessToken',
+    //       'X-Nickname': nickname!,
+    //     },
+    //
+    //
+    //  // );
+    //
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data.containsKey("roomId")) {
+        int roomId = data["roomId"];
+        print('roomId: $roomId');
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GameScreen(
+                roomId: roomId, nickname: nickname!), // 이건 game.dart에 있다.
+          ),
+        );
+      } else {
+        print('서버 응답에 roomId가 없음');
+      }
+    } else {
+      print('요청 실패: ${response.statusCode}');
+    }
+  }
 
   void _navigateToMyInfoScreen() {
     Navigator.push(
@@ -32,12 +132,7 @@ class _MainScreenState extends State<MainScreen>
   }
 
   void _navigateToStartScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StartScreen(),
-      ),
-    );
+    startGame();
   }
 
   void _navigateToRankingScreen() {
@@ -88,10 +183,13 @@ class _MainScreenState extends State<MainScreen>
       ),
     );
 
-      _controller.forward().whenComplete(() {
-    });
-
+    _controller.forward().whenComplete(() {});
+    init();
     super.initState();
+  }
+
+  Future<void> init() async {
+    await _checkLoginStatus();
   }
 
   @override
@@ -101,12 +199,12 @@ class _MainScreenState extends State<MainScreen>
   }
 
   Widget slidingWidget(
-      BuildContext context,
-      Animation<double> animation,
-      Widget child, {
-        Offset begin = Offset.zero,
-        Offset end = Offset.zero,
-      }) {
+    BuildContext context,
+    Animation<double> animation,
+    Widget child, {
+    Offset begin = Offset.zero,
+    Offset end = Offset.zero,
+  }) {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
@@ -127,172 +225,188 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          slidingWidget(
-            context,
-            _animation,
-            Image.asset(
-              'lib/assets/icons/mainMark2.png',
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
-            ),
-            begin: Offset(0, MediaQuery.of(context).size.height * 2 / 7),
-            end: Offset(0, 0),
-          ),
-          Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.55,
+      body: WillPopScope(
+        onWillPop: endApp,
+        child: Stack(
+          children: [
+            slidingWidget(
+              context,
+              _animation,
+              Image.asset(
+                'lib/assets/icons/mainMark2.png',
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
               ),
-              GestureDetector(
-                onTap: () {
-                  _navigateToStartScreen();
-                },
-                onTapDown: (_) {
-                  setState(() {
-                    buttonsrc = 'lib/assets/icons/startButton2.png';
-                  });
-                },
-                onTapUp: (_) {
-                  setState(() {
-                    buttonsrc = 'lib/assets/icons/startButton.png';
-                  });
-                },
-                onTapCancel: () => setState(() {
-                  buttonsrc = 'lib/assets/icons/startButton.png';
-                }),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *0.35,
-                  height:  MediaQuery.of(context).size.width *0.35,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(buttonsrc),
-                      fit: BoxFit.fitWidth,
+              begin: Offset(0, MediaQuery.of(context).size.height * 2 / 7),
+              end: Offset(0, 0),
+            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.55,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (!isButtonDisabled) {
+                      _navigateToStartScreen();
+                      setState(() {
+                        isButtonDisabled = true;
+                      });
+                    }
+                  },
+                  onTapDown: (_) {
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton2.png';
+                      });
+                    }
+                  },
+                  onTapUp: (_) {
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton.png';
+                      });
+                    }
+                  },
+                  onTapCancel: () {
+                    if (!isButtonDisabled) {
+                      setState(() {
+                        buttonsrc = 'lib/assets/icons/startButton.png';
+                      });
+                    }
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.width * 0.35,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(buttonsrc),
+                        fit: BoxFit.fitWidth,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToRankingScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        _navigateToRankingScreen();
+                      },
+                      onTapDown: (_) {
+                        setState(() {
+                          buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
+                        });
+                      },
+                      onTapUp: (_) {
+                        setState(() {
+                          buttonsrc1 = 'lib/assets/icons/rankingButton.png';
+                        });
+                      },
+                      onTapCancel: () => setState(() {
                         buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc1),
-                          fit: BoxFit.fitWidth,
+                      }),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        height: MediaQuery.of(context).size.width * 0.25,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc1),
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToReportScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc2 = 'lib/assets/icons/reportButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
+                    GestureDetector(
+                      onTap: () {
+                        _navigateToReportScreen();
+                      },
+                      onTapDown: (_) {
+                        setState(() {
+                          buttonsrc2 = 'lib/assets/icons/reportButton2.png';
+                        });
+                      },
+                      onTapUp: (_) {
+                        setState(() {
+                          buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                        });
+                      },
+                      onTapCancel: () => setState(() {
                         buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc2),
-                          fit: BoxFit.fitWidth,
+                      }),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        height: MediaQuery.of(context).size.width * 0.25,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc2),
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToFriendScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc3 = 'lib/assets/icons/friendButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
+                    GestureDetector(
+                      onTap: () {
+                        _navigateToFriendScreen();
+                      },
+                      onTapDown: (_) {
+                        setState(() {
+                          buttonsrc3 = 'lib/assets/icons/friendButton2.png';
+                        });
+                      },
+                      onTapUp: (_) {
+                        setState(() {
+                          buttonsrc3 = 'lib/assets/icons/friendButton.png';
+                        });
+                      },
+                      onTapCancel: () => setState(() {
                         buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc3),
-                          fit: BoxFit.fitWidth,
+                      }),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        height: MediaQuery.of(context).size.width * 0.25,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc3),
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToMyInfoScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc4 = 'lib/assets/icons/myButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
+                    GestureDetector(
+                      onTap: () {
+                        _navigateToMyInfoScreen();
+                      },
+                      onTapDown: (_) {
+                        setState(() {
+                          buttonsrc4 = 'lib/assets/icons/myButton2.png';
+                        });
+                      },
+                      onTapUp: (_) {
+                        setState(() {
+                          buttonsrc4 = 'lib/assets/icons/myButton.png';
+                        });
+                      },
+                      onTapCancel: () => setState(() {
                         buttonsrc4 = 'lib/assets/icons/myButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc4 = 'lib/assets/icons/myButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc4),
-                          fit: BoxFit.fitWidth,
+                      }),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.25,
+                        height: MediaQuery.of(context).size.width * 0.25,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc4),
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

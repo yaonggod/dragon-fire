@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
-
+    print(nickname);
     Map<String, String> tokens = await readToken();
     print(tokens.toString());
     print(tokens.isNotEmpty);
@@ -73,15 +73,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> googleLogin() async {
-    // _googleSignIn.disconnect();
+    _googleSignIn.disconnect();
     GoogleSignInAccount? account = await _googleSignIn.signIn();
 
     final accessToken =
         (await _googleSignIn.currentUser!.authentication).accessToken!;
-
-    print('GOOGLE $accessToken');
-
-    Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+    String baseUrl = dotenv.env['BASE_URL']!;
+    Uri uri = Uri.parse("$baseUrl/api/oauth/login");
     // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
     final response = await http.post(uri,
         headers: {
@@ -125,12 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
     // 그럼 네이버에서 토큰을 주는데, 성공했을 경우에는 토큰 문자열이 오지만 실패하면 빈 문자열이 옴
     NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
 
-    print("NAVER ${token.accessToken}");
-
     if (token.accessToken != "") {
       // 네이버 AT를 보내서 백엔드에서 로그인하고, 서비스 AT와 RT를 받아오기
-
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/login");
+      String baseUrl = dotenv.env['BASE_URL']!;
+      Uri uri = Uri.parse("$baseUrl/api/oauth/login");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(uri,
           headers: {
@@ -175,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _logout() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -183,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
 
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/logout");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(
         uri,
@@ -193,8 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
           'refreshToken': 'Bearer ${list['refreshToken']!}'
         },
       );
-
-      print("상태 코드 ${response.statusCode}");
 
       if (response.statusCode == 200) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -213,6 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _out() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -220,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_naverLoginStatus == true) {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/out");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
       final response = await http.delete(
         uri,

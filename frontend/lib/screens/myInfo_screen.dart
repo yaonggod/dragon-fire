@@ -68,6 +68,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
   _logout() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -76,7 +77,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
 
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/logout");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(
         uri,
@@ -104,6 +105,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
   _out() async {
     Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
     if (list.isNotEmpty) {
       if (_googleLoggedIn) {
         _googleSignIn.signOut();
@@ -111,7 +113,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       if (_naverLoginStatus == true) {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
-      Uri uri = Uri.parse("https://k9a209.p.ssafy.io/api/oauth/out");
+      Uri uri = Uri.parse("$baseUrl/api/oauth/out");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/out");
       final response = await http.delete(
         uri,

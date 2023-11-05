@@ -1,15 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/screens/gameResult_screen.dart';
+import 'package:frontend/screens/main_screen.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class GameScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
+
   const GameScreen({
     super.key,
     required this.roomId,
@@ -24,14 +29,15 @@ class _GameScreenState extends State<GameScreen> {
   late final StompClient stompClient;
   String countdown = '';
   String winner = '';
-
+  DateTime? backPressed;
   String youPick = '';
   String mePick = '';
   bool isWaiting = false; // 대기 화면 보여주기
+  bool isConnected = false;
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
-
+  String? contender;
   bool isGi = false; // 기
   bool isPa = false; // 파
   bool isBlock = false; // 막기
@@ -47,7 +53,79 @@ class _GameScreenState extends State<GameScreen> {
   int giCnt = 0;
   int round = 0; // 몇번 째 라운드인지를 판단해야한다.
 
+  String? nickname;
+  String? accessToken;
+  String? refreshToken;
 
+  Future<bool> endApp() async {
+    DateTime curTime = DateTime.now();
+
+    if (backPressed == null ||
+        curTime.difference(backPressed!) > const Duration(seconds: 2)) {
+      backPressed = curTime;
+
+      bool exit = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: Text(
+              isWaiting
+                  ? '게임 대기열에서 나가시겠습니까?'
+                  : '게임에서 나가시겠습니까?\n(※ 퇴장시 패배 처리됩니다)',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('취소'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+      if (exit == true) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (route) => false,
+        );
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  Future<void> _checkLoginStatus() async {
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    print(refreshToken);
+  }
+
+  Future<Map<String, String>> readToken() async {
+    const storage = FlutterSecureStorage();
+    Map<String, String> list = {};
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    String? socialType = await storage.read(key: 'socialType');
+
+    if (accessToken != null && refreshToken != null && socialType != null) {
+      list['Authorization'] = accessToken;
+      list['refreshToken'] = refreshToken;
+      list['socialType'] = socialType;
+    }
+
+    return list;
+  }
 
   void onConnect(StompFrame frame) {
     setState(() {
@@ -64,9 +142,16 @@ class _GameScreenState extends State<GameScreen> {
       callback: (frame) {
         // 원하는 작업 수행
         if (frame.body == '0') {
-          solo = 'false';
-          startGame();
-          round += 1;
+          setState(() {
+            isWaiting = false;
+            isConnected = true;
+          });
+
+          Timer(Duration(seconds: 1), () {
+            solo = 'false';
+            startGame();
+            round += 1;
+          });
         }
       },
     );
@@ -84,6 +169,7 @@ class _GameScreenState extends State<GameScreen> {
               mePick = '';
               showTemp = false;
               isWaiting = false;
+              isConnected = false;
               isGameStart = true;
               isGi = true;
               isPa = true;
@@ -362,7 +448,6 @@ class _GameScreenState extends State<GameScreen> {
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
           winner = "무효입니다";
-
           // winner = frame.body ?? '0';
           setState(() {
             showTemp = false;
@@ -411,9 +496,73 @@ class _GameScreenState extends State<GameScreen> {
         String part4 = parts[4];
 
         if (widget.nickname == part1) {
+          contender = part3;
           giCnt = int.parse(part2);
         } else if (widget.nickname == part3) {
+          contender = part1;
           giCnt = int.parse(part4);
+        }
+      },
+    );
+
+    stompClient.subscribe(
+      // 카운트 다운 도중 한쪽 이상에서 응답이 없는 경우
+      destination: '/sub/${widget.roomId}/finalInfo',
+      callback: (frame) {
+        // 원하는 작업 수행
+        String frameBody = ' ${frame.body}';
+        List<String> part = frameBody.split(' ');
+        List<String> parts = part[1].split(':');
+        String part1 = parts[0];
+        String part2 = parts[1];
+        String part3 = parts[2];
+        String part4 = parts[3];
+        String part5 = parts[4];
+        String part6 = parts[5];
+        if (frame.body != null) {
+          if (winner == widget.nickname) {
+            // 내가 승자인 경우
+            print("승자의 승: " + part4);
+            print("승자의 패: " + part5);
+            print("승자의 점수: " + part6);
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    GameResultScreen(
+                        roomId: widget.roomId,
+                        nickname: winner,
+                        win: part4,
+                        lose: part5,
+                        point: int.parse(part6)),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (Route<dynamic> route) => false,
+            );
+          } else {
+            // 내가 패자인 경우
+            print("패자의 승: " + part1);
+            print("패자의 패: " + part2);
+            print("패자의 점수: " + part3);
+            Navigator.pushAndRemoveUntil(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation1, animation2) =>
+                    GameResultScreen(
+                        roomId: widget.roomId,
+                        nickname: winner,
+                        win: part1,
+                        lose: part2,
+                        point: int.parse(part3)),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+          print(frame.body);
+          dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
       },
     );
@@ -423,7 +572,7 @@ class _GameScreenState extends State<GameScreen> {
         body: widget.nickname,
         headers: {});
 
-    Timer.periodic(Duration(seconds: 10), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       if (isWaiting) {
         stompClient.send(
             destination: '/pub/${widget.roomId}/stillConnect',
@@ -434,7 +583,6 @@ class _GameScreenState extends State<GameScreen> {
         timer.cancel();
       }
     });
-
   }
 
   void sendMessage(String message, String nickname) {
@@ -475,6 +623,9 @@ class _GameScreenState extends State<GameScreen> {
     //   isTel = true;
     //   isBomb =true;
     // });
+    setState(() {
+      isConnected = false;
+    });
     stompClient.send(
         destination: '/pub/${widget.roomId}/Count',
         body: '${widget.nickname}:$round',
@@ -483,10 +634,13 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void initState() {
+    _checkLoginStatus();
     super.initState();
+    String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://k9a209.p.ssafy.io/ws', // STOMP 서버 URL로 변경
+        url: socketUrl,
+        // STOMP 서버 URL로 변경
         //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
@@ -511,145 +665,242 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Game Screen'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Room ID: ${widget.roomId}'), // roomId를 화면에 표시
+      body: WillPopScope(
+        onWillPop: endApp,
+        child: Stack(
+          children: [
+            // Center(
+            //   child: Column(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+
+            if (contender != null)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.1,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child:
+                      Text('적수:\n' + contender!, style: TextStyle(fontSize: 20,), textAlign: TextAlign.center),
+                ),
+              ),
             if (showTemp)
-              Column(
-                children: [
-                  SizedBox(
-                    width: 200, // 원하는 너비 값으로 설정
-                    height: 200, // 원하는 높이 값으로 설정
-                    child: Lottie.asset(
-                      'lib/assets/lottie/$youPick.json',
-                      repeat: true,
-                      onLoaded: (composition) {
-                        Timer(const Duration(milliseconds: 1200), () {
-                          // 여기에 콜백 코드를 넣으세요
-                        });
-                      },
+              Positioned(
+                top: 0,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // 원하는 높이 값으로 설정
+                      child: Lottie.asset(
+                        'lib/assets/lottie/$youPick.json',
+                        repeat: true,
+                        onLoaded: (composition) {
+                          Timer(const Duration(milliseconds: 1200), () {
+                            // 여기에 콜백 코드를 넣으세요
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 200, // 원하는 너비 값으로 설정
-                    height: 200, // 원하는 높이 값으로 설정
-                    child: Lottie.asset(
-                      'lib/assets/lottie/$mePick.json',
-                      repeat: true,
-                      onLoaded: (composition) {
-                        Timer(const Duration(milliseconds: 2000), () {
-                          // 여기에 콜백 코드를 넣으세요
-                        });
-                      },
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                      height: MediaQuery.of(context).size.height *
+                          0.5, // 원하는 높이 값으로 설정
+                      child: Lottie.asset(
+                        'lib/assets/lottie/$mePick.json',
+                        repeat: true,
+                        onLoaded: (composition) {
+                          Timer(const Duration(milliseconds: 2000), () {
+                            // 여기에 콜백 코드를 넣으세요
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             if (isWaiting)
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      sendMessage('대기 화면 입니다', widget.nickname);
-                    },
-                    child: const Text('이건 연결 테스트용 버튼'),
-                  ),
-                  const Text('대기 화면 입니다'), // 조건이 참일 때 추가
-                ],
-              ),
-            if (showResult)
-              Column(
-                children: [
-                  if (!isTie) const Text('승자는!!'), // 조건이 참일 때 추가
-                  Text(winner)
-                ],
-              ),
-            if (isGameStart)
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Countdown: $countdown',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '게임 대기중',
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.15,
+                            ),
+                            CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.05,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ],
+                ),
+              ),
+            if (isConnected)
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '적수 등장',
+                              style:
+                                  TextStyle(fontSize: 24, color: Colors.white),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: 0.41,
+                              child: Image.asset(
+                                'lib/assets/icons/connected.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            // Column(
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: () {
+            //         sendMessage('대기 화면 입니다', widget.nickname);
+            //       },
+            //       child: const Text('이건 연결 테스트용 버튼'),
+            //     ),
+            //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
+            //   ],
+            // ),
+
+            if (isGameStart)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.45,
+                left:0,
+                right:0,
+                child: Center(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          '$countdown',
+                          style: const TextStyle(
+                              fontSize: 60, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             if (isGi || isPa || isBlock || isTel || isBomb)
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // 가위를 선택한 경우
-                      sendMessage('기', widget.nickname);
-                      isGi = false;
-                      isPa = false;
-                      isBlock = false;
-                      isTel = false;
-                      isBomb = false;
-                    },
-                    child: const Text('기'),
-                  ),
-                  if (giCnt >= 1)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.65,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
                     ElevatedButton(
                       onPressed: () {
-                        // 바위를 선택한 경우
-                        sendMessage('파', widget.nickname);
+                        // 가위를 선택한 경우
+                        sendMessage('기', widget.nickname);
                         isGi = false;
                         isPa = false;
                         isBlock = false;
                         isTel = false;
                         isBomb = false;
                       },
-                      child: const Text('파'),
+                      child: const Text('기'),
                     ),
-                  ElevatedButton(
-                    onPressed: () {
-                      //막기를 선택 하는 경우
-                      sendMessage('막기', widget.nickname);
-                      isGi = false;
-                      isPa = false;
-                      isBlock = false;
-                      isTel = false;
-                      isBomb = false;
-                    },
-                    child: const Text('막기'),
-                  ),
-                  if (giCnt >= 1)
+                    if (giCnt >= 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 바위를 선택한 경우
+                          sendMessage('파', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('파'),
+                      ),
                     ElevatedButton(
                       onPressed: () {
-                        // 순간이동을 하는 경우
-                        sendMessage('순간이동', widget.nickname);
+                        //막기를 선택 하는 경우
+                        sendMessage('막기', widget.nickname);
                         isGi = false;
                         isPa = false;
                         isBlock = false;
                         isTel = false;
                         isBomb = false;
                       },
-                      child: const Text('순간이동'),
+                      child: const Text('막기'),
                     ),
-                  if (giCnt >= 3)
-                    ElevatedButton(
-                      onPressed: () {
-                        // 원기옥을 선택하는 경우
-                        sendMessage('원기옥', widget.nickname);
-                        isGi = false;
-                        isPa = false;
-                        isBlock = false;
-                        isTel = false;
-                        isBomb = false;
-                      },
-                      child: const Text('원기옥'),
-                    ),
-                ],
+                    if (giCnt >= 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 순간이동을 하는 경우
+                          sendMessage('순간이동', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('순간이동'),
+                      ),
+                    if (giCnt >= 3)
+                      ElevatedButton(
+                        onPressed: () {
+                          // 원기옥을 선택하는 경우
+                          sendMessage('원기옥', widget.nickname);
+                          isGi = false;
+                          isPa = false;
+                          isBlock = false;
+                          isTel = false;
+                          isBomb = false;
+                        },
+                        child: const Text('원기옥'),
+                      ),
+                  ],
+                ),
               ),
+            // ),
           ],
         ),
       ),

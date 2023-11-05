@@ -5,6 +5,7 @@ import 'package:frontend/models/friend_models/search_result_model.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SearchResultWidget extends StatefulWidget {
   final SearchResultModel searchResult;
@@ -17,8 +18,7 @@ class SearchResultWidget extends StatefulWidget {
 }
 
 class _SearchResultWidgetState extends State<SearchResultWidget> {
-  // String baseUrl = "http://10.0.2.2:8080";
-  String baseUrl = "https://k9a209.p.ssafy.io/api";
+  String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -79,7 +79,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
 
   Future<bool> requestFriend() async {
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/friend/request");
+    Uri uri = Uri.parse("$baseUrl/api/friend/request");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',

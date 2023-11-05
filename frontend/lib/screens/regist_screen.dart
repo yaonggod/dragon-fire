@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 import 'package:http/http.dart' as http;
@@ -41,9 +42,9 @@ class _RegistScreenState extends State<RegistScreen> {
 
   Future<void> nicknameCheck() async {
     String nicknameCur = nicknameController.text;
-
+    String baseUrl = dotenv.env['BASE_URL']!;
     final response = await http.get(Uri.parse(
-            'https://k9a209.p.ssafy.io/api/member/nickname-duplicate/$nicknameCur')
+            '$baseUrl/api/member/nickname-duplicate/$nicknameCur')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
         );
     if (response.statusCode == 200) {
@@ -93,12 +94,12 @@ class _RegistScreenState extends State<RegistScreen> {
   }
 
   void sendDataToServer() async {
-
     final String nicknameCur = nicknameController.text;
+    String baseUrl = dotenv.env['BASE_URL']!;
     if(nicknameCur == nicknameTemp){
 
       final response = await http.post(
-          Uri.parse('https://k9a209.p.ssafy.io/api/oauth/${widget.socialType}'),
+          Uri.parse('$baseUrl/api/oauth/${widget.socialType}'),
           // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(
@@ -188,6 +189,7 @@ class _RegistScreenState extends State<RegistScreen> {
               SizedBox(height: MediaQuery.of(context).size.height / 100),
               TextField(
                   controller: nicknameController,
+                  maxLength: 8,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),

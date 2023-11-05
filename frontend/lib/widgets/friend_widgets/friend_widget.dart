@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:frontend/models/friend_models/friend_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -19,8 +20,7 @@ class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
   String buttonsrc = 'lib/assets/icons/friendButton.png';
 
-  // String baseUrl = "http://10.0.2.2:8080";
-  String baseUrl = "https://k9a209.p.ssafy.io/api";
+  String baseUrl = dotenv.env['BASE_URL']!;
 
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -64,7 +64,7 @@ class _FriendWidgetState extends State<FriendWidget> {
   Future<bool> deleteFriend() async {
     // 친삭 api 쏘고
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/friend/disconnect");
+    Uri uri = Uri.parse("$baseUrl/api/friend/disconnect");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
