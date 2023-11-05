@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 class AccessScreen2 extends StatefulWidget {
-
   final bool isloggedin;
 
   const AccessScreen2({Key? key, required this.isloggedin}) : super(key: key);
@@ -16,7 +16,19 @@ class _AccessScreen2State extends State<AccessScreen2>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  DateTime? backPressed;
 
+  Future<bool> endApp() async {
+    DateTime curTime = DateTime.now();
+
+    if (backPressed == null ||
+        curTime.difference(backPressed!) > const Duration(seconds: 2)) {
+      backPressed = curTime;
+      Fluttertoast.showToast(msg: "'뒤로'버튼 한번 더 누르시면 종료됩니다.");
+      return false;
+    }
+    return true;
+  }
 
   @override
   void initState() {
@@ -32,30 +44,28 @@ class _AccessScreen2State extends State<AccessScreen2>
       ),
     );
 
-    if(widget.isloggedin) {
+    if (widget.isloggedin) {
       _controller.forward().whenComplete(() {
         Navigator.pushAndRemoveUntil(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) =>
-                MainScreen(),
+            pageBuilder: (context, animation1, animation2) => MainScreen(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
           ),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       });
-    }else{
+    } else {
       _controller.forward().whenComplete(() {
         Navigator.pushAndRemoveUntil(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) =>
-                LoginScreen(),
+            pageBuilder: (context, animation1, animation2) => LoginScreen(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
           ),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       });
     }
@@ -70,12 +80,12 @@ class _AccessScreen2State extends State<AccessScreen2>
   }
 
   Widget slidingWidget(
-      BuildContext context,
-      Animation<double> animation,
-      Widget child, {
-        Offset begin = Offset.zero,
-        Offset end = Offset.zero,
-      }) {
+    BuildContext context,
+    Animation<double> animation,
+    Widget child, {
+    Offset begin = Offset.zero,
+    Offset end = Offset.zero,
+  }) {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
@@ -96,51 +106,55 @@ class _AccessScreen2State extends State<AccessScreen2>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          slidingWidget(
-            context,
-            _animation,
-            Container(
-              color: Colors.black,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-            ),
-          ),
-          slidingWidget(
-            context,
-            _animation,
-            Opacity(
-              opacity: 0.5,
-              child: Image.asset(
-                'lib/assets/icons/fire.png',
-                height: MediaQuery.of(context).size.height,
+      body: WillPopScope(
+        onWillPop: endApp,
+        child: Stack(
+          children: [
+            slidingWidget(
+              context,
+              _animation,
+              Container(
+                color: Colors.black,
                 width: MediaQuery.of(context).size.width,
-                fit: BoxFit.fitHeight,
+                height: MediaQuery.of(context).size.height,
               ),
             ),
-          ),
-          slidingWidget(
-            context,
-            _animation,
-            Image.asset(
-              'lib/assets/icons/mainMark2.png',
-              width: MediaQuery.of(context).size.width,
-              fit: BoxFit.cover,
+            slidingWidget(
+              context,
+              _animation,
+              Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  'lib/assets/icons/fire.png',
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  fit: BoxFit.fitHeight,
+                ),
+              ),
             ),
-            begin: Offset(0, MediaQuery.of(context).size.height * 2 / 7),
-            end: Offset(0, 0),
-          ),
-          slidingWidget(
-            context,
-            _animation,
-            Image.asset('lib/assets/icons/pressStart.png',
-            width: MediaQuery.of(context).size.width * 6.6 / 10),
-            begin: Offset(MediaQuery.of(context).size.width * 1.7 / 10,
-                MediaQuery.of(context).size.height * 8 / 12),
-            end: Offset(MediaQuery.of(context).size.width * 1.7 / 10,MediaQuery.of(context).size.height),
-          ),
-        ],
+            slidingWidget(
+              context,
+              _animation,
+              Image.asset(
+                'lib/assets/icons/mainMark2.png',
+                width: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
+              ),
+              begin: Offset(0, MediaQuery.of(context).size.height * 2 / 7),
+              end: Offset(0, 0),
+            ),
+            slidingWidget(
+              context,
+              _animation,
+              Image.asset('lib/assets/icons/pressStart.png',
+                  width: MediaQuery.of(context).size.width * 6.6 / 10),
+              begin: Offset(MediaQuery.of(context).size.width * 1.7 / 10,
+                  MediaQuery.of(context).size.height * 8 / 12),
+              end: Offset(MediaQuery.of(context).size.width * 1.7 / 10,
+                  MediaQuery.of(context).size.height),
+            ),
+          ],
+        ),
       ),
     );
   }

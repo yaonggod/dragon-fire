@@ -11,10 +11,16 @@ class RankingApiServices {
 
   // 현재 주차 전체 랭킹, token 불필요
   static Future<List<TotalRankingModel>?> getCurrentSeasonTotalRanking() async {
+    Map<String, String> token = await TokenControl.readToken();
     try {
       List<TotalRankingModel> totalRankingInstances = [];
       final url = Uri.parse('$baseUrl/api/rank');
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${token['Authorization']}',
+        'refreshToken': 'Bearer ${token['refreshToken']}',
+      });
       if (response.statusCode == 200) {
         var jsonString = utf8.decode(response.bodyBytes);
         final totalRankings = jsonDecode(jsonString);
@@ -39,6 +45,7 @@ class RankingApiServices {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer ${token['Authorization']}',
+        'refreshToken': 'Bearer ${token['refreshToken']}',
       });
       if (response.statusCode == 200 && response.contentLength != 0) {
         var jsonString = utf8.decode(response.bodyBytes);
