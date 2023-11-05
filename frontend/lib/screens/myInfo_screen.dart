@@ -44,7 +44,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
+    print("nickname ${nickname == null}");
     print(nickname);
+
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty && tokens['socialType'] == "GOOGLE") {
       setState(() {
@@ -60,6 +62,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 
     print(_googleLoggedIn);
     print(_naverLoginStatus);
+    print(tokens['Authorization']);
+    print(tokens['refreshToken']);
   }
 
   _logout() async {
@@ -201,10 +205,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
-                child: Text(style: TextStyle(fontSize: 50),nickname!),
+                child: Text(style: TextStyle(fontSize: 50), nickname != null ? nickname! : "null"),
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 3),
-
               SizedBox(height: MediaQuery.of(context).size.height / 100),
               if (_naverLoginStatus == true || _googleLoggedIn == true)
                 MaterialButton(
@@ -218,7 +221,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation1, animation2) =>
-                            MyInfoUpdateScreen(),
+                            const MyInfoUpdateScreen(),
                         transitionDuration: Duration.zero,
                         reverseTransitionDuration: Duration.zero,
                       ),
