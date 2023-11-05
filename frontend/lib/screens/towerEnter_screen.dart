@@ -1,44 +1,33 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/screens/tower_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:frontend/screens/friend_screen.dart';
-import 'package:frontend/screens/game_screen.dart';
-import 'package:frontend/screens/myInfo_screen.dart';
-import 'package:frontend/screens/ranking_screen.dart';
-import 'package:frontend/screens/report_screen.dart';
-import 'package:frontend/screens/towerEnter_screen.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class TowerEnterScreen extends StatefulWidget {
+  const TowerEnterScreen({
+    super.key,
+  });
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<TowerEnterScreen> createState() => _TowerScreenEnterState();
 }
 
-class _MainScreenState extends State<MainScreen>
+class _TowerScreenEnterState extends State<TowerEnterScreen>
   with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
-  String? nickname;
-  String? accessToken;
-  String? refreshToken;
+
   String buttonsrc = 'lib/assets/icons/startButton.png';
   String buttonsrc1 = 'lib/assets/icons/rankingButton.png';
   String buttonsrc2 = 'lib/assets/icons/reportButton.png';
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
 
-  Future<String?> getNickname() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('nickname');
-  }
-
+  String? nickname;
+  String? accessToken;
+  String? refreshToken;
+  @override
   Future<void> _checkLoginStatus() async {
-    nickname = await getNickname();
     Map<String, String> tokens = await readToken();
     accessToken = tokens['Authorization'];
     refreshToken = tokens['refreshToken'];
@@ -61,107 +50,14 @@ class _MainScreenState extends State<MainScreen>
     return list;
   }
 
-  Future<void> startGame() async {
-    String baseUrl = dotenv.env['BASE_URL']!;
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/wait'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accessToken',
-        'refreshToken': 'Bearer $refreshToken'
-      },
-      body: jsonEncode({"nickname": nickname!}),
-
-    );
-
-    // final response = await http.get(
-    //     Uri.parse('http://10.0.2.2:8080/wait'),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Accept': 'application/json',
-    //       'Authorization': 'Bearer $accessToken',
-    //       'X-Nickname': nickname!,
-    //     },
-    //
-    //
-    //  // );
-    //
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-
-      if (data.containsKey("roomId")) {
-        int roomId = data["roomId"];
-        print('roomId: $roomId');
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GameScreen(roomId: roomId,nickname:nickname!), // 이건 game.dart에 있다.
-          ),
-        );
-      } else {
-        print('서버 응답에 roomId가 없음');
-      }
-    } else {
-      print('요청 실패: ${response.statusCode}');
-    }
-  }
-  void _navigateToMyInfoScreen() {
+  void _navigateToTowerScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MyInfoScreen(),
+        builder: (context) => TowerScreen(),
       ),
     );
   }
-
-  void _navigateToStartScreen() {
-    startGame();
-  }
-
-  void _navigateToRankingScreen() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          insetPadding: const EdgeInsets.all(10),
-          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: RankingScreen(),
-        );
-      },
-    );
-  }
-
-  void _navigateToReportScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ReportScreen(),
-      ),
-    );
-  }
-
-  void _navigateToFriendScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FriendScreen(),
-      ),
-    );
-  }
-
-  void _navigateToTowerEnterScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TowerEnterScreen(),
-      ),
-    );
-  }
-
   @override
   void initState() {
     _controller = AnimationController(
@@ -176,7 +72,7 @@ class _MainScreenState extends State<MainScreen>
       ),
     );
 
-      _controller.forward().whenComplete(() {
+    _controller.forward().whenComplete(() {
     });
     init();
     super.initState();
@@ -216,7 +112,6 @@ class _MainScreenState extends State<MainScreen>
       child: child,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,7 +135,7 @@ class _MainScreenState extends State<MainScreen>
               ),
               GestureDetector(
                 onTap: () {
-                  _navigateToStartScreen();
+                  _navigateToTowerScreen();
                 },
                 onTapDown: (_) {
                   setState(() {
@@ -271,7 +166,7 @@ class _MainScreenState extends State<MainScreen>
                 children: [
                   GestureDetector(
                     onTap: () {
-                      _navigateToRankingScreen();
+                      _navigateToTowerScreen();
                     },
                     onTapDown: (_) {
                       setState(() {
@@ -299,7 +194,7 @@ class _MainScreenState extends State<MainScreen>
                   ),
                   GestureDetector(
                     onTap: () {
-                      _navigateToReportScreen();
+                      _navigateToTowerScreen();
                     },
                     onTapDown: (_) {
                       setState(() {
@@ -327,7 +222,7 @@ class _MainScreenState extends State<MainScreen>
                   ),
                   GestureDetector(
                     onTap: () {
-                      _navigateToFriendScreen();
+                      _navigateToTowerScreen();
                     },
                     onTapDown: (_) {
                       setState(() {
@@ -355,7 +250,7 @@ class _MainScreenState extends State<MainScreen>
                   ),
                   GestureDetector(
                     onTap: () {
-                      _navigateToMyInfoScreen();
+                      _navigateToTowerScreen();
                     },
                     onTapDown: (_) {
                       setState(() {
@@ -381,43 +276,42 @@ class _MainScreenState extends State<MainScreen>
                       ),
                     ),
                   ),
-
-                ],
-              ),
-              GestureDetector(
-                // tower를 위해서 추가한 부분
-                onTap: () {
-                  _navigateToTowerEnterScreen();
-                },
-                onTapDown: (_) {
-                  setState(() {
-                    buttonsrc3 = 'lib/assets/icons/friendButton2.png';
-                  });
-                },
-                onTapUp: (_) {
-                  setState(() {
-                    buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                  });
-                },
-                onTapCancel: () => setState(() {
-                  buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                }),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *0.25,
-                  height:  MediaQuery.of(context).size.width *0.25,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(buttonsrc3),
-                      fit: BoxFit.fitWidth,
+                  GestureDetector(
+                    // tower를 위해서 추가한 부분
+                    onTap: () {
+                      _navigateToTowerScreen();
+                    },
+                    onTapDown: (_) {
+                      setState(() {
+                        buttonsrc3 = 'lib/assets/icons/friendButton2.png';
+                      });
+                    },
+                    onTapUp: (_) {
+                      setState(() {
+                        buttonsrc3 = 'lib/assets/icons/friendButton.png';
+                      });
+                    },
+                    onTapCancel: () => setState(() {
+                      buttonsrc3 = 'lib/assets/icons/friendButton.png';
+                    }),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width *0.25,
+                      height:  MediaQuery.of(context).size.width *0.25,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(buttonsrc3),
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
-
           ),
         ],
       ),
     );
   }
+
 }
