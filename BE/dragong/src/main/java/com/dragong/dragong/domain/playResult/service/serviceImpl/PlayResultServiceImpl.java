@@ -252,7 +252,7 @@ public class PlayResultServiceImpl implements PlayResultService {
     }
 
     //    @Scheduled(cron = "0 */5 * * * ?")
-//    @Scheduled(cron = "0 */1 * * * ?")
+    @Scheduled(cron = "0 */1 * * * ?")
     @Async
     public void updateRank() {
         // 5분마다 랭크 초기화
