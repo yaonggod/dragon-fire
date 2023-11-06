@@ -17,6 +17,7 @@ public class GameService {
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
     private final Queue<TokenData> accessTokenRoom[] = new LinkedList[100000]; // accessToken을 저장하기 위해서
     private final Queue<Integer> user = new LinkedList<>(); // 입장하는 사람 정보
+    private final int[] saving= new int[1000000];
     private int total=0;
 
     @PostConstruct
@@ -96,6 +97,11 @@ public class GameService {
 
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
+    public int giCnt(String roomId){
+        //그냥 현재 기 정보가 몇개 담겨 있는지 반환
+        return giDataRoom[Integer.parseInt(roomId)].size();
+    }
+
     public void giClear(String roomId){
         log.info("현재 giDataRoom[roomId]에 있는 자료의 수는 : "+ giDataRoom[Integer.parseInt(roomId)]);
         log.info("해당 데이터를 지웁니다");
@@ -150,6 +156,19 @@ public class GameService {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
         int answer = countDownandstartGame[Integer.parseInt(roomId)].size();
         return answer;
+    }
+
+    public void aliveCheck(String roomId) {
+        // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
+        saving[Integer.parseInt(roomId)]+=1;
+//        return saving[Integer.parseInt(roomId)];
+
+    }
+    public int savingReturn(String roomId){
+        return saving[Integer.parseInt(roomId)];
+    }
+    public void savingReset(String roomId){
+        saving[Integer.parseInt(roomId)]=0;
     }
 
     public void cleanList(String roomId) {
