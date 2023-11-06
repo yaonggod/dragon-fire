@@ -145,6 +145,7 @@ class _FriendWidgetState extends State<FriendWidget> {
                     ),
                     GestureDetector(
                       onTap: () {
+
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -162,10 +163,7 @@ class _FriendWidgetState extends State<FriendWidget> {
                             );
                           },
                         );
-                        setState(() {
-                          buttonsrc =
-                          'lib/assets/icons/friendFightButton2.png';
-                        });
+
                       },
                       onTapDown: (_) {
                         setState(() {
