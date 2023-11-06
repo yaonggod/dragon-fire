@@ -572,6 +572,7 @@ class _GameScreenState extends State<GameScreen> {
       callback: (frame) {
         // 원하는 작업 수행
         if (frame.body == 'still') {
+          print('still값을 받아오고 있습니다');
           sendAlive();
         }
       },
@@ -657,9 +658,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        //url: socketUrl,
         // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
