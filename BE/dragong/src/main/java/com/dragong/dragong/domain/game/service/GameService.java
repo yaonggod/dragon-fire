@@ -12,7 +12,6 @@ import java.util.*;
 @Slf4j
 public class GameService {
     private final Set<GameRoomData> gameRoom[] = new HashSet[100000]; //
-    private final Map<String,String> gameRoom1[] = new HashMap[100000];
     private final ArrayList<GiData> giDataRoom[] = new ArrayList[100000]; // 기 정보를 저장하기 위해서
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
     private final Queue<TokenData> accessTokenRoom[] = new LinkedList[100000]; // accessToken을 저장하기 위해서
@@ -25,7 +24,6 @@ public class GameService {
         // 처음 한번 초기화를 해준다.
         for (int i = 0; i < gameRoom.length; i++) {
             gameRoom[i] = new HashSet<>();
-            gameRoom1[i]= new HashMap<>();
             giDataRoom[i] = new ArrayList<>();
             countDownandstartGame[i] = new ArrayList<>();
             accessTokenRoom[i]= new LinkedList<>();
