@@ -566,23 +566,34 @@ class _GameScreenState extends State<GameScreen> {
         }
       },
     );
+    stompClient.subscribe(
+      // 여전히 방안에 남아있는지 서버에서 물어 보면 남아있다고 대답을 보내야한다.
+      destination: '/sub/${widget.roomId}/stillConnect',
+      callback: (frame) {
+        // 원하는 작업 수행
+        if (frame.body == 'still') {
+          print('still값을 받아오고 있습니다');
+          sendAlive();
+        }
+      },
+    );
 
     stompClient.send(
         destination: '/pub/${widget.roomId}/checkNum',
         body: widget.nickname,
         headers: {});
 
-    Timer.periodic(const Duration(seconds: 10), (timer) {
-      if (isWaiting) {
-        stompClient.send(
-            destination: '/pub/${widget.roomId}/stillConnect',
-            body: '',
-            headers: {});
-      } else {
-        // isWaiting이 false인 경우 타이머 중지
-        timer.cancel();
-      }
-    });
+    // Timer.periodic(const Duration(seconds: 10), (timer) {
+    //   if (isWaiting) {
+    //     stompClient.send(
+    //         destination: '/pub/${widget.roomId}/stillConnect',
+    //         body: '',
+    //         headers: {});
+    //   } else {
+    //     // isWaiting이 false인 경우 타이머 중지
+    //     timer.cancel();
+    //   }
+    // });
   }
 
   void sendMessage(String message, String nickname) {
@@ -590,6 +601,14 @@ class _GameScreenState extends State<GameScreen> {
     stompClient.send(
         destination: '/pub/${widget.roomId}/pickwhat',
         body: '$nickname:$message',
+        headers: {});
+  }
+
+  void sendAlive() {
+    // 아직 방에 살아있다는 것을 알리기 위해서
+    stompClient.send(
+        destination: '/pub/${widget.roomId}/alive',
+        body: '',
         headers: {});
   }
 

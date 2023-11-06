@@ -10,6 +10,7 @@ import 'package:frontend/screens/game_screen.dart';
 import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
+import 'package:frontend/screens/towerEnter_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -88,18 +89,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       body: jsonEncode({"nickname": nickname!}),
     );
 
-    // final response = await http.get(
-    //     Uri.parse('http://10.0.2.2:8080/wait'),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Accept': 'application/json',
-    //       'Authorization': 'Bearer $accessToken',
-    //       'X-Nickname': nickname!,
-    //     },
-    //
-    //
-    //  // );
-    //
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/wait'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
+    //   },
+    //   body: jsonEncode({"nickname": nickname!}),
+    // );
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
@@ -165,6 +163,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       context,
       MaterialPageRoute(
         builder: (context) => FriendScreen(),
+      ),
+    );
+  }
+
+  void _navigateToTowerEnterScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TowerEnterScreen(),
       ),
     );
   }
