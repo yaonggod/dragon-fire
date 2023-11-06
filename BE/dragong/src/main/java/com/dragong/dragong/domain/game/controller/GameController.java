@@ -35,7 +35,9 @@ public class GameController {
         log.info("대기방에 입장합니다.");
         int nowNumber = gameService.enter(); // 몇 번째로 들어온 사람인지 확인한다.
         // 내가 반환해야 하는 숫자는 nowNumber + 1 / 2를 반환해야합니다.
+        log.info("현재 내가 들어온 순서는" + nowNumber + "입니다");
         int roomId = (nowNumber + 1) / 2;
+        log.info("현재의 roomId는" + roomId + "입니다");
         // roomId를 JSON 형식으로 반환
 
         gameService.accessTokenUpdate(roomId, accessToken, nickname);
@@ -73,35 +75,42 @@ public class GameController {
         if (standard == 0) {
             // 0 일때 게임이 시작하니까
             // gi가 몇개인지 보내줘야겠지?
+            log.info("gamestart 명령이 보내짐");
+
             gameService.gameStart();
             String giMessage = gameService.giReturn(roomId);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
-        }else{
+        } else {
             // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
             // 해당 roomId는 가지고 있으니까
-            while(true){
-                int compare=gameService.savingReturn(roomId); // 보내기 전의 값
-                log.info("혼자 있는 상태에서 stillConnect를 보냅니다");
-                log.info("compare 값을 출력합니다");
-                log.info(Integer.toString(compare));
+            while (true) {
+                int compare = gameService.savingReturn(roomId); // 보내기 전의 값
+//                log.info("혼자 있는 상태에서 stillConnect를 보냅니다");
+//                log.info("compare 값을 출력합니다");
+//                log.info(Integer.toString(compare));
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/stillConnect", "still");
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                int inside = gameService.giCnt(roomId) % 2;
-                log.info("inside를 출력합니다"+inside);
+                int inside = gameService.giCnt(roomId);
+//                log.info("inside를 출력합니다" + inside);
 
-                if(inside==0){
-                    log.info("방에 2명이 들어와서 탈출합니다");
+                if (inside == 2) {
+                    log.info("방에  2명이 들어와서 탈출합니다");
                     gameService.savingReset(roomId);
                     return "방에 2명 들어와서 탈출";
+                } else if (inside == 0) {
+                    // 1 명이 기다리다가 그냥 나간 상황
+                    log.info("1명이 기다리다가 방을 나갑니다");
+                    gameService.savingReset(roomId);
+                    return "1명이 기다리다가 방을 나갑니다";
                 }
                 int value = gameService.savingReturn(roomId);
-                log.info("value값을 출력합니다");
+//                log.info("value값을 출력합니다");
                 log.info(Integer.toString(value));
-                if(compare==value){
+                if (compare == value) {
                     log.info("연결이 비정상적으로 끊겼습니다");
                     //이제 여기에서 처리를 해줘야한다. => queue 비우고, gidata 뺴고 등등
                     gameService.giClear(roomId); // 기 정보 초기화
@@ -302,7 +311,7 @@ public class GameController {
 
     @MessageMapping("/{roomId}/alive")
     public void checkConnection(@DestinationVariable String roomId) {
-        log.info("sendAlive로 값이 넘어오고 있습니다");
+//        log.info("sendAlive로 값이 넘어오고 있습니다");
         gameService.aliveCheck(roomId);
     }
 //    @GetMapping("/test")
