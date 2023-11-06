@@ -18,7 +18,7 @@ class FriendWidget extends StatefulWidget {
 
 class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
-  String buttonsrc = 'lib/assets/icons/friendButton.png';
+  String buttonsrc = 'lib/assets/icons/friendFightButton.png';
 
   String baseUrl = dotenv.env['BASE_URL']!;
 
@@ -144,20 +144,42 @@ class _FriendWidgetState extends State<FriendWidget> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('알림'),
+                              content: Text('친구 대전은 아직 준비중입니다.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('확인'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        setState(() {
+                          buttonsrc =
+                          'lib/assets/icons/friendFightButton2.png';
+                        });
+                      },
                       onTapDown: (_) {
                         setState(() {
                           buttonsrc =
-                              'lib/assets/icons/friendButtonPressed.png';
+                              'lib/assets/icons/friendFightButton2.png';
                         });
                       },
                       onTapUp: (_) {
                         setState(() {
-                          buttonsrc = 'lib/assets/icons/friendButton.png';
+                          buttonsrc = 'lib/assets/icons/friendFightButton.png';
                         });
                       },
                       onTapCancel: () => setState(() {
-                        buttonsrc = 'lib/assets/icons/friendButton.png';
+                        buttonsrc = 'lib/assets/icons/friendFightButton.png';
                       }),
                       child: Container(
                         width: 80,
