@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import java.util.UUID;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,4 +25,14 @@ public class FcmToken extends BaseTimeEntity {
 
     @Column
     private String fcmToken;
+
+    @Builder
+    public FcmToken(Member member, String fcmToken) {
+        this.member = member;
+        this.fcmToken = fcmToken;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }
