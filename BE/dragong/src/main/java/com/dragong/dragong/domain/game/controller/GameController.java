@@ -76,6 +76,41 @@ public class GameController {
             gameService.gameStart();
             String giMessage = gameService.giReturn(roomId);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+        }else{
+            // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
+            // 해당 roomId는 가지고 있으니까
+            while(true){
+                int compare=gameService.savingReturn(roomId); // 보내기 전의 값
+                log.info("혼자 있는 상태에서 stillConnect를 보냅니다");
+                log.info("compare 값을 출력합니다");
+                log.info(Integer.toString(compare));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/stillConnect", "still");
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                int inside = gameService.giCnt(roomId) % 2;
+                log.info("inside를 출력합니다"+inside);
+
+                if(inside==0){
+                    log.info("방에 2명이 들어와서 탈출합니다");
+                    gameService.savingReset(roomId);
+                    return "방에 2명 들어와서 탈출";
+                }
+                int value = gameService.savingReturn(roomId);
+                log.info("value값을 출력합니다");
+                log.info(Integer.toString(value));
+                if(compare==value){
+                    log.info("연결이 비정상적으로 끊겼습니다");
+                    //이제 여기에서 처리를 해줘야한다. => queue 비우고, gidata 뺴고 등등
+                    gameService.giClear(roomId); // 기 정보 초기화
+                    gameService.gameStop(); // 대기 queue에서 한 명 빼기
+                    gameService.savingReset(roomId); // 비교를 위한 배열 값 초기화
+                    gameService.deleteAccessToken(roomId);// accessToken 정보 빼기
+                    break;
+                }
+            }
         }
         return String.valueOf(standard); // 처리된 메시지 다시 클라이언트로 전송
     }
@@ -144,8 +179,10 @@ public class GameController {
                         log.info("0초인데 아직 양쪽으로부터 값을 받지 못했습니다");
                         errorCnt += 1;
 
-                        if (errorCnt >= 3) {
+                        if (errorCnt >= 7) {
                             //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
+                            //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
+                            //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
                             if (gameService.evenReturn(roomId) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
                                 log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
@@ -189,8 +226,10 @@ public class GameController {
                         log.info("0초가 아닌데 아직 양쪽으로부터 값을 받지 못했습니다");
                         errorCnt += 1;
 
-                        if (errorCnt >= 3) {
+                        if (errorCnt >= 7) {
                             //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
+                            //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
+                            //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
                             if (gameService.evenReturn(roomId) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
 
@@ -261,9 +300,10 @@ public class GameController {
 
     }
 
-    @MessageMapping("/{roomId}/stillConnect")
-    public void checkConnection() {
-        log.info("여전히 연결되어있습니다");
+    @MessageMapping("/{roomId}/alive")
+    public void checkConnection(@DestinationVariable String roomId) {
+        log.info("sendAlive로 값이 넘어오고 있습니다");
+        gameService.aliveCheck(roomId);
     }
 //    @GetMapping("/test")
 //    public String testing() {

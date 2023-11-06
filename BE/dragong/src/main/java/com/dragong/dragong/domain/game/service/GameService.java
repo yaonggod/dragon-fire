@@ -12,10 +12,12 @@ import java.util.*;
 @Slf4j
 public class GameService {
     private final Set<GameRoomData> gameRoom[] = new HashSet[100000]; //
+    private final Map<String,String> gameRoom1[] = new HashMap[100000];
     private final ArrayList<GiData> giDataRoom[] = new ArrayList[100000]; // 기 정보를 저장하기 위해서
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
     private final Queue<TokenData> accessTokenRoom[] = new LinkedList[100000]; // accessToken을 저장하기 위해서
     private final Queue<Integer> user = new LinkedList<>(); // 입장하는 사람 정보
+    private final int[] saving= new int[1000000];
     private int total=0;
 
     @PostConstruct
@@ -23,6 +25,7 @@ public class GameService {
         // 처음 한번 초기화를 해준다.
         for (int i = 0; i < gameRoom.length; i++) {
             gameRoom[i] = new HashSet<>();
+            gameRoom1[i]= new HashMap<>();
             giDataRoom[i] = new ArrayList<>();
             countDownandstartGame[i] = new ArrayList<>();
             accessTokenRoom[i]= new LinkedList<>();
@@ -94,6 +97,11 @@ public class GameService {
 
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
+    public int giCnt(String roomId){
+        //그냥 현재 기 정보가 몇개 담겨 있는지 반환
+        return giDataRoom[Integer.parseInt(roomId)].size();
+    }
+
     public void giClear(String roomId){
         log.info("현재 giDataRoom[roomId]에 있는 자료의 수는 : "+ giDataRoom[Integer.parseInt(roomId)]);
         log.info("해당 데이터를 지웁니다");
@@ -119,10 +127,20 @@ public class GameService {
         //게임 결과를 하나씩 넣어주는 느낌
         log.info("각각의 플레이어가 선택한 값을 넣어줍니다");
         GameRoomData gameRoomData = new GameRoomData(nickname, picked);
-        gameRoom[Integer.parseInt(roomId)].add(gameRoomData);
+
+        Map<String, GameRoomData> gameRoomMap = new HashMap<>();
+        for (GameRoomData data : gameRoom[Integer.parseInt(roomId)]) {
+            gameRoomMap.put(data.getNickname(), data);
+        }
+        gameRoomMap.put(nickname, gameRoomData);
+        gameRoom[Integer.parseInt(roomId)].clear();
+        gameRoom[Integer.parseInt(roomId)].addAll(gameRoomMap.values());
+
+//        gameRoom[Integer.parseInt(roomId)].add(gameRoomData);
         System.out.println(gameRoom[Integer.parseInt(roomId)].size());
         //들어오는 값들을 확인하고
     }
+
 
     public void messageInsert(String roomId, String nickname) {
         // 양쪽에서 메시지 전달을 받았는지 확인하기 위한 용도
@@ -138,6 +156,19 @@ public class GameService {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
         int answer = countDownandstartGame[Integer.parseInt(roomId)].size();
         return answer;
+    }
+
+    public void aliveCheck(String roomId) {
+        // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
+        saving[Integer.parseInt(roomId)]+=1;
+//        return saving[Integer.parseInt(roomId)];
+
+    }
+    public int savingReturn(String roomId){
+        return saving[Integer.parseInt(roomId)];
+    }
+    public void savingReset(String roomId){
+        saving[Integer.parseInt(roomId)]=0;
     }
 
     public void cleanList(String roomId) {
@@ -358,7 +389,7 @@ public class GameService {
                 } else {
                     // 원기옥
                     gi1 -= 3;
-                    answer += player2;
+                    answer += "비겼습니다";
                 }
 
             } else {
