@@ -109,7 +109,7 @@ public class GameController {
                 }
                 int value = gameService.savingReturn(roomId);
 //                log.info("value값을 출력합니다");
-                log.info(Integer.toString(value));
+//                log.info(Integer.toString(value));
                 if (compare == value) {
                     log.info("연결이 비정상적으로 끊겼습니다");
                     //이제 여기에서 처리를 해줘야한다. => queue 비우고, gidata 뺴고 등등
