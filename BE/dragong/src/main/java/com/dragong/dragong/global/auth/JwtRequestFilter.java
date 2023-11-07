@@ -54,12 +54,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // 액세스, 리프레시 토큰이 모두 유효한 경우
                 if (jwtUtil.validateAccessToken(accessToken) && jwtUtil.validateRefreshToken(
                         refreshToken)) {
+                    Map<String, String> newTokens = jwtUtil.refreshTokens(refreshToken);
                     memberId = jwtUtil.extractMemberId(accessToken);
                     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                             memberId, null, new ArrayList<>());
                     token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(token);
-
+                    response.setHeader("Authorization", "Bearer " + newTokens.get("Authorization"));
+                    response.setHeader("refreshToken", "Bearer " + newTokens.get("refreshToken"));
                     // 액세스 토큰만 만료된 경우
                 } else if (!jwtUtil.validateAccessToken(accessToken)
                         && jwtUtil.validateRefreshToken(
