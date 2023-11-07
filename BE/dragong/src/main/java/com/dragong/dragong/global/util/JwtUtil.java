@@ -18,7 +18,6 @@ import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -120,8 +119,6 @@ public class JwtUtil {
      * 리프레시 토큰이 유효하고 액세스 토큰이 만료된 경우
      * 액세스 토큰을 재발급해줌과 동시에 리프레시 토큰을 재발급해준다.
      */
-
-    @Transactional
     public Map<String, String> refreshTokens(String refreshToken) {
         if (validateAccessToken(refreshToken)) {
             Claims refreshTokenClaims = Jwts.parser().setSigningKey(secret)
@@ -140,7 +137,11 @@ public class JwtUtil {
             String newRefreshToken = generateRefreshToken();
 
             // DB에 새로운 리프레시 토큰 저장
-            refreshTokenEntity.updateRefreshToken(newRefreshToken);
+            refreshTokenEntity.updateRefreshTokenBuilder()
+                    .refreshToken(newRefreshToken)
+                    .build();
+
+            refreshTokenRepository.save(refreshTokenEntity);
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("Authorization", newAccessToken);
