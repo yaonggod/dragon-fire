@@ -7,6 +7,7 @@ import com.dragong.dragong.domain.friend.dto.response.MessageListDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface FriendService {
     
@@ -16,10 +17,10 @@ public interface FriendService {
     public FriendStatusResponseDto getFriendStatus(String accessToken, String refreshToken, String toNickname);
 
     // 친구 신청하기
-    public void requestFriend(String accessToken, String refreshToken, FriendRequestDto friendRequestDto);
+    public void requestFriend(String accessToken, String refreshToken, FriendRequestDto friendRequestDto, HttpServletResponse httpServletResponse);
 
     // 친구 신청 수락하기
-    public void acceptFriend(String accessToken, String refreshToken, FriendRequestDto friendRequestDto);
+    public void acceptFriend(String accessToken, String refreshToken, FriendRequestDto friendRequestDto, HttpServletResponse httpServletResponse);
 
     // 친구 신청 거절하기
     public void rejectFriend(String accessToken, String refreshToken, FriendRequestDto friendRequestDto);
