@@ -103,13 +103,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
       if (data.containsKey("roomId")) {
         int roomId = data["roomId"];
+        int nowNumber = data["nowNumber"];
+        print("나는 "+'$nowNumber'+"번 째 사람입니다");
         print('roomId: $roomId');
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => GameScreen(
-                roomId: roomId, nickname: nickname!), // 이건 game.dart에 있다.
+                roomId: roomId, nickname: nickname!, nowNumber: nowNumber), // 이건 game.dart에 있다.
           ),
         );
       } else {
@@ -324,34 +326,34 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToReportScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton2.png';
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc2),
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     _navigateToReportScreen();
+                    //   },
+                    //   onTapDown: (_) {
+                    //     setState(() {
+                    //       buttonsrc2 = 'lib/assets/icons/reportButton2.png';
+                    //     });
+                    //   },
+                    //   onTapUp: (_) {
+                    //     setState(() {
+                    //       buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                    //     });
+                    //   },
+                    //   onTapCancel: () => setState(() {
+                    //     buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                    //   }),
+                    //   child: Container(
+                    //     width: MediaQuery.of(context).size.width * 0.25,
+                    //     height: MediaQuery.of(context).size.width * 0.25,
+                    //     decoration: BoxDecoration(
+                    //       image: DecorationImage(
+                    //         image: AssetImage(buttonsrc2),
+                    //         fit: BoxFit.fitWidth,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     GestureDetector(
                       onTap: () {
                         _navigateToFriendScreen();
