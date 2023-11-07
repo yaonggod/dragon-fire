@@ -11,6 +11,7 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:vibration/vibration.dart';
 
 class GameScreen extends StatefulWidget {
   final int roomId;
@@ -252,6 +253,7 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'upTel';
             } else if (picked2 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
@@ -267,6 +269,7 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'upTel';
             } else if (picked2 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
@@ -282,6 +285,7 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'upTel';
             } else if (picked2 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
@@ -304,14 +308,18 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'bottomPower';
             if (picked2 == '기') {
               youPick = 'upfist';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '파') {
               youPick = 'upPa';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '막기') {
               youPick = 'upBlock';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '순간이동') {
               youPick = 'upTel';
             } else if (picked2 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 200);
             } else {
               youPick = '미처리';
             }
@@ -344,6 +352,7 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'upTel';
             } else if (picked1 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
@@ -358,6 +367,7 @@ class _GameScreenState extends State<GameScreen> {
             } else if (picked1 == '순간이동') {
               youPick = 'upTel';
             } else if (picked1 == '원기옥') {
+              Vibration.vibrate(amplitude: 128);
               youPick = 'upPower';
             } else {
               youPick = '미처리';
@@ -374,6 +384,7 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'upTel';
             } else if (picked1 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
@@ -396,14 +407,18 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'bottomPower';
             if (picked1 == '기') {
               youPick = 'upfist';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '파') {
               youPick = 'upPa';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '막기') {
               youPick = 'upBlock';
+              Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '순간이동') {
               youPick = 'upTel';
             } else if (picked1 == '원기옥') {
               youPick = 'upPower';
+              Vibration.vibrate(amplitude: 200);
             } else {
               youPick = '미처리';
             }
