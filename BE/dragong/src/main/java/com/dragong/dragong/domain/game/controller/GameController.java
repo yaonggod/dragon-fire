@@ -2,9 +2,7 @@ package com.dragong.dragong.domain.game.controller;
 
 import com.dragong.dragong.domain.game.service.GameService;
 import com.dragong.dragong.domain.game.service.ResultUpdateService;
-import com.dragong.dragong.domain.playResult.service.PlayResultService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.util.ToStringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -43,6 +41,8 @@ public class GameController {
         gameService.accessTokenUpdate(roomId, accessToken, nickname);
         Map<String, Integer> response = new HashMap<>();
         response.put("roomId", roomId);
+        response.put("nowNumber",nowNumber); // 내가 몇 번째인지를 전해준다.
+
         return ResponseEntity.ok(response);
     }
 
@@ -84,6 +84,7 @@ public class GameController {
             // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
             // 해당 roomId는 가지고 있으니까
             while (true) {
+
                 int compare = gameService.savingReturn(roomId); // 보내기 전의 값
 //                log.info("혼자 있는 상태에서 stillConnect를 보냅니다");
 //                log.info("compare 값을 출력합니다");
@@ -111,12 +112,26 @@ public class GameController {
 //                log.info("value값을 출력합니다");
 //                log.info(Integer.toString(value));
                 if (compare == value) {
-                    log.info("연결이 비정상적으로 끊겼습니다");
+                    log.info("연결이 끊겼습니다");
                     //이제 여기에서 처리를 해줘야한다. => queue 비우고, gidata 뺴고 등등
-                    gameService.giClear(roomId); // 기 정보 초기화
-                    gameService.gameStop(); // 대기 queue에서 한 명 빼기
-                    gameService.savingReset(roomId); // 비교를 위한 배열 값 초기화
-                    gameService.deleteAccessToken(roomId);// accessToken 정보 빼기
+                    int whoamI = gameService.whoisInThere(roomId); // 나는 누구인가?
+                    if(whoamI%2==0){
+                        log.info("에러가 발생해 내가 짝수번 째 사람이지만 게임이 시작되지 않았기에 탈출합니다");
+                        // total 뺄 필요없음. => 꼬이기만 할 뿐
+                        //que 에서는 빼줘야 한다. // 수는 그대로 유지해야한다.
+                        gameService.gameStopTemp();
+                        gameService.giClear(roomId);
+                        gameService.savingReset(roomId);
+                        gameService.deleteAccessToken(roomId);// accessToken 정보 빼기
+                    }else{
+                        // 내가 혼자 있다가 그냥 방에서 나가는 경우를 말한다.
+                        log.info("혼자 있다가 그냥 방을 탈출합니다");
+                        gameService.giClear(roomId); // 기 정보 초기화
+                        gameService.gameStop(whoamI); // 대기 queue에서 한 명 빼기
+                        gameService.savingReset(roomId); // 비교를 위한 배열 값 초기화
+                        gameService.deleteAccessToken(roomId);// accessToken 정보 빼기
+                    }
+
                     break;
                 }
             }
@@ -264,18 +279,23 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/dispose")
-    public void disposeHandle(@DestinationVariable String roomId, String message) {
+    public void disposeHandle(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
         // 방을 폭파시켜야 한다.
         log.info("방 폭파 명령을 받았습니다");
+        log.info("하지만 아무것도 하지 않습니다");
         //두명일 때는 false를 return 하고 혼자 있는 방을 나올 때는 true를 return 한다
-        if (message.equals("true")) {
-            // 혼자 일 때
-            log.info("혼자인데 방 폭파 명령을 받았습니다.");
-            gameService.giClear(roomId); // 기 정보 초기화
-            gameService.gameStop(); // 대기 queue에서 한 명 빼기
-            // accessToken 정보 빼기
-            gameService.deleteAccessToken(roomId);
-        }
+//        String solo = (String) messageBody.get("solo");
+//        int nowNumber = (int) messageBody.get("nowNumber");
+//        System.out.println(solo);
+//        System.out.println(nowNumber);
+//        if (message.equals("true")) {
+//            // 혼자 일 때
+//            log.info("혼자인데 방 폭파 명령을 받았습니다.");
+//            gameService.giClear(roomId); // 기 정보 초기화
+//            gameService.gameStop(); // 대기 queue에서 한 명 빼기
+//            // accessToken 정보 빼기
+//            gameService.deleteAccessToken(roomId);
+//        }
 
     }
 
@@ -310,15 +330,12 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/alive")
-    public void checkConnection(@DestinationVariable String roomId) {
-//        log.info("sendAlive로 값이 넘어오고 있습니다");
+    public void checkConnection(@DestinationVariable String roomId,@RequestBody Map<String, Object> messageBody) {
+//        log.info("checkConnection 입장");
+
+        int nowNumber = (int) messageBody.get("nowNumber");
+//        log.info("nowNumber를 출력합니다"+nowNumber);
+        gameService.whoIn(roomId,nowNumber);
         gameService.aliveCheck(roomId);
     }
-//    @GetMapping("/test")
-//    public String testing() {
-//        resultUpdateService.testing();
-//        log.info("테스트합니다");
-//        System.out.println("테스트합니당");
-//        return "하윙";
-//    }
 }
