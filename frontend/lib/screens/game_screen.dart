@@ -102,7 +102,7 @@ class _GameScreenState extends State<GameScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
-          (route) => false,
+              (route) => false,
         );
         return true;
       }
@@ -545,7 +545,7 @@ class _GameScreenState extends State<GameScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-              (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
             );
           } else {
             // 내가 패자인 경우
@@ -565,7 +565,7 @@ class _GameScreenState extends State<GameScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-              (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
             );
           }
           print(frame.body);
@@ -767,7 +767,7 @@ class _GameScreenState extends State<GameScreen> {
                             Text(
                               '게임 대기중',
                               style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
+                              TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             SizedBox(
                               height: MediaQuery.of(context).size.width * 0.15,
@@ -806,7 +806,7 @@ class _GameScreenState extends State<GameScreen> {
                             Text(
                               '적수 등장',
                               style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
+                              TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             FractionallySizedBox(
                               widthFactor: 0.41,
@@ -855,17 +855,16 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               ),
             if (isGi || isPa || isBlock || isTel || isBomb)
-              if(giCnt == 0)
-                Positioned(
-                  top:  MediaQuery.of(context).size.height * 0.4,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+              Positioned(
+                top:  MediaQuery.of(context).size.height * 0.35,
+                left: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if(giCnt == 0)
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.33,
-                        height: MediaQuery.of(context).size.width * 0.33,
+                        width: MediaQuery.of(context).size.width * 0.15,
+                        height: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage(giIcon),
@@ -873,20 +872,10 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              if(giCnt == 1)
-                Positioned(
-                  top: 10,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                    if(giCnt == 1)
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.33,
-                        height: MediaQuery.of(context).size.width * 0.33,
+                        width: MediaQuery.of(context).size.width * 0.15,
+                        height: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('lib/assets/icons/giStatus1.png'),
@@ -894,20 +883,10 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              if(giCnt == 2)
-                Positioned(
-                  top: 10,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                    if(giCnt == 2)
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.33,
-                        height: MediaQuery.of(context).size.width * 0.33,
+                        width: MediaQuery.of(context).size.width * 0.15,
+                        height: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('lib/assets/icons/giStatus2.png'),
@@ -915,20 +894,10 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              if(giCnt >= 3)
-                Positioned(
-                  top: 10,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
+                    if(giCnt >= 3)
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.33,
-                        height: MediaQuery.of(context).size.width * 0.33,
+                        width: MediaQuery.of(context).size.width * 0.15,
+                        height: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('lib/assets/icons/giStatus3.png'),
@@ -936,300 +905,300 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
+              ),
             if (isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                    top: MediaQuery.of(context).size.height * 0.65,
-                    left: 0,
-                    right: 0,
-                    child: Column(
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.65,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            if (giCnt < 1)
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height: MediaQuery.of(context).size.width * 0.33,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    opacity: 0.5,
-                                    image: AssetImage(buttonTele),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                        if (giCnt < 1)
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            height: MediaQuery.of(context).size.width * 0.33,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                opacity: 0.5,
+                                image: AssetImage(buttonTele),
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        if (giCnt >= 1)
+                          GestureDetector(
+                            onTap: () {
+                              // 순간이동을 하는 경우
+                              sendMessage('순간이동', widget.nickname);
+                              isGi = false;
+                              isPa = false;
+                              isBlock = false;
+                              isTel = false;
+                              isBomb = false;
+                            },
+                            onTapDown: (_) {
+                              setState(() {
+                                buttonTele = 'lib/assets/icons/buttonTele2.png';
+                              });
+                            },
+                            onTapUp: (_) {
+                              setState(() {
+                                buttonTele = 'lib/assets/icons/buttonTele.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonTele = 'lib/assets/icons/buttonTele.png';
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonTele),
+                                  fit: BoxFit.fitWidth,
                                 ),
                               ),
-                            if (giCnt >= 1)
-                              GestureDetector(
-                                onTap: () {
-                                  // 순간이동을 하는 경우
-                                  sendMessage('순간이동', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
-                                },
-                                onTapDown: (_) {
-                                  setState(() {
-                                    buttonTele = 'lib/assets/icons/buttonTele2.png';
-                                  });
-                                },
-                                onTapUp: (_) {
-                                  setState(() {
-                                    buttonTele = 'lib/assets/icons/buttonTele.png';
-                                  });
-                                },
-                                onTapCancel: () => setState(() {
-                                  buttonTele = 'lib/assets/icons/buttonTele.png';
-                                }),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.33,
-                                  height: MediaQuery.of(context).size.width * 0.33,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(buttonTele),
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
+                            ),
+                          ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 순간이동을 하는 경우
+                        //     sendMessage('순간이동', widget.nickname);
+                        //     isGi = false;
+                        //     isPa = false;
+                        //     isBlock = false;
+                        //     isTel = false;
+                        //     isBomb = false;
+                        //   },
+                        //   child: const Text('순간이동'),
+                        // ),
+                        if (giCnt < 3)
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            height: MediaQuery.of(context).size.width * 0.33,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                opacity: 0.5,
+                                image: AssetImage(buttonOne),
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        if (giCnt >= 3)
+                          GestureDetector(
+                            onTap: () {
+                              // 원기옥을 선택하는 경우
+                              sendMessage('원기옥', widget.nickname);
+                              isGi = false;
+                              isPa = false;
+                              isBlock = false;
+                              isTel = false;
+                              isBomb = false;
+                            },
+                            onTapDown: (_) {
+                              setState(() {
+                                buttonOne = 'lib/assets/icons/buttonOne2.png';
+                              });
+                            },
+                            onTapUp: (_) {
+                              setState(() {
+                                buttonOne = 'lib/assets/icons/buttonOne.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonOne = 'lib/assets/icons/buttonOne.png';
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonOne),
+                                  fit: BoxFit.fitWidth,
                                 ),
                               ),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     // 순간이동을 하는 경우
-                            //     sendMessage('순간이동', widget.nickname);
-                            //     isGi = false;
-                            //     isPa = false;
-                            //     isBlock = false;
-                            //     isTel = false;
-                            //     isBomb = false;
-                            //   },
-                            //   child: const Text('순간이동'),
-                            // ),
-                            if (giCnt < 3)
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height: MediaQuery.of(context).size.width * 0.33,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    opacity: 0.5,
-                                    image: AssetImage(buttonOne),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
+                            ),
+                          ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 원기옥을 선택하는 경우
+                        //     sendMessage('원기옥', widget.nickname);
+                        //     isGi = false;
+                        //     isPa = false;
+                        //     isBlock = false;
+                        //     isTel = false;
+                        //     isBomb = false;
+                        //   },
+                        //   child: const Text('원기옥'),
+                        // ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            sendMessage('기', widget.nickname);
+                            isGi = false;
+                            isPa = false;
+                            isBlock = false;
+                            isTel = false;
+                            isBomb = false;
+                          },
+                          onTapDown: (_) {
+                            setState(() {
+                              buttonGi = 'lib/assets/icons/buttonGi2.png';
+                            });
+                          },
+                          onTapUp: (_) {
+                            setState(() {
+                              buttonGi = 'lib/assets/icons/buttonGi.png';
+                            });
+                          },
+                          onTapCancel: () => setState(() {
+                            buttonGi = 'lib/assets/icons/buttonGi.png';
+                          }),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            height: MediaQuery.of(context).size.width * 0.33,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(buttonGi),
+                                fit: BoxFit.fitWidth,
                               ),
-                            if (giCnt >= 3)
-                              GestureDetector(
-                                onTap: () {
-                                  // 원기옥을 선택하는 경우
-                                  sendMessage('원기옥', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
-                                },
-                                onTapDown: (_) {
-                                  setState(() {
-                                    buttonOne = 'lib/assets/icons/buttonOne2.png';
-                                  });
-                                },
-                                onTapUp: (_) {
-                                  setState(() {
-                                    buttonOne = 'lib/assets/icons/buttonOne.png';
-                                  });
-                                },
-                                onTapCancel: () => setState(() {
-                                  buttonOne = 'lib/assets/icons/buttonOne.png';
-                                }),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.33,
-                                  height: MediaQuery.of(context).size.width * 0.33,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(buttonOne),
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     // 원기옥을 선택하는 경우
-                            //     sendMessage('원기옥', widget.nickname);
-                            //     isGi = false;
-                            //     isPa = false;
-                            //     isBlock = false;
-                            //     isTel = false;
-                            //     isBomb = false;
-                            //   },
-                            //   child: const Text('원기옥'),
-                            // ),
-                          ],
+                            ),
+                          ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                sendMessage('기', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
-                              },
-                              onTapDown: (_) {
-                                setState(() {
-                                  buttonGi = 'lib/assets/icons/buttonGi2.png';
-                                });
-                              },
-                              onTapUp: (_) {
-                                setState(() {
-                                  buttonGi = 'lib/assets/icons/buttonGi.png';
-                                });
-                              },
-                              onTapCancel: () => setState(() {
-                                buttonGi = 'lib/assets/icons/buttonGi.png';
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height: MediaQuery.of(context).size.width * 0.33,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(buttonGi),
-                                    fit: BoxFit.fitWidth,
-                                  ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 가위를 선택한 경우
+                        //     sendMessage('기', widget.nickname);
+                        //     isGi = false;
+                        //     isPa = false;
+                        //     isBlock = false;
+                        //     isTel = false;
+                        //     isBomb = false;
+                        //   },
+                        //   child: const Text('기'),
+                        // ),
+                        GestureDetector(
+                          onTap: () {
+                            //막기를 선택 하는 경우
+                            sendMessage('막기', widget.nickname);
+                            isGi = false;
+                            isPa = false;
+                            isBlock = false;
+                            isTel = false;
+                            isBomb = false;
+                          },
+                          onTapDown: (_) {
+                            setState(() {
+                              buttonShield =
+                              'lib/assets/icons/buttonShield2.png';
+                            });
+                          },
+                          onTapUp: (_) {
+                            setState(() {
+                              buttonShield =
+                              'lib/assets/icons/buttonShield.png';
+                            });
+                          },
+                          onTapCancel: () => setState(() {
+                            buttonShield = 'lib/assets/icons/buttonShield.png';
+                          }),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            height: MediaQuery.of(context).size.width * 0.33,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(buttonShield),
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (giCnt >= 1)
+                          GestureDetector(
+                            onTap: () {
+                              // 바위를 선택한 경우
+                              sendMessage('파', widget.nickname);
+                              isGi = false;
+                              isPa = false;
+                              isBlock = false;
+                              isTel = false;
+                              isBomb = false;
+                            },
+                            onTapDown: (_) {
+                              setState(() {
+                                buttonPa = 'lib/assets/icons/buttonPa2.png';
+                              });
+                            },
+                            onTapUp: (_) {
+                              setState(() {
+                                buttonPa = 'lib/assets/icons/buttonPa.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonPa = 'lib/assets/icons/buttonPa.png';
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonPa),
+                                  fit: BoxFit.fitWidth,
                                 ),
                               ),
                             ),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     // 가위를 선택한 경우
-                            //     sendMessage('기', widget.nickname);
-                            //     isGi = false;
-                            //     isPa = false;
-                            //     isBlock = false;
-                            //     isTel = false;
-                            //     isBomb = false;
-                            //   },
-                            //   child: const Text('기'),
-                            // ),
-                            GestureDetector(
-                              onTap: () {
-                                //막기를 선택 하는 경우
-                                sendMessage('막기', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
-                              },
-                              onTapDown: (_) {
-                                setState(() {
-                                  buttonShield =
-                                  'lib/assets/icons/buttonShield2.png';
-                                });
-                              },
-                              onTapUp: (_) {
-                                setState(() {
-                                  buttonShield =
-                                  'lib/assets/icons/buttonShield.png';
-                                });
-                              },
-                              onTapCancel: () => setState(() {
-                                buttonShield = 'lib/assets/icons/buttonShield.png';
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height: MediaQuery.of(context).size.width * 0.33,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(buttonShield),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
+                          ),
+                        if (giCnt < 1)
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.33,
+                            height: MediaQuery.of(context).size.width * 0.33,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                opacity: 0.5,
+                                image: AssetImage(buttonPa),
+                                fit: BoxFit.fitWidth,
                               ),
                             ),
-                            if (giCnt >= 1)
-                              GestureDetector(
-                                onTap: () {
-                                  // 바위를 선택한 경우
-                                  sendMessage('파', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
-                                },
-                                onTapDown: (_) {
-                                  setState(() {
-                                    buttonPa = 'lib/assets/icons/buttonPa2.png';
-                                  });
-                                },
-                                onTapUp: (_) {
-                                  setState(() {
-                                    buttonPa = 'lib/assets/icons/buttonPa.png';
-                                  });
-                                },
-                                onTapCancel: () => setState(() {
-                                  buttonPa = 'lib/assets/icons/buttonPa.png';
-                                }),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.33,
-                                  height: MediaQuery.of(context).size.width * 0.33,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(buttonPa),
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (giCnt < 1)
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height: MediaQuery.of(context).size.width * 0.33,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    opacity: 0.5,
-                                    image: AssetImage(buttonPa),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     // 바위를 선택한 경우
-                            //     sendMessage('파', widget.nickname);
-                            //     isGi = false;
-                            //     isPa = false;
-                            //     isBlock = false;
-                            //     isTel = false;
-                            //     isBomb = false;
-                            //   },
-                            //   child: const Text('파'),
-                            // ),
+                          ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // 바위를 선택한 경우
+                        //     sendMessage('파', widget.nickname);
+                        //     isGi = false;
+                        //     isPa = false;
+                        //     isBlock = false;
+                        //     isTel = false;
+                        //     isBomb = false;
+                        //   },
+                        //   child: const Text('파'),
+                        // ),
 
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     //막기를 선택 하는 경우
-                            //     sendMessage('막기', widget.nickname);
-                            //     isGi = false;
-                            //     isPa = false;
-                            //     isBlock = false;
-                            //     isTel = false;
-                            //     isBomb = false;
-                            //   },
-                            //   child: const Text('막기'),
-                            // ),
-                          ],
-                      ),
-                    ],
-                  ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     //막기를 선택 하는 경우
+                        //     sendMessage('막기', widget.nickname);
+                        //     isGi = false;
+                        //     isPa = false;
+                        //     isBlock = false;
+                        //     isTel = false;
+                        //     isBomb = false;
+                        //   },
+                        //   child: const Text('막기'),
+                        // ),
+                      ],
+                    ),
+                  ],
                 ),
+              ),
             // ),
           ],
         ),
