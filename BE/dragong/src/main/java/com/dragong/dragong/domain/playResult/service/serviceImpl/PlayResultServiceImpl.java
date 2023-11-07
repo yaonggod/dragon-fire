@@ -83,10 +83,6 @@ public class PlayResultServiceImpl implements PlayResultService {
             int lose = playResult.getLose();
             int seasonMaxScore = playResult.getSeasonMaxScore();
 
-            log.info("UUID는 " + UUID);
-            log.info("nickname은 " + nickname);
-            log.info("score는 " + score);
-            log.info("rank는 " + rank);
 
             // 레디스에 넣기
             listOperations.rightPush("UUID", UUID); // UUID는 필요 없다면 빼기 => 내 랭킹 찾을 때 사용해야함

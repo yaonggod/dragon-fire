@@ -6,6 +6,7 @@ import com.dragong.dragong.domain.game.dto.TokenData;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 @Service
@@ -16,8 +17,11 @@ public class GameService {
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
     private final Queue<TokenData> accessTokenRoom[] = new LinkedList[100000]; // accessToken을 저장하기 위해서
     private final Queue<Integer> user = new LinkedList<>(); // 입장하는 사람 정보
-    private final int[] saving= new int[1000000];
-    private int total=0;
+    private final int[] saving = new int[1000000];
+    private int total = 0;
+    private boolean visited[] = new boolean[2000000]; // 각 사용자가 들어올 떄마다 visited를 true로
+
+    private final int[] whoisIn = new int[1000000];
 
     @PostConstruct
     public void initializeGameRoom() {
@@ -26,65 +30,93 @@ public class GameService {
             gameRoom[i] = new HashSet<>();
             giDataRoom[i] = new ArrayList<>();
             countDownandstartGame[i] = new ArrayList<>();
-            accessTokenRoom[i]= new LinkedList<>();
+            accessTokenRoom[i] = new LinkedList<>();
         }
     }
 
-    public void accessTokenUpdate(int roomId,String accessToken,String nickname){
+    public void accessTokenUpdate(int roomId, String accessToken, String nickname) {
         // 처음 대기화면에서 방 배정을 받을 때 accessToken 값을 넣어준다.
-        log.info(nickname+"이 nickname과 accessToken 값을 넣어줍니다.");
-        TokenData tokenData = new TokenData(accessToken,nickname);
+        log.info(nickname + "이 nickname과 accessToken 값을 넣어줍니다.");
+        TokenData tokenData = new TokenData(accessToken, nickname);
         log.info(tokenData.getAccessToken());
         log.info(tokenData.getNickname());
         accessTokenRoom[roomId].add(tokenData);
-        log.info("현재 accessToken의 사이즈는?"+ accessTokenRoom[roomId].size());
+        log.info("현재 accessToken의 사이즈는?" + accessTokenRoom[roomId].size());
     }
 
+    public void whoIn(String roomId, int nowNumber) {
+        // 해당 방에 누가 들어있는지 계속 업데이트
+        whoisIn[Integer.parseInt(roomId)] = nowNumber;
+    }
 
-    public void deleteAccessToken(String roomId){
-        log.info(roomId+"의 accessToken값을 초기화합니다");
+    public int whoisInThere(String roomId) {
+        // 지금 방에 혼자 있는게 누구인가!
+        return whoisIn[Integer.parseInt(roomId)];
+    }
+
+    public void deleteAccessToken(String roomId) {
+        log.info(roomId + "의 accessToken값을 초기화합니다");
         accessTokenRoom[Integer.parseInt(roomId)].clear();
     }
-    public String winnerAndLoserToken(String roomId,String nickname){
+
+    public String winnerAndLoserToken(String roomId, String nickname) {
         // 승자의 nickname을 받아서 승자와 패자의 accessToken을 반환한다.
         TokenData tokenData1 = accessTokenRoom[Integer.parseInt(roomId)].poll();
         TokenData tokenData2 = accessTokenRoom[Integer.parseInt(roomId)].poll();
 
-        if(tokenData1.getNickname().equals(nickname)){
+        if (tokenData1.getNickname().equals(nickname)) {
             // tokenData1이 승자의 nickname과 일치할 경우
             log.info("결과 업데이트를 위해 값을 반환합니다");
-            log.info(tokenData1.getAccessToken()+":"+tokenData2.getAccessToken());
-            return tokenData1.getAccessToken()+":"+tokenData2.getAccessToken();
-        }else{
+            log.info(tokenData1.getAccessToken() + ":" + tokenData2.getAccessToken());
+            return tokenData1.getAccessToken() + ":" + tokenData2.getAccessToken();
+        } else {
             //tokenData2가 승자의 nickname과 일치할 경우
             log.info("결과 업데이트를 위해 값을 반환합니다");
-            log.info(tokenData2.getAccessToken()+":"+tokenData1.getAccessToken());
-            return tokenData2.getAccessToken()+":"+tokenData1.getAccessToken();
+            log.info(tokenData2.getAccessToken() + ":" + tokenData1.getAccessToken());
+            return tokenData2.getAccessToken() + ":" + tokenData1.getAccessToken();
         }
     }
+
     public int enter() {
         // 한 명 들어올 때마다 Queue에 넣어준다.
         // 그리고 한 명을 넣은 순간! 몇 명이 남아 있는지 확인해준다.
+        // 처음 들어오자마자 하는 행위다. => visietd를 해줘야지?
         log.info("방에 입장합니다");
-        total+=1;
+        total += 1;
+        if (visited[total]) {
+            // 이미 차지하고 있다면?
+            while (visited[total]) {
+                total += 1;
+            }
+        } else {
+            // 빈 곳이라면?
+            visited[total] = true;
+        }
+
         user.add(total);
-        log.info("Queue에 들어있는 사람의 수는 :"+ user.size());
+        log.info("Queue에 들어있는 사람의 수는 :" + user.size());
         return total;
-        //return user.peek();
     }
 
-    public void gameStart(){
+    public void gameStart() {
         // 게임을 시작하면 queue에서 2명을 빼준다.
         log.info("게임을 시작합니다 따라서 Queue에서 2명을 빼줍니다");
         user.poll();
         user.poll();
 
     }
-    public void gameStop(){
+
+    public void gameStop(int whoamI) {
         // 혼자 일 때 나가는 경우 => 2명이 나가는 경우는 생각하지 않는 이유가 2명이면 게임이 시작하니까
         log.info("한 명만 있는데 방을 나갑니다!.");
         user.poll();
-        total-=1;
+        visited[whoamI] = false;
+        total -= 1;
+    }
+    public void gameStopTemp(){
+        log.info("에러가 발생한 경우의 방 해제");
+        user.poll();
+
     }
 
     public int giInit(String roomId, String nickname) {
@@ -95,13 +127,14 @@ public class GameService {
 
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
-    public int giCnt(String roomId){
+
+    public int giCnt(String roomId) {
         //그냥 현재 기 정보가 몇개 담겨 있는지 반환
         return giDataRoom[Integer.parseInt(roomId)].size();
     }
 
-    public void giClear(String roomId){
-        log.info("현재 giDataRoom[roomId]에 있는 자료의 수는 : "+ giDataRoom[Integer.parseInt(roomId)]);
+    public void giClear(String roomId) {
+        log.info("현재 giDataRoom[roomId]에 있는 자료의 수는 : " + giDataRoom[Integer.parseInt(roomId)]);
         log.info("해당 데이터를 지웁니다");
         giDataRoom[Integer.parseInt(roomId)].clear();
     }
@@ -158,15 +191,17 @@ public class GameService {
 
     public void aliveCheck(String roomId) {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
-        saving[Integer.parseInt(roomId)]+=1;
+        saving[Integer.parseInt(roomId)] += 1;
 //        return saving[Integer.parseInt(roomId)];
 
     }
-    public int savingReturn(String roomId){
+
+    public int savingReturn(String roomId) {
         return saving[Integer.parseInt(roomId)];
     }
-    public void savingReset(String roomId){
-        saving[Integer.parseInt(roomId)]=0;
+
+    public void savingReset(String roomId) {
+        saving[Integer.parseInt(roomId)] = 0;
     }
 
     public void cleanList(String roomId) {
@@ -188,7 +223,7 @@ public class GameService {
             //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
             //grd2 = gameRoom[Integer.parseInt(roomId)].poll();
             grd1 = list.get(0);
-            grd2= list.get(1);
+            grd2 = list.get(1);
         } else if (gameRoom[Integer.parseInt(roomId)].size() == 1) {
             // 한 명만 정보를 입력한 경우
             ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[Integer.parseInt(roomId)]);
