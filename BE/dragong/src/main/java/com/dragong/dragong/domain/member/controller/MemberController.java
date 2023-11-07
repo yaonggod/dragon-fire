@@ -59,4 +59,12 @@ public class MemberController {
         }
     }
 
+    @GetMapping("/token-check")
+    public ResponseEntity<?> generateNewToken() {
+        try {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
