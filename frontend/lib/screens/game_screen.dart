@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,11 +15,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class GameScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
+  final int nowNumber;
 
   const GameScreen({
     super.key,
     required this.roomId,
     required this.nickname,
+    required this.nowNumber,
   });
 
   @override
@@ -135,6 +138,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void onConnect(StompFrame frame) {
+    print(widget.nowNumber);
     setState(() {
       isWaiting = true; // 연결이 성공하면 상태 변수를 true로 설정
       // 한 명이 접속했을 때 상대방을 기다려야 하는 상황이기에 isWaiting을 true로 해서
@@ -579,7 +583,7 @@ class _GameScreenState extends State<GameScreen> {
       callback: (frame) {
         // 원하는 작업 수행
         if (frame.body == 'still') {
-          print('still값을 받아오고 있습니다');
+          // print('still값을 받아오고 있습니다');
           sendAlive();
         }
       },
@@ -613,8 +617,11 @@ class _GameScreenState extends State<GameScreen> {
 
   void sendAlive() {
     // 아직 방에 살아있다는 것을 알리기 위해서
+    final Map<String, dynamic> messageBody ={
+      "nowNumber": widget.nowNumber,
+    };
     stompClient.send(
-        destination: '/pub/${widget.roomId}/alive', body: '', headers: {});
+        destination: '/pub/${widget.roomId}/alive', body: jsonEncode(messageBody), headers: {});
   }
 
   void sendTime(String time) {
@@ -634,19 +641,6 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void startGame() {
-    // setState(() {
-    //   print('setstate 실행');
-    //   youPick='';
-    //   mePick='';
-    //   showTemp = false;
-    //   isWaiting= false;
-    //   isGameStart= true;
-    //   isGi = true;
-    //   isPa = true;
-    //   isBlock= true;
-    //   isTel = true;
-    //   isBomb =true;
-    // });
     setState(() {
       isConnected = false;
     });
@@ -680,8 +674,12 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    final Map<String, dynamic> messageBody ={
+      "solo" : solo,
+      "nowNumber": widget.nowNumber,
+    };
     stompClient.send(
-        destination: '/pub/${widget.roomId}/dispose', body: solo, headers: {});
+        destination: '/pub/${widget.roomId}/dispose', body: jsonEncode(messageBody), headers: {});
     stompClient.deactivate();
     super.dispose();
   }
