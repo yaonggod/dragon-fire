@@ -279,7 +279,7 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/dispose")
-    public void disposeHandle(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
+    public void disposeHandle(@DestinationVariable String roomId) {
         // 방을 폭파시켜야 한다.
         log.info("방 폭파 명령을 받았습니다");
         log.info("하지만 아무것도 하지 않습니다");
