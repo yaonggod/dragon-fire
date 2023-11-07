@@ -18,7 +18,7 @@ class MessageWidget extends StatefulWidget {
 class _MessageWidgetState extends State<MessageWidget> {
   bool visible = true;
 
-  String baseUrl = dotenv.env['BASE_URL']!;
+  String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
   String messageText = "";
 
@@ -112,7 +112,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   Future<bool> acceptFriend() async {
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/api/friend/accept");
+    Uri uri = Uri.parse("$baseUrl/friend/accept");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -122,6 +122,8 @@ class _MessageWidgetState extends State<MessageWidget> {
         body: jsonEncode(
             {"toMember": widget.message.toMember}));
     if (response.statusCode == 200) {
+      // firebase AT 받아서 알람 보내기
+      print(response.headers["firebase"] != null ? response.headers["firebase"] : "null");
       return true;
     }
     return false;
@@ -151,7 +153,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   Future<bool> rejectFriend() async {
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/api/friend/reject");
+    Uri uri = Uri.parse("$baseUrl/friend/reject");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +192,7 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   Future<bool> checkFriend() async {
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/api/friend/check");
+    Uri uri = Uri.parse("$baseUrl/friend/check");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -200,6 +202,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         body: jsonEncode(
             {"toMember": widget.message.toMember}));
     if (response.statusCode == 200) {
+      // firebase AT 받아서 알람 보내기
       return true;
     }
     return false;

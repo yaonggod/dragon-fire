@@ -1,11 +1,17 @@
 
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(NotificationResponse details) {
+  print('background ${details.payload}');
+}
 
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('background ${message.data}');
 }
 
 // 앱 시작할때 notification 열어놓기
@@ -23,6 +29,13 @@ void initializeNotification() async {
   flutterLocalNotificationPlugin.resolvePlatformSpecificImplementation<
       AndroidFlutterLocalNotificationsPlugin>()!.requestNotificationsPermission();
 
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+
   await flutterLocalNotificationPlugin.initialize(
     // 안드로이드 기본 세팅
     const InitializationSettings(android: AndroidInitializationSettings('@mipmap/ic_launcher')),
@@ -37,7 +50,7 @@ void initializeNotification() async {
 
   );
 
-  // firebase message를 듣기
+  // 포그라운드에서 firebase message를 듣기
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     if (message.notification != null) {
       // 메시지를 보여줘
@@ -54,4 +67,14 @@ void initializeNotification() async {
     }
 
   });
+
+  RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
+  if (message != null) {
+    print(message.data);
+  }
+
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    print(message.data);
+  });
+
 }

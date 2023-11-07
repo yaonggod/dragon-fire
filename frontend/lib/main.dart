@@ -18,7 +18,10 @@ Future main() async {
   // firebase를 시작하고 notification도 열어놓는다
   await Firebase.initializeApp();
   initializeNotification();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   //
+
+  print("FCM ${await FirebaseMessaging.instance.getToken()}");
 
   runApp(const DragonG());
 }
@@ -39,4 +42,10 @@ class DragonG extends StatelessWidget {
       home: const AccessScreen(),
     );
   }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print('background ${message.data}');
 }

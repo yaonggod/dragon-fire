@@ -18,7 +18,8 @@ class SearchResultWidget extends StatefulWidget {
 }
 
 class _SearchResultWidgetState extends State<SearchResultWidget> {
-  String baseUrl = dotenv.env['BASE_URL']!;
+  // String baseUrl = "http://10.0.2.2:8080";
+  String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -47,6 +48,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
           },
 
           child: Text("친구 신청하기"));
+    } else if (widget.searchResult.friendStatus == "WAITING") {
+      return Text("수락 대기중");
     }
 
     return Container();
@@ -79,7 +82,7 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
 
   Future<bool> requestFriend() async {
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/api/friend/request");
+    Uri uri = Uri.parse("$baseUrl/friend/request");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +91,34 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
         },
         body: jsonEncode(
             {"toMember": widget.searchResult.toMember}));
+
+    const storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
     if (response.statusCode == 200) {
+      // firebase AT
+      print(response.headers["firebase"] != null ? response.headers["firebase"] : "null");
+
+      final response2 = await http.post(Uri.parse("https://fcm.googleapis.com/v1/projects/dragon-fire-829f8/messages:send"),
+        headers: {
+          'Authorization': response.headers["firebase"]!
+        },
+        body: jsonEncode(
+            {
+              "message": {
+                "notification": {
+                  "title": "dragon-fire",
+                  "body": "멍멍123님이 당신을 그룹에 초대하려 합니다."
+                },
+                "data": {
+                  "do": "group"
+                },
+                "token": "cERGr2e3RVCtBwgzD12PR7:APA91bEnIevNJCmdFG78vlIg6EeIfCbjFgK66TuByuM0EZh3zPtiOQA2sgkKjfZyhinL_VgxaZ15iQoHgR0-cznxXx7LawEbFyx8GCJaTlM1zcqBK4-aQE53KyS2BxgOcaFH6YPco3dd"
+              }
+            }
+        )
+      );
+      print(response2.statusCode);
+
       return true;
     }
     return false;
