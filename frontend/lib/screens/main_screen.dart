@@ -103,13 +103,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
       if (data.containsKey("roomId")) {
         int roomId = data["roomId"];
+        int nowNumber = data["nowNumber"];
+        print("나는 "+'$nowNumber'+"번 째 사람입니다");
         print('roomId: $roomId');
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => GameScreen(
-                roomId: roomId, nickname: nickname!), // 이건 game.dart에 있다.
+                roomId: roomId, nickname: nickname!, nowNumber: nowNumber), // 이건 game.dart에 있다.
           ),
         );
       } else {
