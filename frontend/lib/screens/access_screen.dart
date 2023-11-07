@@ -62,7 +62,7 @@ class _AccessScreenState extends State<AccessScreen>
     }
   }
   Future<void> _checkLoginStatus() async {
-    await tokenCheck();
+    // await tokenCheck();
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty) {
       setState(() {
