@@ -20,11 +20,15 @@ import com.dragong.dragong.domain.playResult.repository.PlayResultRepository;
 import com.dragong.dragong.domain.playResult.service.PlayResultService;
 import com.dragong.dragong.global.util.JwtUtil;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -110,7 +114,13 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void requestFriend(String accessToken, String refreshToken,
-            FriendRequestDto friendRequestDto) {
+            FriendRequestDto friendRequestDto, HttpServletResponse httpServletResponse) {
+
+        // firebase AT를 헤더에 보내서 기기보고 스토리지에 등록하라고 하기
+        try {
+            httpServletResponse.setHeader("firebase", "Bearer " + getFirebaseAccessToken());
+        } catch (Exception e) {
+        }
 
         // 나
         UUID fromMember = jwtUtil.extractMemberId(accessToken.substring(7));
@@ -147,6 +157,9 @@ public class FriendServiceImpl implements FriendService {
                     .build();
             friendRepository.save(newFromFriend);
             friendRepository.save(newToFriend);
+
+
+
         } else {
             if (fromFriend.get().getFriendStatus().equals(FriendStatus.DISCONNECTED) && toFriend.get().getFriendStatus().equals(FriendStatus.DISCONNECTED)) {
                 // 아니면 그냥 존재하는 관계의 상태만 바꿔주기
@@ -163,7 +176,13 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void acceptFriend(String accessToken, String refreshToken,
-            FriendRequestDto friendRequestDto) {
+            FriendRequestDto friendRequestDto, HttpServletResponse httpServletResponse) {
+
+        // firebase AT를 헤더에 보내서 기기보고 스토리지에 등록하라고 하기
+        try {
+            httpServletResponse.setHeader("firebase", "Bearer " + getFirebaseAccessToken());
+        } catch (Exception e) {
+        }
 
         // 나
         UUID fromMember = jwtUtil.extractMemberId(accessToken.substring(7));
@@ -194,6 +213,8 @@ public class FriendServiceImpl implements FriendService {
 
             friendRepository.save(fromFriend);
             friendRepository.save(toFriend);
+
+
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -368,8 +389,17 @@ public class FriendServiceImpl implements FriendService {
                     .build();
             friendListDtoList.add(friendListDto);
         }
-
         return friendListDtoList;
+    }
+
+    // 이 AT를 가지고 있어야 기기에서 다른 기기에 알림을 보낼 수 있음
+    private String getFirebaseAccessToken() throws IOException {
+        String firebaseConfigPath = "/service_key.json";
+        GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
+                .createScoped("https://www.googleapis.com/auth/cloud-platform");
+
+        googleCredentials.refreshIfExpired();
+        return googleCredentials.getAccessToken().getTokenValue();
     }
 
     @Override
@@ -379,8 +409,6 @@ public class FriendServiceImpl implements FriendService {
         UUID fromMember = jwtUtil.extractMemberId(accessToken.substring(7));
         MemberInfo fromMemberInfo = memberInfoRepository.findMemberInfoByMemberId(fromMember)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        System.out.println(fromMember);
 
         // 내 친구 후보들 불러모아~
         List<FriendStatus> friendStatusList = new ArrayList<>();
