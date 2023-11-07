@@ -79,18 +79,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   Future<void> startGame() async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/wait'),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accessToken',
-        'refreshToken': 'Bearer $refreshToken'
-      },
-      body: jsonEncode({"nickname": nickname!}),
-    );
-
     // final response = await http.post(
-    //   Uri.parse('http://10.0.2.2:8080/wait'),
+    //   Uri.parse('$baseUrl/api/wait'),
     //   headers: {
     //     'Content-Type': 'application/json; charset=UTF-8',
     //     'Authorization': 'Bearer $accessToken',
@@ -98,6 +88,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     //   },
     //   body: jsonEncode({"nickname": nickname!}),
     // );
+
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8080/wait'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"nickname": nickname!}),
+    );
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
