@@ -1,8 +1,10 @@
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 import 'package:frontend/screens/access_screen2.dart';
 
 class AccessScreen extends StatefulWidget {
@@ -16,11 +18,51 @@ class _AccessScreenState extends State<AccessScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _controller2;
+  String? accessToken;
+  String? refreshToken;
+  String? socialType;
   final player = AudioPlayer();
   DateTime? backPressed;
   bool _isLoggedIn = false;
 
+  Future<void> tokenCheck() async {
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+
+    print(" 이전 발급된 토큰 :");
+    print(accessToken);
+    print(refreshToken);
+
+    if(accessToken == null && refreshToken == null){
+      return;
+    }
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.get(
+        Uri.parse(
+        '$baseUrl/api/member/token-check'),
+      // Uri.parse('http://10.0.2.2:8080/member/token-check'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+    );
+    if (response.statusCode == 200) {
+      FlutterSecureStorage storage = const FlutterSecureStorage();
+      storage.delete(key: 'accessToken');
+      storage.delete(key: 'refreshToken');
+
+      await storage.write(key: 'accessToken', value: response.headers['authorization']!.substring(7));
+      await storage.write(key: 'refreshToken', value: response.headers['refreshtoken']!.substring(7));
+    } else{
+      FlutterSecureStorage storage = const FlutterSecureStorage();
+      storage.delete(key: 'accessToken');
+      storage.delete(key: 'refreshToken');
+    }
+  }
   Future<void> _checkLoginStatus() async {
+    await tokenCheck();
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty) {
       setState(() {
