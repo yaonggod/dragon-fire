@@ -2,6 +2,7 @@ package com.dragong.dragong.global.util;
 
 import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.Role;
+import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
 import com.dragong.dragong.domain.member.repository.MemberRepository;
 import com.dragong.dragong.domain.member.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
@@ -126,11 +127,21 @@ public class JwtUtil {
             Member member = memberRepository.findMemberByRefreshToken_RefreshToken(refreshToken)
                     .orElseThrow(() ->
                             new IllegalArgumentException());
+
+            RefreshToken refreshTokenEntity = member.getRefreshToken();
+
             // 새로운 액세스 토큰 생성
             String newAccessToken = generateAccessToken(member.getMemberId(), Role.USER);
 
             // 새로운 리프레시 토큰 생성
             String newRefreshToken = generateRefreshToken();
+
+            // DB에 새로운 리프레시 토큰 저장
+            refreshTokenEntity.updateRefreshTokenBuilder()
+                    .refreshToken(newRefreshToken)
+                    .build();
+
+            refreshTokenRepository.save(refreshTokenEntity);
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("Authorization", newAccessToken);
