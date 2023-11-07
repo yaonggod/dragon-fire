@@ -620,8 +620,11 @@ class _GameScreenState extends State<GameScreen> {
     final Map<String, dynamic> messageBody ={
       "nowNumber": widget.nowNumber,
     };
+    final headers = {
+      'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
+    };
     stompClient.send(
-        destination: '/pub/${widget.roomId}/alive', body: jsonEncode(messageBody), headers: {});
+        destination: '/pub/${widget.roomId}/alive', body: jsonEncode(messageBody), headers: headers);
   }
 
   void sendTime(String time) {
@@ -674,12 +677,12 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
-    final Map<String, dynamic> messageBody ={
-      "solo" : solo,
-      "nowNumber": widget.nowNumber,
-    };
+    // final Map<String, dynamic> messageBody ={
+    //   "solo" : solo,
+    //   "nowNumber": widget.nowNumber,
+    // };
     stompClient.send(
-        destination: '/pub/${widget.roomId}/dispose', body: jsonEncode(messageBody), headers: {});
+        destination: '/pub/${widget.roomId}/dispose', body: '', headers: {});
     stompClient.deactivate();
     super.dispose();
   }
