@@ -32,7 +32,7 @@ public class OAuthController {
             LoginResponseDto response = memberService.login(loginRequestDto, httpServletResponse);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
