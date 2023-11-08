@@ -32,15 +32,7 @@ public class PlayLogServiceImpl implements PlayLogService {
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7));
 
         Member member = memberRepository.findById(myUUID).orElse(null);
-        List<PlayLog> playLogList = playLogRepository.findByMyUUID(member).orElse(null);
-
-        for (PlayLog playLog : playLogList) {
-            System.out.println("내 UUID : " + playLog.getMyUUID());
-            System.out.println("상대 UUID : " + playLog.getOpponentPlay());
-            System.out.println();
-        }
-
-
+//        List<PlayLog> playLogList = playLogRepository.findByMyUUID(member).orElse(null);
         return null;
     }
 }

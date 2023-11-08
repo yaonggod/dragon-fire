@@ -11,6 +11,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlayLogRepository extends JpaRepository<PlayLog, Long> {
 
-    Optional<List<PlayLog>> findByMyUUID(Member myUUID);
-
 }

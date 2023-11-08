@@ -26,14 +26,6 @@ public class PlayLog extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "my_uuid")
-    private List<Member> myUUID = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opponent_uuid")
-    private List<Member> opponentUUID = new ArrayList<>();
-
     @Column(name = "play_result")
     private boolean playResult;
 

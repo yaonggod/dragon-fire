@@ -3,6 +3,7 @@ package com.dragong.dragong.domain.member.entity;
 import com.dragong.dragong.domain.member.entity.auth.GoogleAuth;
 import com.dragong.dragong.domain.member.entity.auth.NaverAuth;
 import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
+import com.dragong.dragong.domain.playLog.entity.PlayLog;
 import com.dragong.dragong.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +11,11 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,6 +58,14 @@ public class Member extends BaseTimeEntity {
     @OneToOne(mappedBy = "member",
             fetch = FetchType.LAZY)
     private RefreshToken refreshToken;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "my_uuid")
+    private List<PlayLog> myUUID = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "opponent_uuid")
+    private List<PlayLog> opponentUUID = new ArrayList<>();
 
 
     // member 먼저 생성 후 memberInfo를 생성해야하므로 builder와 따로
