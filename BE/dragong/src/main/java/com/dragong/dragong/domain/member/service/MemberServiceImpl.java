@@ -278,18 +278,23 @@ public class MemberServiceImpl implements MemberService {
                 loginRequestDto.getAccessToken());
 
         // DB에서 구글 이메일 조회
-        GoogleAuth googleAuth = googleAuthRepository.findByEmailAndMember_QuitFlagIsFalse(email)
-                .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
+        GoogleAuth googleAuth = googleAuthRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("회원가입 필요")); // 회원이 아닌 경우 예외처리
+
+        // 기존 회원정보 불러오기
+        Member member = googleAuth.getMember();
+
+        // 탈퇴한 회원인지 체크
+        if (member.isQuitFlag()) {
+            throw new DuplicateKeyException("탈퇴된 회원"); // 탈퇴한 회원인 경우 예외처리
+        }
 
         // 회원인 경우
         // jwt 발급
         String accessToken = jwtUtil.generateAccessToken(googleAuth.getMemberId(),
-                googleAuth.getMember()
-                        .getRole());
+                member.getRole());
         String refreshToken = jwtUtil.generateRefreshToken();
 
-        // 기존 회원정보 불러오기
-        Member member = googleAuth.getMember();
         RefreshToken refreshTokenEntity = member.getRefreshToken();
 
         // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
@@ -329,18 +334,23 @@ public class MemberServiceImpl implements MemberService {
         String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
 
         // DB에서 네이버 이메일 조회
-        NaverAuth naverAuth = naverAuthRepository.findByEmailAndMember_QuitFlagIsFalse(email)
-                .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
+        NaverAuth naverAuth = naverAuthRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException("회원가입 필요")); // 회원이 아닌 경우 예외처리
+
+        // 기존 회원정보 불러오기
+        Member member = naverAuth.getMember();
+
+        // 탈퇴한 회원인지 체크
+        if (member.isQuitFlag()) {
+            throw new DuplicateKeyException("탈퇴된 회원"); // 탈퇴한 회원인 경우 예외처리
+        }
 
         // 회원인 경우
         // jwt 발급
         String accessToken = jwtUtil.generateAccessToken(naverAuth.getMemberId(),
-                naverAuth.getMember()
-                        .getRole());
+                member.getRole());
         String refreshToken = jwtUtil.generateRefreshToken();
 
-        // 기존 회원정보 불러오기
-        Member member = naverAuth.getMember();
 
         // 회원 정보로 과거 리프레시 토큰 내역 가져오기
         RefreshToken refreshTokenEntity = member.getRefreshToken();
