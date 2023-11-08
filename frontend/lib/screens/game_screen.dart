@@ -33,9 +33,12 @@ class _GameScreenState extends State<GameScreen> {
   late final StompClient stompClient;
   String countdown = '';
   String winner = '';
+  int pan = 0; // 몇 번 째 판인지 // round와는 다르다
   DateTime? backPressed;
   String youPick = '';
   String mePick = '';
+  String myHp = '2';
+  String youHp = '2';
   bool isWaiting = false; // 대기 화면 보여주기
   bool isConnected = false;
   bool isGameStart = false;
@@ -47,6 +50,7 @@ class _GameScreenState extends State<GameScreen> {
   bool isBlock = false; // 막기
   bool isTel = false; // 텔레포트
   bool isBomb = false; // 원기옥
+  bool isPan = false; // 몇 번째 판인지를 보여주기 위해서
 
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
@@ -156,14 +160,18 @@ class _GameScreenState extends State<GameScreen> {
         if (frame.body == '0') {
           setState(() {
             isWaiting = false;
-            isConnected = true;
+            // isConnected = true;
           });
-
-          Timer(Duration(seconds: 1), () {
-            solo = 'false';
-            startGame();
-            round += 1;
-          });
+          solo = 'false';
+          round += 1;
+          showPan();
+          // Timer(Duration(seconds: 1), () {
+          //
+          // });
+        } else if (frame.body == '에러입니다') {
+          // 내가 짝수번째 사람인데 방에 혼자 남아 있는경우?
+          // 즉 내가 짝수번째로 들어가는 순간 홀수 번째 사람이 나가버린 경우
+          dispose();
         }
       },
     );
@@ -182,6 +190,7 @@ class _GameScreenState extends State<GameScreen> {
               showTemp = false;
               isWaiting = false;
               isConnected = false;
+              isPan = false;
               isGameStart = true;
               isGi = true;
               isPa = true;
@@ -209,6 +218,7 @@ class _GameScreenState extends State<GameScreen> {
             showTemp = false;
             isGameStart = false;
             showResult = true;
+            isPan = false;
             isGi = false; // 기
             isPa = false; // 파
             isBlock = false; // 막기
@@ -445,6 +455,7 @@ class _GameScreenState extends State<GameScreen> {
           setState(() {
             isGameStart = false;
             showResult = false;
+            isPan = false;
             showTemp = true;
             isGi = false; // 기
             isPa = false; // 파
@@ -464,6 +475,9 @@ class _GameScreenState extends State<GameScreen> {
         String frameBody = ' ${frame.body}';
         List<String> parts = frameBody.split(' ');
         String comparing = parts[3];
+        String shouldContinue = parts[4];
+        print("제일 중요한 부분을 출력합니다.");
+        print(shouldContinue); // 이게 게임을 끝낼지 여부를 선택하는 것이다.
         List<String> section1 = parts[1].split(':');
         String user1 = section1[0];
         if (comparing == '비겼습니다') {
@@ -473,11 +487,13 @@ class _GameScreenState extends State<GameScreen> {
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
+          // 몇 번 째 게임인지와 상관없이 무조건 게임을 끝냅니다.
           winner = "무효입니다";
           // winner = frame.body ?? '0';
           setState(() {
             showTemp = false;
             isGameStart = false;
+            isPan = false;
             showResult = true;
             isGi = false; // 기
             isPa = false; // 파
@@ -489,21 +505,29 @@ class _GameScreenState extends State<GameScreen> {
 
           // dispose();
         } else {
-          // 승자를 표시하고 게임을 끝내야함
-          winner = comparing;
-
-          setState(() {
-            showTemp = false;
-            isGameStart = false;
-            showResult = true;
-            isGi = false; // 기
-            isPa = false; // 파
-            isBlock = false; // 막기
-            isTel = false; // 텔레포트
-            isBomb = false; // 원기옥
-          });
-          // dispose();
-          sendResult(winner);
+          if (shouldContinue == '계속합니다') {
+            // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
+            // 그럼 이때는 처음부터 게임을 시작해야 한다.
+            round = 0;
+            showPan();
+            // 새로운 게임을 시작하는데 가장 중요한 요소가 뭘까? 일단 기 정보를 초기화 해줘야 한다.
+          } else if (shouldContinue == '끝냅니다') {
+            // 2승을 한 유저가 있기에 해당 유저를 승자로 선언합니다.
+            winner = comparing; // 그 판의 승자를 의미한다.
+            setState(() {
+              showTemp = false;
+              isGameStart = false;
+              isPan = false;
+              showResult = true;
+              isGi = false; // 기
+              isPa = false; // 파
+              isBlock = false; // 막기
+              isTel = false; // 텔레포트
+              isBomb = false; // 원기옥
+            });
+            // dispose();
+            sendResult(winner);
+          }
         }
       },
     );
@@ -588,7 +612,7 @@ class _GameScreenState extends State<GameScreen> {
             );
           }
           print(frame.body);
-          dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
+          // dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
       },
     );
@@ -604,22 +628,55 @@ class _GameScreenState extends State<GameScreen> {
       },
     );
 
+    stompClient.subscribe(
+      // 판을 1.5초 동안 보여준 이후 명령이 들어오면 startgame 을 실행한다.
+      destination: '/sub/${widget.roomId}/startinggame',
+      callback: (frame) {
+        // 원하는 작업 수행
+        if (frame.body == 'start') {
+          startGame();
+        }
+      },
+    );
+    stompClient.subscribe(
+      // 현재 각자의 기가 몇 개 인지 확인하기 위해서
+      destination: '/sub/${widget.roomId}/winData',
+      callback: (frame) {
+        print('현재 받아온 승 정보는 다음과 같습니다: ${frame.body}');
+        String frameBody = ' ${frame.body}';
+        List<String> parts = frameBody.split(' ');
+
+        String part1 = parts[1];
+        print(part1);
+        String part2 = parts[2];
+        print(part2);
+        List<String> info1 = part1.split(':');
+        List<String> info2 = part2.split(':');
+
+        String nick1 = info1[0];
+        String win1 = info1[1];
+        String nick2 = info2[0];
+        String win2 = info2[1];
+        if (widget.nickname == nick1) {
+          // nick1이 나일 때
+          int hpOfMe = 2 - int.parse(win2);
+          int hpOfYou = 2 - int.parse(win1);
+          myHp= hpOfMe.toString();
+          youHp= hpOfYou.toString();
+        } else {
+          //nick2가 나일 때
+          int hpOfMe = 2 - int.parse(win1);
+          int hpOfYou= 2- int.parse(win2);
+          myHp= hpOfMe.toString();
+          youHp= hpOfYou.toString();
+        }
+      },
+    );
+
     stompClient.send(
         destination: '/pub/${widget.roomId}/checkNum',
         body: widget.nickname,
         headers: {});
-
-    // Timer.periodic(const Duration(seconds: 10), (timer) {
-    //   if (isWaiting) {
-    //     stompClient.send(
-    //         destination: '/pub/${widget.roomId}/stillConnect',
-    //         body: '',
-    //         headers: {});
-    //   } else {
-    //     // isWaiting이 false인 경우 타이머 중지
-    //     timer.cancel();
-    //   }
-    // });
   }
 
   void sendMessage(String message, String nickname) {
@@ -662,11 +719,27 @@ class _GameScreenState extends State<GameScreen> {
 
   void startGame() {
     setState(() {
-      isConnected = false;
+      isPan = false;
     });
     stompClient.send(
         destination: '/pub/${widget.roomId}/Count',
         body: '${widget.nickname}:$round',
+        headers: {});
+  }
+
+  void showPan() {
+    // 몇 번째 판인지를 보여주는 화면 클라이언트에서 서버로 보내고 서버에서 1초 이후
+    // 클라이언트로 메시지를 보낸다. => 해당 메시지를 받자마자 gamestart를 실행한다.
+    print("showPan 입장");
+    pan += 1;
+    setState(() {
+      showTemp = false;
+      isConnected = false;
+      isPan = true;
+    });
+    stompClient.send(
+        destination: '/pub/${widget.roomId}/panShow',
+        body: 'widget.nickname',
         headers: {});
   }
 
@@ -677,9 +750,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        //url: socketUrl,
         // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -714,7 +787,6 @@ class _GameScreenState extends State<GameScreen> {
             // Center(
             //   child: Column(
             //     mainAxisAlignment: MainAxisAlignment.center,
-
             if (contender != null)
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.08,
@@ -814,6 +886,28 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
+            if (isPan)
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    child: SizedBox(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '몇번째 판인가? + $pan',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
             if (isConnected)
               Container(
                 color: Colors.black.withOpacity(0.6),
@@ -956,7 +1050,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp2.png'),
+                          image: AssetImage('lib/assets/icons/hp$myHp.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
@@ -966,7 +1060,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp2-1.png'),
+                          image: AssetImage('lib/assets/icons/hp$youHp-1.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
