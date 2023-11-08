@@ -37,6 +37,8 @@ class _GameScreenState extends State<GameScreen> {
   DateTime? backPressed;
   String youPick = '';
   String mePick = '';
+  String myHp = '2';
+  String youHp = '2';
   bool isWaiting = false; // 대기 화면 보여주기
   bool isConnected = false;
   bool isGameStart = false;
@@ -161,8 +163,8 @@ class _GameScreenState extends State<GameScreen> {
             // isConnected = true;
           });
           solo = 'false';
-          showPan();
           round += 1;
+          showPan();
           // Timer(Duration(seconds: 1), () {
           //
           // });
@@ -481,7 +483,7 @@ class _GameScreenState extends State<GameScreen> {
         if (comparing == '비겼습니다') {
           // 비겼으니까 다시 게임을 진행해야함
           // 이 때 기를 가져온다.
-          showPan();
+          startGame();
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
@@ -610,7 +612,7 @@ class _GameScreenState extends State<GameScreen> {
             );
           }
           print(frame.body);
-          dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
+          // dispose(); // 이거 다음에 다음 화면으로 넘어가면 됩니다.
         }
       },
     );
@@ -628,11 +630,45 @@ class _GameScreenState extends State<GameScreen> {
 
     stompClient.subscribe(
       // 판을 1.5초 동안 보여준 이후 명령이 들어오면 startgame 을 실행한다.
-      destination: '/sub/${widget.roomId}/startgame',
+      destination: '/sub/${widget.roomId}/startinggame',
       callback: (frame) {
         // 원하는 작업 수행
         if (frame.body == 'start') {
           startGame();
+        }
+      },
+    );
+    stompClient.subscribe(
+      // 현재 각자의 기가 몇 개 인지 확인하기 위해서
+      destination: '/sub/${widget.roomId}/winData',
+      callback: (frame) {
+        print('현재 받아온 승 정보는 다음과 같습니다: ${frame.body}');
+        String frameBody = ' ${frame.body}';
+        List<String> parts = frameBody.split(' ');
+
+        String part1 = parts[1];
+        print(part1);
+        String part2 = parts[2];
+        print(part2);
+        List<String> info1 = part1.split(':');
+        List<String> info2 = part2.split(':');
+
+        String nick1 = info1[0];
+        String win1 = info1[1];
+        String nick2 = info2[0];
+        String win2 = info2[1];
+        if (widget.nickname == nick1) {
+          // nick1이 나일 때
+          int hpOfMe = 2 - int.parse(win2);
+          int hpOfYou = 2 - int.parse(win1);
+          myHp= hpOfMe.toString();
+          youHp= hpOfYou.toString();
+        } else {
+          //nick2가 나일 때
+          int hpOfMe = 2 - int.parse(win1);
+          int hpOfYou= 2- int.parse(win2);
+          myHp= hpOfMe.toString();
+          youHp= hpOfYou.toString();
         }
       },
     );
@@ -683,7 +719,6 @@ class _GameScreenState extends State<GameScreen> {
 
   void startGame() {
     setState(() {
-      isConnected = false;
       isPan = false;
     });
     stompClient.send(
@@ -695,13 +730,17 @@ class _GameScreenState extends State<GameScreen> {
   void showPan() {
     // 몇 번째 판인지를 보여주는 화면 클라이언트에서 서버로 보내고 서버에서 1초 이후
     // 클라이언트로 메시지를 보낸다. => 해당 메시지를 받자마자 gamestart를 실행한다.
+    print("showPan 입장");
     pan += 1;
     setState(() {
+      showTemp = false;
       isConnected = false;
       isPan = true;
     });
     stompClient.send(
-        destination: '/pub/${widget.roomId}/panShow', body: '', headers: {});
+        destination: '/pub/${widget.roomId}/panShow',
+        body: 'widget.nickname',
+        headers: {});
   }
 
   @override
@@ -748,7 +787,6 @@ class _GameScreenState extends State<GameScreen> {
             // Center(
             //   child: Column(
             //     mainAxisAlignment: MainAxisAlignment.center,
-
             if (contender != null)
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.08,
@@ -1012,7 +1050,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp2.png'),
+                          image: AssetImage('lib/assets/icons/hp$myHp.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
@@ -1022,7 +1060,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp2-1.png'),
+                          image: AssetImage('lib/assets/icons/hp$youHp-1.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
