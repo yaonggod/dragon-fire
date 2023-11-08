@@ -956,7 +956,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp3.png'),
+                          image: AssetImage('lib/assets/icons/hp2.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
@@ -966,7 +966,7 @@ class _GameScreenState extends State<GameScreen> {
                       height: MediaQuery.of(context).size.width * 0.065,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp3-1.png'),
+                          image: AssetImage('lib/assets/icons/hp2-1.png'),
                           fit: BoxFit.fitWidth,
                         ),
                       ),
