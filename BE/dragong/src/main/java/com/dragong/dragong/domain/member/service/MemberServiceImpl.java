@@ -299,7 +299,7 @@ public class MemberServiceImpl implements MemberService {
     public void delete(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
-        Member member = getMyMember(accessToken.substring(7), refreshToken.substring(7),
+        Member member = getMyMember(accessToken, refreshToken.substring(7),
                 httpServletResponse);
 
         member.deleteMember();
