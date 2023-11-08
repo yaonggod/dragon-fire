@@ -5,13 +5,27 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(NotificationResponse details) {
-  print('background ${details.payload}');
+  // print('background111 ${details.payload}');
+  print("1111111");
+
 }
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // 앱이 백그라운드에 있을 시 여기로 옴, firebase를 시작하고
   await Firebase.initializeApp();
-  print('background ${message.data}');
+  // 알림을 보여주자 
+  final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationPlugin.show(
+      message.notification.hashCode,
+      // 메시지에서 지정한 title과 body
+      message.notification!.title,
+      message.notification!.body,
+      const NotificationDetails(
+          android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
+      ),
+      payload: message.data.toString()
+  );
 }
 
 // 앱 시작할때 notification 열어놓기
@@ -21,8 +35,8 @@ void initializeNotification() async {
   // 알림 채널 만들기
   await flutterLocalNotificationPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
-      .createNotificationChannel(const AndroidNotificationChannel("dragon-fire", "dragon-fire",
-      importance: Importance.defaultImportance
+      .createNotificationChannel(const AndroidNotificationChannel("high_importance_channel", "dragon-fire",
+      importance: Importance.max
   ));
 
   // 앱에서 알림 수신 허락받자 
@@ -38,11 +52,12 @@ void initializeNotification() async {
 
   await flutterLocalNotificationPlugin.initialize(
     // 안드로이드 기본 세팅
-    const InitializationSettings(android: AndroidInitializationSettings('@mipmap/ic_launcher')),
+    const InitializationSettings(android: AndroidInitializationSettings('appicontrans')),
 
     // 포그라운드에서 noti를 받을 때
     onDidReceiveNotificationResponse: (details) {
       print('foreground ${details.payload}');
+      // 받은 데이터로 리다이렉트하기
     },
 
     // 백그라운드에서 noti를 받을 때
@@ -60,7 +75,7 @@ void initializeNotification() async {
         message.notification!.title,
         message.notification!.body,
         const NotificationDetails(
-          android: AndroidNotificationDetails("dragon-fire", "dragon-fire", importance: Importance.max, priority: Priority.high)
+          android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
         ),
         payload: message.data.toString()
       );
@@ -74,7 +89,8 @@ void initializeNotification() async {
   }
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    print(message.data);
+    print("background opened ${message.data}");
+    // 받은 데이터로 리다이렉트하기
   });
 
 }

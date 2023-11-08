@@ -13,6 +13,7 @@ import 'package:frontend/screens/report_screen.dart';
 import 'package:frontend/screens/towerEnter_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -194,12 +195,32 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
     _controller.forward().whenComplete(() {});
     init();
+    updateFcmToken();
     super.initState();
   }
 
   Future<void> init() async {
     await _checkLoginStatus();
   }
+
+  Future<void> updateFcmToken() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    Map<String, String> tokens = await readToken();
+    accessToken = tokens['Authorization'];
+    refreshToken = tokens['refreshToken'];
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/member/fcm'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"fcmToken": fcmToken}),
+    );
+    print(response.statusCode);
+  }
+
 
   @override
   void dispose() {
