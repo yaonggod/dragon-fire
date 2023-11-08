@@ -49,6 +49,8 @@ dependencies:
   shared_preferences: ^2.0.6
   fluttertoast: ^8.2.2
   animated_digit: ^3.2.3
+  vibration: ^1.8.3
+  carousel_slider: ^4.2.1
   firebase_core: ^2.21.0
   firebase_messaging: ^14.7.3
   flutter_local_notifications: ^16.1.0

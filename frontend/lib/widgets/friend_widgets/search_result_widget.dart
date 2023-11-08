@@ -11,7 +11,8 @@ class SearchResultWidget extends StatefulWidget {
   final SearchResultModel searchResult;
   final VoidCallback onEvent;
 
-  const SearchResultWidget({super.key, required this.searchResult, required this.onEvent});
+  const SearchResultWidget(
+      {super.key, required this.searchResult, required this.onEvent});
 
   @override
   State<SearchResultWidget> createState() => _SearchResultWidgetState();
@@ -38,18 +39,17 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
   }
 
   Widget showButton(context) {
-    if (widget.searchResult.friendStatus == "NONE" || widget.searchResult.friendStatus == "DISCONNECTED") {
+    if (widget.searchResult.friendStatus == "NONE" ||
+        widget.searchResult.friendStatus == "DISCONNECTED") {
       return GestureDetector(
           onTap: () async {
-
             bool result = await requestFriend();
             widget.onEvent();
             _requestResultDialog(context, result);
           },
-
-          child: Text("친구 신청하기"));
+          child: const Text("친구 신청하기"));
     } else if (widget.searchResult.friendStatus == "WAITING") {
-      return Text("수락 대기중");
+      return const Text("수락 대기중");
     }
 
     return Container();
@@ -61,16 +61,15 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            result ?
-            '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다.' :
-            "친구 요청에 실패했습니다.",
+            result
+                ? '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다.'
+                : "친구 요청에 실패했습니다.",
             style: const TextStyle(fontSize: 18),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
-
               },
               child: const Text('확인'),
             ),
@@ -89,11 +88,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
           'Authorization': 'Bearer ${list["Authorization"]!}',
           'refreshToken': 'Bearer ${list['refreshToken']!}'
         },
-        body: jsonEncode(
-            {"toMember": widget.searchResult.toMember}));
+        body: jsonEncode({"toMember": widget.searchResult.toMember}));
 
-    const storage = FlutterSecureStorage();
-    String? accessToken = await storage.read(key: 'accessToken');
     if (response.statusCode == 200) {
       // // firebase AT
       // print(response.headers["firebase"]!.substring(7));
@@ -143,21 +139,23 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
             Row(
               children: [
                 const CircleAvatar(
-                  backgroundImage:
-                  AssetImage("lib/assets/icons/appIcon.png"),
+                  backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
                   radius: 30,
                 ),
-                SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.03),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.03),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.searchResult.toNickname, style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text("${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패"),
-                    widget.searchResult.friendStatus == "FRIEND" ? Text("상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패") : Container(),
+                    Text(widget.searchResult.toNickname,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                        "${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패"),
+                    widget.searchResult.friendStatus == "FRIEND"
+                        ? Text(
+                            "상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패")
+                        : Container(),
                   ],
                 ),
-
               ],
             ),
             showButton(context),

@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/info_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/myInfoUpdate_screen.dart';
+import 'package:frontend/widgets/carousel_widget.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -33,6 +35,15 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   NaverLoginResult? _naverLoginResult;
 
   String? nickname;
+
+  List<String> assetList =[
+    "lib/assets/icons/tutorial0.png",
+    "lib/assets/icons/tutorial1.png",
+    "lib/assets/icons/tutorial2.png",
+    "lib/assets/icons/tutorial3.png",
+    "lib/assets/icons/tutorial4.png",
+    "lib/assets/icons/tutorial5.png",
+  ];
 
   @override
   void initState() {
@@ -196,6 +207,168 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         iconTheme: const IconThemeData(
           color: Colors.black,
         ),
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 50, 90, 0.8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.width * 1.5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            flex: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    child: Center(
+                                      child: Text(
+                                        "환경설정",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 40,
+                                        ),
+                                      ),
+                                    ),
+                                    left: 0,
+                                    height: MediaQuery.of(context).size.width * 0.2,
+                                    right: 0,
+                                  ),
+
+                                  Positioned(
+                                    child: Divider(
+                                      color: Colors.white,
+                                      thickness: 2,
+                                    ),
+                                    left: 0,
+                                    top: MediaQuery.of(context).size.width * 0.2,
+                                    right: 0,
+                                  ),
+
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width - 20,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: MediaQuery.of(context).size.width * 0.22),
+                                        GestureDetector(
+                                          onTap: () {
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(builder: (context) => MusicScreen()),
+                                            // );
+                                          },
+                                          child: ListTile(
+                                            title: Text(
+                                              '음악',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Divider(
+                                          color: Colors.white,
+                                          thickness: 2,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => InfoScreen()),
+                                            );
+                                          },
+                                          child: ListTile(
+                                            title: Text(
+                                              '개인정보처리방침',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Divider(
+                                          color: Colors.white,
+                                          thickness: 2,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Scaffold(
+                                                  backgroundColor: Colors.transparent,
+
+                                                  body: Center(
+                                                    child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        CarouselWidget(asset: assetList),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: ListTile(
+                                            title: Text(
+                                              '튜토리얼',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 8),
+              width: MediaQuery.of(context).size.width * 0.09,
+              height: MediaQuery.of(context).size.width * 0.09,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('lib/assets/icons/settings.png'),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -205,7 +378,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
-                child: Text(style: TextStyle(fontSize: 50), nickname != null ? nickname! : "null"),
+                child: Text(
+                    style: TextStyle(fontSize: 50),
+                    nickname != null ? nickname! : "null"),
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 3),
               SizedBox(height: MediaQuery.of(context).size.height / 100),
