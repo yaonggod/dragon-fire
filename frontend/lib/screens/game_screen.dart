@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/gameResult_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
@@ -160,14 +161,13 @@ class _GameScreenState extends State<GameScreen> {
         if (frame.body == '0') {
           setState(() {
             isWaiting = false;
-            // isConnected = true;
+            isConnected = true;
           });
           solo = 'false';
           round += 1;
-          showPan();
-          // Timer(Duration(seconds: 1), () {
-          //
-          // });
+          Timer(Duration(milliseconds: 1200), () {
+            showPan();
+          });
         } else if (frame.body == '에러입니다') {
           // 내가 짝수번째 사람인데 방에 혼자 남아 있는경우?
           // 즉 내가 짝수번째로 들어가는 순간 홀수 번째 사람이 나가버린 경우
@@ -750,9 +750,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        //url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -888,25 +888,43 @@ class _GameScreenState extends State<GameScreen> {
               ),
             if (isPan)
               Container(
-                color: Colors.black.withOpacity(0.6),
                 height: MediaQuery.of(context).size.height,
                 child: Center(
                   child: Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.width * 0.5,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              '몇번째 판인가? + $pan',
-                            ),
+                            if(pan == 1)
+                              Text(
+                                 '1st Round!!',
+                                style: TextStyle(color: Colors.white, fontSize: 35),
+                              ),
+                            if(pan == 2)
+                              Text(
+                                '2nd Round!!',
+                                style: TextStyle(color: Colors.white, fontSize: 35),
+                              ),
+                            if(pan == 3)
+                              Text(
+                                '3rd Round!!',
+                                style: TextStyle(color: Colors.white, fontSize: 35),
+                              ),
                           ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ).animate().fade().slideY(curve: Curves.bounceOut),
 
             if (isConnected)
               Container(
@@ -937,7 +955,7 @@ class _GameScreenState extends State<GameScreen> {
                                 'lib/assets/icons/connected.png',
                                 fit: BoxFit.contain,
                               ),
-                            ),
+                            ).animate().scaleXY(begin:10, curve: Curves.bounceInOut).shake(delay:Duration(milliseconds: 500),curve: Curves.bounceInOut),
                           ],
                         ),
                       ),
