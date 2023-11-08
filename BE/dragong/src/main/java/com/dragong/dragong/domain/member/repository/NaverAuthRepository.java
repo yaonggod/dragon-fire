@@ -10,5 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface NaverAuthRepository extends JpaRepository<NaverAuth, UUID> {
 
     Optional<NaverAuth> findByEmail(String email);
+    Optional<NaverAuth> findByEmailAndMember_QuitFlagIsFalse(String email);
 }
 

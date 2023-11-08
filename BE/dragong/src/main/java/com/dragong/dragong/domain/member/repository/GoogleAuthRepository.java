@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface GoogleAuthRepository extends JpaRepository<GoogleAuth, UUID> {
 
     Optional<GoogleAuth> findByEmail(String email);
+
+    Optional<GoogleAuth> findByEmailAndMember_QuitFlagIsFalse(String email);
 }
