@@ -106,7 +106,7 @@ class _GameScreenState extends State<GameScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
-              (route) => false,
+          (route) => false,
         );
         return true;
       }
@@ -564,7 +564,7 @@ class _GameScreenState extends State<GameScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           } else {
             // 내가 패자인 경우
@@ -584,7 +584,7 @@ class _GameScreenState extends State<GameScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           }
           print(frame.body);
@@ -632,14 +632,16 @@ class _GameScreenState extends State<GameScreen> {
 
   void sendAlive() {
     // 아직 방에 살아있다는 것을 알리기 위해서
-    final Map<String, dynamic> messageBody ={
+    final Map<String, dynamic> messageBody = {
       "nowNumber": widget.nowNumber,
     };
     final headers = {
       'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
     };
     stompClient.send(
-        destination: '/pub/${widget.roomId}/alive', body: jsonEncode(messageBody), headers: headers);
+        destination: '/pub/${widget.roomId}/alive',
+        body: jsonEncode(messageBody),
+        headers: headers);
   }
 
   void sendTime(String time) {
@@ -715,17 +717,28 @@ class _GameScreenState extends State<GameScreen> {
 
             if (contender != null)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.1,
-                left: 0,
-                right: 0,
+                top: MediaQuery.of(context).size.height * 0.08,
+                right: 20,
                 child: Center(
-                  child: Text('적수:\n' + contender!,
+                  child: Text(contender!,
                       style: TextStyle(
                         fontSize: 20,
                       ),
                       textAlign: TextAlign.center),
                 ),
               ),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.08,
+              left: 20,
+              child: Center(
+                child: Text(widget.nickname,
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center),
+              ),
+            ),
+
             if (showTemp)
               Positioned(
                 top: 0,
@@ -783,7 +796,7 @@ class _GameScreenState extends State<GameScreen> {
                             Text(
                               '게임 대기중',
                               style:
-                              TextStyle(fontSize: 24, color: Colors.white),
+                                  TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             SizedBox(
                               height: MediaQuery.of(context).size.width * 0.15,
@@ -822,7 +835,7 @@ class _GameScreenState extends State<GameScreen> {
                             Text(
                               '적수 등장',
                               style:
-                              TextStyle(fontSize: 24, color: Colors.white),
+                                  TextStyle(fontSize: 24, color: Colors.white),
                             ),
                             FractionallySizedBox(
                               widthFactor: 0.41,
@@ -852,7 +865,7 @@ class _GameScreenState extends State<GameScreen> {
 
             if (isGameStart)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.45,
+                top: 0,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -872,12 +885,12 @@ class _GameScreenState extends State<GameScreen> {
               ),
             if (isGi || isPa || isBlock || isTel || isBomb)
               Positioned(
-                top:  MediaQuery.of(context).size.height * 0.35,
+                top: MediaQuery.of(context).size.height * 0.35,
                 left: 0,
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    if(giCnt == 0)
+                    if (giCnt == 0)
                       Container(
                         width: MediaQuery.of(context).size.width * 0.15,
                         height: MediaQuery.of(context).size.width * 0.6,
@@ -888,7 +901,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    if(giCnt == 1)
+                    if (giCnt == 1)
                       Container(
                         width: MediaQuery.of(context).size.width * 0.15,
                         height: MediaQuery.of(context).size.width * 0.6,
@@ -899,7 +912,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    if(giCnt == 2)
+                    if (giCnt == 2)
                       Container(
                         width: MediaQuery.of(context).size.width * 0.15,
                         height: MediaQuery.of(context).size.width * 0.6,
@@ -910,7 +923,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
-                    if(giCnt >= 3)
+                    if (giCnt >= 3)
                       Container(
                         width: MediaQuery.of(context).size.width * 0.15,
                         height: MediaQuery.of(context).size.width * 0.6,
@@ -921,6 +934,43 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ),
+                    Container(
+                      child: Center(
+                        child: Text(giCnt.toString(),
+                            style: TextStyle(fontSize: 28)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (isGi || isPa || isBlock || isTel || isBomb)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.05,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      height: MediaQuery.of(context).size.width * 0.065,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('lib/assets/icons/hp3.png'),
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      height: MediaQuery.of(context).size.width * 0.065,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('lib/assets/icons/hp3-1.png'),
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1115,13 +1165,13 @@ class _GameScreenState extends State<GameScreen> {
                           onTapDown: (_) {
                             setState(() {
                               buttonShield =
-                              'lib/assets/icons/buttonShield2.png';
+                                  'lib/assets/icons/buttonShield2.png';
                             });
                           },
                           onTapUp: (_) {
                             setState(() {
                               buttonShield =
-                              'lib/assets/icons/buttonShield.png';
+                                  'lib/assets/icons/buttonShield.png';
                             });
                           },
                           onTapCancel: () => setState(() {
