@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,109 +50,16 @@ public class MemberServiceImpl implements MemberService {
     public LoginResponseDto login(LoginRequestDto loginRequestDto,
             HttpServletResponse httpServletResponse) {
 
-        //구글 로그인 여부 확인
-        if (loginRequestDto.getSocialType() == SocialType.GOOGLE) {
-
-            // access_token의 구글로부터 유저 이메일 요청
-            String email = oAuthService.getGoogleEmailInfo(
-                    loginRequestDto.getAccessToken());
-
-            // DB에서 구글 이메일 조회
-            GoogleAuth googleAuth = googleAuthRepository.findByEmail(email)
-                    .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
-
-            // 회원인 경우
-            // jwt 발급
-            String accessToken = jwtUtil.generateAccessToken(googleAuth.getMemberId(),
-                    googleAuth.getMember()
-                            .getRole());
-            String refreshToken = jwtUtil.generateRefreshToken();
-
-            // 기존 회원정보 불러오기
-            Member member = googleAuth.getMember();
-            RefreshToken refreshTokenEntity = member.getRefreshToken();
-
-            // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
-            if (refreshTokenEntity != null) {
-
-                // db에 refreshToken update
-                refreshTokenEntity.updateRefreshToken(refreshToken);
-
-                // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
-            } else {
-
-                // db에 refreshToken 저장
-                RefreshToken newRefreshTokenEntity = RefreshToken.builder()
-                        .member(member)
-                        .refreshToken(refreshToken)
-                        .build();
-
-                member.addRefreshToken(newRefreshTokenEntity);
-                refreshTokenRepository.save(newRefreshTokenEntity);
-            }
-
-            httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
-            httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
-
-            LoginResponseDto response = LoginResponseDto.builder()
-                    .nickname(member.getMemberInfo().getNickname())
-                    .build();
-
-            log.info("Google 로그인 성공: " + email);
-
-            return response;
-        } else {
-            // AccessToken으로 네이버에 요청해서 유저 이메일 받아오기
-            String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
-
-            // DB에서 네이버 이메일 조회
-            NaverAuth naverAuth = naverAuthRepository.findByEmail(email)
-                    .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
-
-            // 회원인 경우
-            // jwt 발급
-            String accessToken = jwtUtil.generateAccessToken(naverAuth.getMemberId(),
-                    naverAuth.getMember()
-                            .getRole());
-            String refreshToken = jwtUtil.generateRefreshToken();
-
-            // 기존 회원정보 불러오기
-            Member member = naverAuth.getMember();
-
-            // 회원 정보로 과거 리프레시 토큰 내역 가져오기
-            RefreshToken refreshTokenEntity = member.getRefreshToken();
-
-            // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
-            if (refreshTokenEntity != null) {
-
-                // db에 refreshToken update
-                refreshTokenEntity.updateRefreshToken(refreshToken);
-
-                // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
-            } else {
-
-                // db에 refreshToken 저장
-                RefreshToken newRefreshTokenEntity = RefreshToken.builder()
-                        .member(member)
-                        .refreshToken(refreshToken)
-                        .build();
-
-                member.addRefreshToken(newRefreshTokenEntity);
-                refreshTokenRepository.save(newRefreshTokenEntity);
-            }
-
-            httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
-            httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
-
-            LoginResponseDto response = LoginResponseDto.builder()
-                    .nickname(member.getMemberInfo().getNickname())
-                    .build();
-
-            log.info("Naver 로그인 성공: " + email);
-
-            return response;
+        switch (loginRequestDto.getSocialType()) {
+            case APPLE:
+                return appleLogin(loginRequestDto, httpServletResponse);
+            case GOOGLE:
+                return googleLogin(loginRequestDto, httpServletResponse);
+            case NAVER:
+                return naverLogin(loginRequestDto, httpServletResponse);
+            default:
+                throw new IllegalStateException();
         }
-
     }
 
     @Override
@@ -165,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
 
             // 이미 회원가입을 한 회원인 경우
             if (googleAuthRepository.findByEmail(email).isPresent()) {
-                throw new RuntimeException();
+                throw new DuplicateKeyException("이미 존재하는 회원");
             }
 
             UUID memberId = UUID.randomUUID();
@@ -251,7 +159,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public NicknameUpdateResponseDto update(UpdateRequestDto updateRequestDto, String accessToken, String refreshToken,
+    public NicknameUpdateResponseDto update(UpdateRequestDto updateRequestDto, String accessToken,
+            String refreshToken,
             HttpServletResponse httpServletResponse) {
 
         MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken,
@@ -359,6 +268,118 @@ public class MemberServiceImpl implements MemberService {
             }
         }
 
+    }
+
+    @Transactional
+    public LoginResponseDto googleLogin(LoginRequestDto loginRequestDto,
+            HttpServletResponse httpServletResponse) {
+        // access_token의 구글로부터 유저 이메일 요청
+        String email = oAuthService.getGoogleEmailInfo(
+                loginRequestDto.getAccessToken());
+
+        // DB에서 구글 이메일 조회
+        GoogleAuth googleAuth = googleAuthRepository.findByEmailAndMember_QuitFlagIsFalse(email)
+                .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
+
+        // 회원인 경우
+        // jwt 발급
+        String accessToken = jwtUtil.generateAccessToken(googleAuth.getMemberId(),
+                googleAuth.getMember()
+                        .getRole());
+        String refreshToken = jwtUtil.generateRefreshToken();
+
+        // 기존 회원정보 불러오기
+        Member member = googleAuth.getMember();
+        RefreshToken refreshTokenEntity = member.getRefreshToken();
+
+        // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
+        if (refreshTokenEntity != null) {
+
+            // db에 refreshToken update
+            refreshTokenEntity.updateRefreshToken(refreshToken);
+
+            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+        } else {
+
+            // db에 refreshToken 저장
+            RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                    .member(member)
+                    .refreshToken(refreshToken)
+                    .build();
+
+            member.addRefreshToken(newRefreshTokenEntity);
+            refreshTokenRepository.save(newRefreshTokenEntity);
+        }
+
+        httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
+        httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
+
+        LoginResponseDto response = LoginResponseDto.builder()
+                .nickname(member.getMemberInfo().getNickname())
+                .build();
+
+        log.info("Google 로그인 성공: " + email);
+
+        return response;
+    }
+
+    @Transactional
+    public LoginResponseDto naverLogin(LoginRequestDto loginRequestDto,
+            HttpServletResponse httpServletResponse) {
+        String email = oAuthService.getNaverEmailInfo(loginRequestDto.getAccessToken());
+
+        // DB에서 네이버 이메일 조회
+        NaverAuth naverAuth = naverAuthRepository.findByEmailAndMember_QuitFlagIsFalse(email)
+                .orElseThrow(() -> new NoSuchElementException()); // 회원이 아닌 경우 예외처리
+
+        // 회원인 경우
+        // jwt 발급
+        String accessToken = jwtUtil.generateAccessToken(naverAuth.getMemberId(),
+                naverAuth.getMember()
+                        .getRole());
+        String refreshToken = jwtUtil.generateRefreshToken();
+
+        // 기존 회원정보 불러오기
+        Member member = naverAuth.getMember();
+
+        // 회원 정보로 과거 리프레시 토큰 내역 가져오기
+        RefreshToken refreshTokenEntity = member.getRefreshToken();
+
+        // 이미 리프레시 토큰이 db에 있는 경우 (but 만료된 경우)
+        if (refreshTokenEntity != null) {
+
+            // db에 refreshToken update
+            refreshTokenEntity.updateRefreshToken(refreshToken);
+
+            // 첫 로그인 (리프레시 토큰을 저장했던 적이 없는 경우)
+        } else {
+
+            // db에 refreshToken 저장
+            RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                    .member(member)
+                    .refreshToken(refreshToken)
+                    .build();
+
+            member.addRefreshToken(newRefreshTokenEntity);
+            refreshTokenRepository.save(newRefreshTokenEntity);
+        }
+
+        httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
+        httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
+
+        LoginResponseDto response = LoginResponseDto.builder()
+                .nickname(member.getMemberInfo().getNickname())
+                .build();
+
+        log.info("Naver 로그인 성공: " + email);
+
+        return response;
+    }
+
+    @Transactional
+    public LoginResponseDto appleLogin(LoginRequestDto loginRequestDto,
+            HttpServletResponse httpServletResponse) {
+        return LoginResponseDto.builder().build();
     }
 
 

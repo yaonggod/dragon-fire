@@ -1,5 +1,6 @@
 package com.dragong.dragong.domain.member.entity;
 
+import com.dragong.dragong.domain.member.entity.auth.AppleAuth;
 import com.dragong.dragong.domain.member.entity.auth.GoogleAuth;
 import com.dragong.dragong.domain.member.entity.auth.NaverAuth;
 import com.dragong.dragong.domain.member.entity.auth.RefreshToken;
@@ -49,6 +50,9 @@ public class Member extends BaseTimeEntity {
             fetch = FetchType.LAZY)
     private NaverAuth naverAuth;
 
+    @OneToOne(mappedBy = "member",
+            fetch = FetchType.LAZY)
+    private AppleAuth appleAuth;
 
     @OneToOne(mappedBy = "member",
             fetch = FetchType.LAZY)
@@ -66,6 +70,10 @@ public class Member extends BaseTimeEntity {
 
     public void addNaverAuth(NaverAuth naverAuth) {
         this.naverAuth = naverAuth;
+    }
+
+    public void addAppleAuth(AppleAuth appleAuth) {
+        this.appleAuth = appleAuth;
     }
 
     public void addRefreshToken(RefreshToken refreshToken) {
