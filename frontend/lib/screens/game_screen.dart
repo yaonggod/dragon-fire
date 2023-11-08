@@ -33,6 +33,7 @@ class _GameScreenState extends State<GameScreen> {
   late final StompClient stompClient;
   String countdown = '';
   String winner = '';
+  int pan = 0; // 몇 번 째 판인지 // round와는 다르다
   DateTime? backPressed;
   String youPick = '';
   String mePick = '';
@@ -47,6 +48,7 @@ class _GameScreenState extends State<GameScreen> {
   bool isBlock = false; // 막기
   bool isTel = false; // 텔레포트
   bool isBomb = false; // 원기옥
+  bool isPan = false; // 몇 번째 판인지를 보여주기 위해서
 
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
@@ -156,15 +158,15 @@ class _GameScreenState extends State<GameScreen> {
         if (frame.body == '0') {
           setState(() {
             isWaiting = false;
-            isConnected = true;
+            // isConnected = true;
           });
-
-          Timer(Duration(seconds: 1), () {
-            solo = 'false';
-            startGame();
-            round += 1;
-          });
-        }else if(frame.body=='에러입니다'){
+          solo = 'false';
+          showPan();
+          round += 1;
+          // Timer(Duration(seconds: 1), () {
+          //
+          // });
+        } else if (frame.body == '에러입니다') {
           // 내가 짝수번째 사람인데 방에 혼자 남아 있는경우?
           // 즉 내가 짝수번째로 들어가는 순간 홀수 번째 사람이 나가버린 경우
           dispose();
@@ -186,6 +188,7 @@ class _GameScreenState extends State<GameScreen> {
               showTemp = false;
               isWaiting = false;
               isConnected = false;
+              isPan = false;
               isGameStart = true;
               isGi = true;
               isPa = true;
@@ -213,6 +216,7 @@ class _GameScreenState extends State<GameScreen> {
             showTemp = false;
             isGameStart = false;
             showResult = true;
+            isPan = false;
             isGi = false; // 기
             isPa = false; // 파
             isBlock = false; // 막기
@@ -449,6 +453,7 @@ class _GameScreenState extends State<GameScreen> {
           setState(() {
             isGameStart = false;
             showResult = false;
+            isPan = false;
             showTemp = true;
             isGi = false; // 기
             isPa = false; // 파
@@ -476,7 +481,7 @@ class _GameScreenState extends State<GameScreen> {
         if (comparing == '비겼습니다') {
           // 비겼으니까 다시 게임을 진행해야함
           // 이 때 기를 가져온다.
-          startGame();
+          showPan();
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
@@ -486,6 +491,7 @@ class _GameScreenState extends State<GameScreen> {
           setState(() {
             showTemp = false;
             isGameStart = false;
+            isPan = false;
             showResult = true;
             isGi = false; // 기
             isPa = false; // 파
@@ -497,18 +503,19 @@ class _GameScreenState extends State<GameScreen> {
 
           // dispose();
         } else {
-          if(shouldContinue=='계속합니다'){
+          if (shouldContinue == '계속합니다') {
             // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
             // 그럼 이때는 처음부터 게임을 시작해야 한다.
-            round=0;
-            startGame();
+            round = 0;
+            showPan();
             // 새로운 게임을 시작하는데 가장 중요한 요소가 뭘까? 일단 기 정보를 초기화 해줘야 한다.
-          }else if(shouldContinue=='끝냅니다'){
+          } else if (shouldContinue == '끝냅니다') {
             // 2승을 한 유저가 있기에 해당 유저를 승자로 선언합니다.
             winner = comparing; // 그 판의 승자를 의미한다.
             setState(() {
               showTemp = false;
               isGameStart = false;
+              isPan = false;
               showResult = true;
               isGi = false; // 기
               isPa = false; // 파
@@ -619,11 +626,21 @@ class _GameScreenState extends State<GameScreen> {
       },
     );
 
+    stompClient.subscribe(
+      // 판을 1.5초 동안 보여준 이후 명령이 들어오면 startgame 을 실행한다.
+      destination: '/sub/${widget.roomId}/startgame',
+      callback: (frame) {
+        // 원하는 작업 수행
+        if (frame.body == 'start') {
+          startGame();
+        }
+      },
+    );
+
     stompClient.send(
         destination: '/pub/${widget.roomId}/checkNum',
         body: widget.nickname,
         headers: {});
-
   }
 
   void sendMessage(String message, String nickname) {
@@ -667,11 +684,24 @@ class _GameScreenState extends State<GameScreen> {
   void startGame() {
     setState(() {
       isConnected = false;
+      isPan = false;
     });
     stompClient.send(
         destination: '/pub/${widget.roomId}/Count',
         body: '${widget.nickname}:$round',
         headers: {});
+  }
+
+  void showPan() {
+    // 몇 번째 판인지를 보여주는 화면 클라이언트에서 서버로 보내고 서버에서 1초 이후
+    // 클라이언트로 메시지를 보낸다. => 해당 메시지를 받자마자 gamestart를 실행한다.
+    pan += 1;
+    setState(() {
+      isConnected = false;
+      isPan = true;
+    });
+    stompClient.send(
+        destination: '/pub/${widget.roomId}/panShow', body: '', headers: {});
   }
 
   @override
@@ -818,6 +848,28 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               ),
+            if (isPan)
+              Container(
+                color: Colors.black.withOpacity(0.6),
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: Dialog(
+                    child: SizedBox(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '몇번째 판인가? + $pan',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
             if (isConnected)
               Container(
                 color: Colors.black.withOpacity(0.6),
