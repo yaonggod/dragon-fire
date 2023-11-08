@@ -95,14 +95,35 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode({"accessToken": accessToken, "socialType": "GOOGLE"}));
 
     if (response.statusCode != 200) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RegistScreen(
-                  accessToken: accessToken,
-                  socialType: "GOOGLE",
-                )),
-      );
+      if(response.body == "탈퇴된 회원") {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('알림'),
+              content: Text('탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+      else{
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RegistScreen(
+                      accessToken: accessToken,
+                      socialType: "GOOGLE",
+                    )),
+          );
+      }
     }
     if (response.statusCode == 200) {
       String? accessToken1 = response.headers['authorization'];
@@ -193,15 +214,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // 유저가 존재하지 않을 경우
       if (response.statusCode != 200) {
-        // AT와 NAVER를 가지고 회원가입 페이지로 보내기
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RegistScreen(
-                    accessToken: token.accessToken,
-                    socialType: "NAVER",
-                  )),
-        );
+        if(response.body == "탈퇴된 회원") {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('알림'),
+                content: Text('탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('확인'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+        else{
+          // AT와 NAVER를 가지고 회원가입 페이지로 보내기
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RegistScreen(
+                  accessToken: token.accessToken,
+                  socialType: "NAVER",
+                )),
+          );
+        }
       }
 
       // 유저가 존재할 경우 서버에서 AT와 RT를 보내줌
