@@ -55,9 +55,14 @@ void initializeNotification() async {
     const InitializationSettings(android: AndroidInitializationSettings('appicontrans')),
 
     // 포그라운드에서 noti를 받을 때
-    onDidReceiveNotificationResponse: (details) {
+    onDidReceiveNotificationResponse: (details) async {
       print('foreground ${details.payload}');
       // 받은 데이터로 리다이렉트하기
+      // await Navigator.push(
+      //   context,
+      //   MaterialPageRoute<void>(builder: (context) => FriendScreen(friendSelected: false)),
+      // );
+
     },
 
     // 백그라운드에서 noti를 받을 때

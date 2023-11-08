@@ -12,7 +12,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
-  const FriendScreen({super.key});
+  final friendSelected;
+  const FriendScreen({super.key, required this.friendSelected});
 
   @override
   _FriendScreenState createState() => _FriendScreenState();
@@ -158,6 +159,9 @@ class _FriendScreenState extends State<FriendScreen> {
     });
     getMyFriends();
     getMyMessages();
+    setState(() {
+      friendSelected = widget.friendSelected;
+    });
     super.initState();
   }
 

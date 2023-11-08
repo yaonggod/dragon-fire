@@ -191,7 +191,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FriendScreen(),
+        builder: (context) => FriendScreen(friendSelected: true),
       ),
     );
   }
