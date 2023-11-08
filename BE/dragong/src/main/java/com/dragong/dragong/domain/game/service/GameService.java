@@ -34,7 +34,7 @@ public class GameService {
             countDownandstartGame[i] = new ArrayList<>();
             accessTokenRoom[i] = new LinkedList<>();
             winInfo[i] = new ArrayList<>();
-            whoisIn[i]=1;
+            whoisIn[i] = 1;
         }
     }
 
@@ -132,6 +132,21 @@ public class GameService {
         winInfo[roomId].clear();
     }
 
+    public String returnWinData(int roomId) {
+        String result = "";
+        WinData winData1 = winInfo[roomId].get(0);
+        WinData winData2 = winInfo[roomId].get(1);
+
+        String nick1 = winData1.getNickname();
+        int score1 = winData1.getWin();
+        String nick2 = winData2.getNickname();
+        int score2 = winData2.getWin();
+
+        result += nick1 + ":" + Integer.toString(score1) + " " + nick2 + ":" + Integer.toString(score2);
+
+        return result;
+    }
+
     public int giInit(int roomId, String nickname) {
         // 기 정보를 처음으로 초기화 해주고 넣어준다.
         log.info("기 정보를 초기화해줍니다");
@@ -172,8 +187,8 @@ public class GameService {
 
         String nick1 = gi1.getNickname();
         String nick2 = gi2.getNickname();
-        giDataRoom[roomId].set(0,new GiData(nick1,0));
-        giDataRoom[roomId].set(1,new GiData(nick2,0));
+        giDataRoom[roomId].set(0, new GiData(nick1, 0));
+        giDataRoom[roomId].set(1, new GiData(nick2, 0));
     }
 
     public void gameStack(int roomId, String nickname, String picked) {
@@ -211,6 +226,10 @@ public class GameService {
         return answer;
     }
 
+    public void cleanList(int roomId) {
+        countDownandstartGame[roomId].clear();
+    }
+
     public void aliveCheck(int roomId) {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
         saving[roomId] += 1;
@@ -226,9 +245,6 @@ public class GameService {
         saving[roomId] = 0;
     }
 
-    public void cleanList(int roomId) {
-        countDownandstartGame[roomId].clear();
-    }
 
     public String gameResult(int roomId) {
         log.info("게임 결과를 확인합니다");
@@ -261,7 +277,7 @@ public class GameService {
 //            }
             //
             answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[roomId].get(1) + ":" + "미처리" + " " + grd1.getNickname();
-            winner= grd1.getNickname();
+            winner = grd1.getNickname();
             if (winner != null) {
                 System.out.println("이거실행");
                 if (winInfo[roomId].get(0).getNickname().equals(winner)) {
@@ -294,7 +310,7 @@ public class GameService {
 
         } else if (gameRoom[roomId].size() == 0) {
             // 둘 다 정보를 입력하지 않은 경우
-            answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다"+" 끝냅니다";
+            answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다" + " 끝냅니다";
             return answer;
         }
         String player1 = grd1.getNickname();

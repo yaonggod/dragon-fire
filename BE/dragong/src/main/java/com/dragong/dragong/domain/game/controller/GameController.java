@@ -38,31 +38,14 @@ public class GameController {
         int roomId = (nowNumber + 1) / 2;
         log.info("현재의 roomId는" + roomId + "입니다");
         // roomId를 JSON 형식으로 반환
-        gameService.initWinData(roomId,nickname); // 승 정보를 처음에 초기화 해준다.
+        gameService.initWinData(roomId, nickname); // 승 정보를 처음에 초기화 해준다.
         gameService.accessTokenUpdate(roomId, accessToken, nickname);
         Map<String, Integer> response = new HashMap<>();
         response.put("roomId", roomId);
-        response.put("nowNumber",nowNumber); // 내가 몇 번째인지를 전해준다.
+        response.put("nowNumber", nowNumber); // 내가 몇 번째인지를 전해준다.
 
         return ResponseEntity.ok(response);
     }
-
-    @MessageMapping("/{roomId}/pickwhat")
-    public void handleChatMessage(@DestinationVariable String roomId, String message) {
-        // 무엇을 선택했는지 저장하기 위해서
-        int roomID = Integer.parseInt(roomId);
-        log.info("선택한 값 저장을 위해 controller 입장");
-        log.info("받아온 값 출력: " + message);
-        String[] parts = message.split(":");
-        if (parts.length == 2) {
-            String nickname = parts[0].trim();
-            String picked = parts[1].trim();
-            gameService.gameStack(roomID, nickname, picked);
-        } else {
-            log.info("올바른 메시지 형식이 아닙니다");
-        }
-    }
-
 
     @MessageMapping("/{roomId}/checkNum")
     @SendTo("/sub/{roomId}/numCheck")
@@ -91,7 +74,7 @@ public class GameController {
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/stillConnect", "still");
                 int compare = gameService.savingReturn(roomID); // 보내기 전의 값
                 int whoIam = gameService.whoisInThere(roomID); // 나는 누구인가?
-                if(whoIam%2==0){
+                if (whoIam % 2 == 0) {
                     //내가 짝수 번째 사람인데 여기 있다?  => 바로 탈출 해야 한다.
                     log.info("이게 실행된다");
                     gameService.gameStopTemp();
@@ -125,7 +108,7 @@ public class GameController {
                     log.info("연결이 끊겼습니다");
                     //이제 여기에서 처리를 해줘야한다. => queue 비우고, gidata 뺴고 등등
                     int whoamI = gameService.whoisInThere(roomID); // 나는 누구인가?
-                    if(whoamI%2==0){
+                    if (whoamI % 2 == 0) {
                         log.info("에러가 발생해 내가 짝수번 째 사람이지만 게임이 시작되지 않았기에 탈출합니다");
                         // total 뺄 필요없음. => 꼬이기만 할 뿐
                         //que 에서는 빼줘야 한다. // 수는 그대로 유지해야한다.
@@ -134,7 +117,7 @@ public class GameController {
                         gameService.savingReset(roomID);
                         gameService.cleanWinData(roomID);
                         gameService.deleteAccessToken(roomID);// accessToken 정보 빼기
-                    }else{
+                    } else {
                         // 내가 혼자 있다가 그냥 방에서 나가는 경우를 말한다.
                         log.info("혼자 있다가 그냥 방을 탈출합니다");
                         gameService.giClear(roomID); // 기 정보 초기화
@@ -151,9 +134,27 @@ public class GameController {
         return String.valueOf(standard); // 처리된 메시지 다시 클라이언트로 전송
     }
 
+    @MessageMapping("/{roomId}/pickwhat")
+    public void handleChatMessage(@DestinationVariable String roomId, String message) {
+        // 무엇을 선택했는지 저장하기 위해서
+        int roomID = Integer.parseInt(roomId);
+        log.info("선택한 값 저장을 위해 controller 입장");
+        log.info("받아온 값 출력: " + message);
+        String[] parts = message.split(":");
+        if (parts.length == 2) {
+            String nickname = parts[0].trim();
+            String picked = parts[1].trim();
+            gameService.gameStack(roomID, nickname, picked);
+        } else {
+            log.info("올바른 메시지 형식이 아닙니다");
+        }
+    }
+
+
     @MessageMapping("/{roomId}/Count")
     public void Count(@DestinationVariable String roomId, String nicknameRound) {
         // 카운트 다운을 해준다.
+
         int errorCnt = 0;
         int roomID = Integer.parseInt(roomId);
         log.info("Count를 시작합니다.");
@@ -193,15 +194,16 @@ public class GameController {
         //gameService.messageInsert(roomId, nickname);
 
         if (gameStart) {
+            log.info("gameStart 입장");
             gameService.cleanList(roomID);
             for (int i = 3; i >= 0; i--) {
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                if (i != 3) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
-
                 if (i == 0) {
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i)); // 0초도 한번 보내준다.
                     // 보내주는 이유는 한 명이라도 선택을 하지 않았을 경우, 해당 유저의 닉네임을 처리해야하기 때문(이건 선택을 하지 않을 상황이지, 튕긴 상황이 아니다)
@@ -237,12 +239,14 @@ public class GameController {
                     }
                     String answer = gameService.gameResult(roomID);
                     // 여기서 만약에 answer의 가장 끝부분이 "안끝남"이 아니라면 gi 정보를 초기화 해주면 되지 않을까?
+
+                     // 이제 승 정보를 반환해야지
                     String[] information = answer.split(" ");
                     System.out.println(information[3]); // 이게
-                    if(information[3].equals("끝냅니다")) {
+                    if (information[3].equals("끝냅니다")) {
                         // 기 정보를 0, 0 으로 수정해줘야 한다.
                         gameService.giReset(roomID);
-                    }else if(information[3].equals("계속합니다")){
+                    } else if (information[3].equals("계속합니다")) {
                         // 기 정보를 0,0 으로 수정해줘야 한다.
                         gameService.giReset(roomID);
                     }
@@ -300,7 +304,9 @@ public class GameController {
                 }
             }
             String giMessage = gameService.giReturn(roomID);
+            String winInformation = gameService.returnWinData(roomID);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
         }
     }
 
@@ -343,10 +349,28 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/alive")
-    public void checkConnection(@DestinationVariable String roomId,@RequestBody Map<String, Object> messageBody) {
+    public void checkConnection(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
         int roomID = Integer.parseInt(roomId);
         int nowNumber = (int) messageBody.get("nowNumber");
-        gameService.whoIn(roomID,nowNumber);
+        gameService.whoIn(roomID, nowNumber);
         gameService.aliveCheck(roomID);
+    }
+
+    @MessageMapping("/{roomId}/panShow")
+    public void showingPan(@DestinationVariable String roomId, String nickname) {
+        // 1.5 초를 쉬고 명령을 보내줄 것이다. // 근데 이 명령이 2번 들어올테니 이것도 처리를 해줘야 한다.
+        int roomID = Integer.parseInt(roomId);
+        gameService.messageInsert(roomID, nickname);
+        int cnt = gameService.evenReturn(roomID);
+        if (cnt == 2) {
+            gameService.cleanList(roomID);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
+        }
+
     }
 }
