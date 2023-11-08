@@ -9,6 +9,7 @@ import 'package:frontend/widgets/friend_widgets/message_widget.dart';
 import 'package:frontend/widgets/friend_widgets/search_result_widget.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({super.key});
@@ -19,8 +20,7 @@ class FriendScreen extends StatefulWidget {
 
 class _FriendScreenState extends State<FriendScreen> {
   // String baseUrl = "http://10.0.2.2:8080";
-  String baseUrl = "https://k9a209.p.ssafy.io/api";
-  // String? baseUrl = dotenv.env["BASE_URL"];
+  String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
   // 검색할 닉네임
   String searchNickname = "";
@@ -82,6 +82,7 @@ class _FriendScreenState extends State<FriendScreen> {
           'refreshToken': 'Bearer ${list['refreshToken']!}'
         }
     );
+
     if (response.statusCode == 200) {
       var jsonString = utf8.decode(response.bodyBytes);
       List<dynamic> jsonMap = jsonDecode(jsonString);
