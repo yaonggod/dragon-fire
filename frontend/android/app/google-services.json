@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "960931172753",
+    "project_id": "dragon-fire-829f8",
+    "storage_bucket": "dragon-fire-829f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:960931172753:android:1acf75bc29e351faa8ca30",
+        "android_client_info": {
+          "package_name": "com.capsule.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6Fh4IkQLGm5g0s_UeYvXy_jJgld_7y6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

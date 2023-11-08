@@ -20,7 +20,7 @@ class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
   String buttonsrc = 'lib/assets/icons/friendFightButton.png';
 
-  String baseUrl = dotenv.env['BASE_URL']!;
+  String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -64,7 +64,7 @@ class _FriendWidgetState extends State<FriendWidget> {
   Future<bool> deleteFriend() async {
     // 친삭 api 쏘고
     Map<String, String> list = await readToken();
-    Uri uri = Uri.parse("$baseUrl/api/friend/disconnect");
+    Uri uri = Uri.parse("$baseUrl/friend/disconnect");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
