@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 def keystoreProperties = new Properties()
@@ -49,30 +50,33 @@ android {
         versionName "0.0.58"
     }
 
-     signingConfigs{
-         release {
-             keyAlias keystoreProperties['keyAlias']
-             keyPassword keystoreProperties['keyPassword']
-             storeFile file(keystoreProperties['storeFile'])
-             storePassword keystoreProperties['storePassword']
-         }
-     }
+    signingConfigs{
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
 
-     buildTypes {
-         release {
-             // TODO: Add your own signing config for the release build.
-             // Signing with the debug keys for now, so `flutter run --release` works.
-             signingConfig signingConfigs.release
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
 
-             minifyEnabled true
-             shrinkResources true
-             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-         }
-     }
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
 }
 
 flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:32.5.0')
+    implementation 'com.google.firebase:firebase-analytics'
+}
