@@ -168,9 +168,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   Future<void> checkFirstAccess() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
-    await prefs.setBool('firstAccess', false);
     if (_isFirstAccess) {
-      await prefs.setBool('firstAccess', true);
+      await prefs.setBool('isFirstAccess', false);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => TutorialScreen()),
