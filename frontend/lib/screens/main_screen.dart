@@ -11,6 +11,7 @@ import 'package:frontend/screens/myInfo_screen.dart';
 import 'package:frontend/screens/ranking_screen.dart';
 import 'package:frontend/screens/report_screen.dart';
 import 'package:frontend/screens/towerEnter_screen.dart';
+import 'package:frontend/screens/tutorial_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +37,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   bool isButtonDisabled = false;
 
+  bool _isFirstAccess = true; // 첫 접속 여부
+
+  List<String> assetList =[
+    "lib/assets/icons/tutorial0.png",
+    "lib/assets/icons/tutorial1.png",
+    "lib/assets/icons/tutorial2.png",
+    "lib/assets/icons/tutorial3.png",
+    "lib/assets/icons/tutorial4.png",
+    "lib/assets/icons/tutorial5.png",
+  ];
+
+
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
 
@@ -54,6 +67,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _checkLoginStatus() async {
+    await checkFirstAccess();
     nickname = await getNickname();
     Map<String, String> tokens = await readToken();
     accessToken = tokens['Authorization'];
@@ -149,6 +163,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         );
       },
     );
+  }
+
+  Future<void> checkFirstAccess() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
+    if (_isFirstAccess) {
+      await prefs.setBool('isFirstAccess', false);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TutorialScreen()),
+      );
+    }
   }
 
   void _navigateToReportScreen() {

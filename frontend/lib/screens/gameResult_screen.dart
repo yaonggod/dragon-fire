@@ -162,6 +162,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                                     // ),
                                     AnimatedDigitWidget(
                                       controller: _controller2,
+                                      duration: Duration(milliseconds: 800),
                                       textStyle: TextStyle(
                                           color: Colors.white, fontSize: 30),
                                       enableSeparator: true,
