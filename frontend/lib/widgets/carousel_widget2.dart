@@ -22,7 +22,7 @@ class _CarouselWidget2State extends State<CarouselWidget2> {
     final List<Widget> imageSliders = widget.asset.map(
           (assetName) => Image.asset(
         assetName,
-        fit: BoxFit.fitHeight,
+        fit: BoxFit.fitWidth,
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
       ),
@@ -45,7 +45,7 @@ class _CarouselWidget2State extends State<CarouselWidget2> {
           ),
         ),
         Positioned(
-          top:MediaQuery.of(context).size.height*0.95,
+          top:MediaQuery.of(context).size.height*0.90,
           left: 0,
           right: 0,
           child: Center(

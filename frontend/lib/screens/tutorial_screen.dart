@@ -48,10 +48,41 @@ class _TutorialScreenState extends State<TutorialScreen> {
           );
           return true;
         },
-        child: Stack(
-          children: [
-            CarouselWidget2(asset: assetList),
-          ],
+        child: SafeArea(
+          child: Stack(
+            children: [
+              CarouselWidget2(asset: assetList),
+              Positioned(
+                top: 10,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Text("튜토리얼",style: TextStyle(fontSize: 30, color: Colors.black)),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                            (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: Image.asset(
+                      'lib/assets/icons/close.png',
+                      width: 35,
+                      height: 35,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
