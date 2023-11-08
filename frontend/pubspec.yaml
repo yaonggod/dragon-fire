@@ -51,6 +51,8 @@ dependencies:
   animated_digit: ^3.2.3
   vibration: ^1.8.3
   carousel_slider: ^4.2.1
+  device_info_plus: ^9.1.0
+  sign_in_with_apple: ^5.0.0
   firebase_core: ^2.21.0
   firebase_messaging: ^14.7.3
   flutter_local_notifications: ^16.1.0
