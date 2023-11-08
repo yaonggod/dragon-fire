@@ -715,17 +715,28 @@ class _GameScreenState extends State<GameScreen> {
 
             if (contender != null)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.1,
-                left: 0,
-                right: 0,
+                top: MediaQuery.of(context).size.height * 0.08,
+                right: 20,
                 child: Center(
-                  child: Text('적수:\n' + contender!,
+                  child: Text(contender!,
                       style: TextStyle(
                         fontSize: 20,
                       ),
                       textAlign: TextAlign.center),
                 ),
               ),
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.08,
+                left: 20,
+                child: Center(
+                  child: Text(widget.nickname,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center),
+                ),
+              ),
+
             if (showTemp)
               Positioned(
                 top: 0,
@@ -852,7 +863,7 @@ class _GameScreenState extends State<GameScreen> {
 
             if (isGameStart)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.45,
+                top: 0,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -918,6 +929,37 @@ class _GameScreenState extends State<GameScreen> {
                           image: DecorationImage(
                             image: AssetImage('lib/assets/icons/giStatus3.png'),
                             fit: BoxFit.fitHeight,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            if (isGi || isPa || isBlock || isTel || isBomb)
+              Positioned(
+                top:  MediaQuery.of(context).size.height * 0.05,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        height: MediaQuery.of(context).size.width * 0.065,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('lib/assets/icons/hp3.png'),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        height: MediaQuery.of(context).size.width * 0.065,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('lib/assets/icons/hp3-1.png'),
+                            fit: BoxFit.fitWidth,
                           ),
                         ),
                       ),
