@@ -163,6 +163,10 @@ class _GameScreenState extends State<GameScreen> {
             startGame();
             round += 1;
           });
+        }else if(frame.body=='에러입니다'){
+          // 내가 짝수번째 사람인데 방에 혼자 남아 있는경우?
+          // 즉 내가 짝수번째로 들어가는 순간 홀수 번째 사람이 나가버린 경우
+          dispose();
         }
       },
     );
@@ -449,6 +453,9 @@ class _GameScreenState extends State<GameScreen> {
         String frameBody = ' ${frame.body}';
         List<String> parts = frameBody.split(' ');
         String comparing = parts[3];
+        String shouldContinue = parts[4];
+        print("제일 중요한 부분을 출력합니다.");
+        print(shouldContinue); // 이게 게임을 끝낼지 여부를 선택하는 것이다.
         List<String> section1 = parts[1].split(':');
         String user1 = section1[0];
         if (comparing == '비겼습니다') {
@@ -458,6 +465,7 @@ class _GameScreenState extends State<GameScreen> {
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
+          // 몇 번 째 게임인지와 상관없이 무조건 게임을 끝냅니다.
           winner = "무효입니다";
           // winner = frame.body ?? '0';
           setState(() {
@@ -474,21 +482,28 @@ class _GameScreenState extends State<GameScreen> {
 
           // dispose();
         } else {
-          // 승자를 표시하고 게임을 끝내야함
-          winner = comparing;
-
-          setState(() {
-            showTemp = false;
-            isGameStart = false;
-            showResult = true;
-            isGi = false; // 기
-            isPa = false; // 파
-            isBlock = false; // 막기
-            isTel = false; // 텔레포트
-            isBomb = false; // 원기옥
-          });
-          // dispose();
-          sendResult(winner);
+          if(shouldContinue=='계속합니다'){
+            // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
+            // 그럼 이때는 처음부터 게임을 시작해야 한다.
+            round=0;
+            startGame();
+            // 새로운 게임을 시작하는데 가장 중요한 요소가 뭘까? 일단 기 정보를 초기화 해줘야 한다.
+          }else if(shouldContinue=='끝냅니다'){
+            // 2승을 한 유저가 있기에 해당 유저를 승자로 선언합니다.
+            winner = comparing; // 그 판의 승자를 의미한다.
+            setState(() {
+              showTemp = false;
+              isGameStart = false;
+              showResult = true;
+              isGi = false; // 기
+              isPa = false; // 파
+              isBlock = false; // 막기
+              isTel = false; // 텔레포트
+              isBomb = false; // 원기옥
+            });
+            // dispose();
+            sendResult(winner);
+          }
         }
       },
     );
@@ -594,17 +609,6 @@ class _GameScreenState extends State<GameScreen> {
         body: widget.nickname,
         headers: {});
 
-    // Timer.periodic(const Duration(seconds: 10), (timer) {
-    //   if (isWaiting) {
-    //     stompClient.send(
-    //         destination: '/pub/${widget.roomId}/stillConnect',
-    //         body: '',
-    //         headers: {});
-    //   } else {
-    //     // isWaiting이 false인 경우 타이머 중지
-    //     timer.cancel();
-    //   }
-    // });
   }
 
   void sendMessage(String message, String nickname) {
