@@ -2,6 +2,7 @@ package com.dragong.dragong.domain.friend.controller;
 
 import com.dragong.dragong.domain.friend.dto.request.FriendRequestDto;
 import com.dragong.dragong.domain.friend.service.FriendService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +31,17 @@ public class FriendController {
     @PostMapping("/request")
     public ResponseEntity<?> requestFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
-            @RequestHeader("refreshToken") String refreshToken) {
-        friendService.requestFriend(accessToken, refreshToken, friendRequestDto);
+            @RequestHeader("refreshToken") String refreshToken,
+            HttpServletResponse httpServletResponse) {
+        friendService.requestFriend(accessToken, refreshToken, friendRequestDto, httpServletResponse);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/accept")
     public ResponseEntity<?> acceptFriend(@RequestBody FriendRequestDto friendRequestDto,
             @RequestHeader("Authorization") String accessToken,
-            @RequestHeader("refreshToken") String refreshToken) {
-        friendService.acceptFriend(accessToken, refreshToken, friendRequestDto);
+            @RequestHeader("refreshToken") String refreshToken, HttpServletResponse httpServletResponse) {
+        friendService.acceptFriend(accessToken, refreshToken, friendRequestDto, httpServletResponse);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
