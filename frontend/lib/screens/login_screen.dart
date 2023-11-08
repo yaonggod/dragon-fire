@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:frontend/screens/regist_screen.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,6 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
 
+  bool _appleLoggedIn = false;
+
+  bool _isIos = false;
   String? nickname;
 
   @override
@@ -43,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
+    await isIOSPlatform();
     nickname = await getNickname();
     print(nickname);
     Map<String, String> tokens = await readToken();
@@ -116,6 +123,55 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Future<void> appleLogin() async {
+  //   final credential = await SignInWithApple.getAppleIDCredential(
+  //     scopes: [
+  //       AppleIDAuthorizationScopes.email,
+  //     ],
+  //   );
+  //   GoogleSignInAccount? account = await _googleSignIn.signIn();
+  //
+  //   final accessToken =
+  //       (await _googleSignIn.currentUser!.authentication).accessToken!;
+  //   String baseUrl = dotenv.env['BASE_URL']!;
+  //   Uri uri = Uri.parse("$baseUrl/api/oauth/login");
+  //   // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/login");
+  //   final response = await http.post(uri,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: jsonEncode({"accessToken": accessToken, "socialType": "APPLE"}));
+  //
+  //   if (response.statusCode != 200) {
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //           builder: (context) => RegistScreen(
+  //                 accessToken: accessToken,
+  //                 socialType: "APPLE",
+  //               )),
+  //     );
+  //   }
+  //   if (response.statusCode == 200) {
+  //     String? accessToken1 = response.headers['authorization'];
+  //     String? refreshToken1 = response.headers['refreshtoken'];
+  //     String? nickname =
+  //         jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+  //
+  //     if (accessToken1 != null && refreshToken1 != null && nickname != null) {
+  //       saveToken(
+  //           accessToken1.substring(7), refreshToken1.substring(7), "APPLE");
+  //       saveNickname(nickname);
+  //       Navigator.pushAndRemoveUntil(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => const MainScreen()),
+  //         (route) => false,
+  //       );
+  //     }
+  //   }
+  // }
+
+
   Future<void> naverLogin() async {
     // 네이버 로그인하기
     _naverLoginResult = await FlutterNaverLogin.logIn();
@@ -167,6 +223,19 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     }
+  }
+
+  Future<void> isIOSPlatform() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    try {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    } catch (e) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      setState(() {
+        _isIos = true;
+      });
+    };
   }
 
   _logout() async {
@@ -308,73 +377,57 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: MediaQuery.of(context).size.height / 3),
-              (_naverLoginStatus != true && !_googleLoggedIn)
-                  ? GestureDetector(
-                      onTap: naverLogin,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.25),
-                              offset: Offset(0, 3),
-                              blurRadius: 5,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: Image.asset(
-                          'lib/assets/icons/naverButton.png',
-                          width: MediaQuery.of(context).size.width * 0.8,
-                        ),
+              GestureDetector(
+                onTap: naverLogin,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.25),
+                        offset: Offset(0, 3),
+                        blurRadius: 5,
+                        spreadRadius: 0,
                       ),
-                    )
-                  : Container(),
-              SizedBox(height: MediaQuery.of(context).size.height / 60),
-              (_naverLoginStatus != true && !_googleLoggedIn)
-                  ? GestureDetector(
-                      onTap: googleLogin,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.15),
-                              offset: Offset(0, 5),
-                              blurRadius: 5,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: Image.asset(
-                          'lib/assets/icons/googleButton.png',
-                          width: MediaQuery.of(context).size.width * 0.8,
-                        ),
-                      ),
-                    )
-                  : Container(),
-              if (_naverLoginStatus == true || _googleLoggedIn == true)
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '로그아웃',
-                    style: TextStyle(color: Colors.white),
+                    ],
                   ),
-                  onPressed: () {
-                    _logout();
-                    print('Logout button pressed.');
-                  },
+                  child: Image.asset(
+                    'lib/assets/icons/naverButton.png',
+                    width: MediaQuery.of(context).size.width * 0.8,
+                  ),
                 ),
-              if (_naverLoginStatus == true || _googleLoggedIn == true)
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '회원탈퇴',
-                    style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height / 60),
+              GestureDetector(
+                onTap: googleLogin,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        offset: Offset(0, 5),
+                        blurRadius: 5,
+                        spreadRadius: 0,
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    _out();
-                    print('회원탈퇴.');
-                  },
-                )
+                  child: Image.asset(
+                    'lib/assets/icons/googleButton.png',
+                    width: MediaQuery.of(context).size.width * 0.8,
+                  ),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height / 60),
+              (_isIos)
+                  ? SignInWithAppleButton(
+                      text: "Continue with Apple",
+                      borderRadius: BorderRadius.all(Radius.circular(7)),
+                      style: SignInWithAppleButtonStyle.black,
+                      iconAlignment: IconAlignment.center,
+                      onPressed: () async {
+
+                      },
+                    )
+                  : Container(),
             ],
           ),
         ),
