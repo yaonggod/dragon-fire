@@ -9,10 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,4 +31,12 @@ public class PlayLog extends BaseTimeEntity {
 
     @Column(name = "opponent_play")
     private String opponentPlay;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "my_uuid")
+    private Member myUUID;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "opponent_uuid")
+    private Member opponentUUID;
 }

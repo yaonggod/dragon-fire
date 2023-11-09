@@ -59,14 +59,6 @@ public class Member extends BaseTimeEntity {
             fetch = FetchType.LAZY)
     private RefreshToken refreshToken;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "my_uuid")
-    private List<PlayLog> myUUID = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opponent_uuid")
-    private List<PlayLog> opponentUUID = new ArrayList<>();
-
 
     // member 먼저 생성 후 memberInfo를 생성해야하므로 builder와 따로
     public void addMemberInfo(MemberInfo memberInfo) {
