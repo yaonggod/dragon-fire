@@ -52,7 +52,7 @@ public class OAuthServiceImpl implements OAuthService {
         String res = response.get("response").toString();
 
         // 객체에서 이메일 뽑아내기
-        String email = res.split(", ")[1].split("=")[1].trim();
+        String email = res.split(", ")[1].split("=")[1].trim().replace("}", "");
 
         return email;
 
