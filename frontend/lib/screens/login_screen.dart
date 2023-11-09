@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
         body: jsonEncode({"accessToken": accessToken, "socialType": "GOOGLE"}));
 
     if (response.statusCode != 200) {
-      if(response.body == "탈퇴된 회원") {
+      if (response.body == "탈퇴된 회원") {
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -113,16 +113,15 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           },
         );
-      }
-      else{
+      } else {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => RegistScreen(
-                      accessToken: accessToken,
-                      socialType: "GOOGLE",
-                    )),
-          );
+          context,
+          MaterialPageRoute(
+              builder: (context) => RegistScreen(
+                    accessToken: accessToken,
+                    socialType: "GOOGLE",
+                  )),
+        );
       }
     }
     if (response.statusCode == 200) {
@@ -130,11 +129,15 @@ class _LoginScreenState extends State<LoginScreen> {
       String? refreshToken1 = response.headers['refreshtoken'];
       String? nickname =
           jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
-
-      if (accessToken1 != null && refreshToken1 != null && nickname != null) {
+      String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
+      if (accessToken1 != null &&
+          refreshToken1 != null &&
+          nickname != null &&
+          email != null) {
         saveToken(
             accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
         saveNickname(nickname);
+        saveEmail(email);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -192,7 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
   //   }
   // }
 
-
   Future<void> naverLogin() async {
     // 네이버 로그인하기
     _naverLoginResult = await FlutterNaverLogin.logIn();
@@ -214,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // 유저가 존재하지 않을 경우
       if (response.statusCode != 200) {
-        if(response.body == "탈퇴된 회원") {
+        if (response.body == "탈퇴된 회원") {
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -232,16 +234,15 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             },
           );
-        }
-        else{
+        } else {
           // AT와 NAVER를 가지고 회원가입 페이지로 보내기
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => RegistScreen(
-                  accessToken: token.accessToken,
-                  socialType: "NAVER",
-                )),
+                      accessToken: token.accessToken,
+                      socialType: "NAVER",
+                    )),
           );
         }
       }
@@ -252,11 +253,16 @@ class _LoginScreenState extends State<LoginScreen> {
         String? refreshToken1 = response.headers['refreshtoken'];
         String? nickname =
             jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+        String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
 
-        if (accessToken1 != null && refreshToken1 != null && nickname != null) {
+        if (accessToken1 != null &&
+            refreshToken1 != null &&
+            nickname != null &&
+            email != null) {
           saveToken(
               accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
           saveNickname(nickname);
+          saveEmail(email);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -277,7 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isIos = true;
       });
-    };
+    }
+    ;
   }
 
   _logout() async {
@@ -366,9 +373,19 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs.setString('nickname', nickname);
   }
 
+  saveEmail(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('email', email);
+  }
+
   Future<String?> getNickname() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('nickname');
+  }
+
+  Future<String?> getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('email');
   }
 
   removeNickname() async {
@@ -465,9 +482,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(7)),
                       style: SignInWithAppleButtonStyle.black,
                       iconAlignment: IconAlignment.center,
-                      onPressed: () async {
-
-                      },
+                      onPressed: () async {},
                     )
                   : Container(),
             ],
