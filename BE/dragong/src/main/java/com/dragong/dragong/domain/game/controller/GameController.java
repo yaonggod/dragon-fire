@@ -76,7 +76,7 @@ public class GameController {
                 int whoIam = gameService.whoisInThere(roomID); // 나는 누구인가?
                 if (whoIam % 2 == 0) {
                     //내가 짝수 번째 사람인데 여기 있다?  => 바로 탈출 해야 한다.
-                    log.info("이게 실행된다");
+                    log.info("짝수번째 사람인데 게임을 시작하지 못하기에 탈출합니다");
                     gameService.gameStopTemp();
                     gameService.giClear(roomID);
                     gameService.savingReset(roomID);
@@ -85,7 +85,7 @@ public class GameController {
                     return "에러입니다";
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
