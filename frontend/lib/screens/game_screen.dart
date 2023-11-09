@@ -886,16 +886,21 @@ class _GameScreenState extends State<GameScreen> {
                             MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
                         height: MediaQuery.of(context).size.height *
                             0.3, // 원하는 높이 값으로 설정
-                        child: Lottie.asset(
-                          'lib/assets/lottie/$youPick.json',
+                        // child: Lottie.asset(
+                        //   'lib/assets/lottie/$youPick.json',
+                        //   fit: BoxFit.fitHeight,
+                        //   width: MediaQuery.of(context).size.width,
+                        //   repeat: true,
+                        //   onLoaded: (composition) {
+                        //     Timer(const Duration(milliseconds: 1200), () {
+                        //       // 여기에 콜백 코드를 넣으세요
+                        //     });
+                        //   },
+                        // ),
+                        child: Image.asset(
+                          'lib/assets/skills/$youPick.gif',
                           fit: BoxFit.fitHeight,
                           width: MediaQuery.of(context).size.width,
-                          repeat: true,
-                          onLoaded: (composition) {
-                            Timer(const Duration(milliseconds: 1200), () {
-                              // 여기에 콜백 코드를 넣으세요
-                            });
-                          },
                         ),
                       ),
                     ],
@@ -920,16 +925,21 @@ class _GameScreenState extends State<GameScreen> {
                             MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
                         height: MediaQuery.of(context).size.height *
                             0.3, // 원하는 높이 값으로 설정
-                        child: Lottie.asset(
-                          'lib/assets/lottie/$mePick.json',
+                        // child: Lottie.asset(
+                        //   'lib/assets/lottie/$mePick.json',
+                        //   fit: BoxFit.fitHeight,
+                        //   width: MediaQuery.of(context).size.width,
+                        //   repeat: true,
+                        //   onLoaded: (composition) {
+                        //     Timer(const Duration(milliseconds: 2000), () {
+                        //       // 여기에 콜백 코드를 넣으세요
+                        //     });
+                        //   },
+                        // ),
+                        child: Image.asset(
+                          'lib/assets/skills/$mePick.gif',
                           fit: BoxFit.fitHeight,
                           width: MediaQuery.of(context).size.width,
-                          repeat: true,
-                          onLoaded: (composition) {
-                            Timer(const Duration(milliseconds: 2000), () {
-                              // 여기에 콜백 코드를 넣으세요
-                            });
-                          },
                         ),
                       ),
                     ],
@@ -1509,7 +1519,6 @@ class _GameScreenState extends State<GameScreen> {
                                   setState(() {
                                     isBombPressed = true;
                                   });
-
                                 }
                               },
                               onTapDown: (_) {
@@ -1555,7 +1564,6 @@ class _GameScreenState extends State<GameScreen> {
                                 setState(() {
                                   isGiPressed = true;
                                 });
-
                               }
                             },
                             onTapDown: (_) {
@@ -1607,7 +1615,6 @@ class _GameScreenState extends State<GameScreen> {
                                 setState(() {
                                   isBlockPressed = true;
                                 });
-
                               }
                             },
                             onTapDown: (_) {
@@ -1640,7 +1647,7 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt >= 1)
                             GestureDetector(
                               onTap: () {
-                                if (!showTemp  && !isPaPressed) {
+                                if (!showTemp && !isPaPressed) {
                                   // 바위를 선택한 경우
                                   sendMessage('파', widget.nickname);
                                   // isGi = false;
@@ -1651,7 +1658,6 @@ class _GameScreenState extends State<GameScreen> {
                                   setState(() {
                                     isPaPressed = true;
                                   });
-
                                 }
                               },
                               onTapDown: (_) {
