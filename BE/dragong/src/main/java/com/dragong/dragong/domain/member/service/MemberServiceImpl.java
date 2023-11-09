@@ -321,6 +321,7 @@ public class MemberServiceImpl implements MemberService {
 
         LoginResponseDto response = LoginResponseDto.builder()
                 .nickname(member.getMemberInfo().getNickname())
+                .email(email)
                 .build();
 
         log.info("Google 로그인 성공: " + email);
@@ -379,6 +380,7 @@ public class MemberServiceImpl implements MemberService {
 
         LoginResponseDto response = LoginResponseDto.builder()
                 .nickname(member.getMemberInfo().getNickname())
+                .email(email)
                 .build();
 
         log.info("Naver 로그인 성공: " + email);
