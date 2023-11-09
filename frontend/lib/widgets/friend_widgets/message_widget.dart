@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/models/friend_models/message_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MessageWidget extends StatefulWidget {
   final MessageModel message;
@@ -123,7 +124,40 @@ class _MessageWidgetState extends State<MessageWidget> {
             {"toMember": widget.message.toMember}));
     if (response.statusCode == 200) {
       // firebase AT 받아서 알람 보내기
-      print(response.headers["firebase"] != null ? response.headers["firebase"] : "null");
+      final firebaseAccessToken = response.headers["firebase"]!.substring(7);
+
+      print("firebase AT $firebaseAccessToken");
+
+      // 내 닉네임
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final myNickname = prefs.getString('nickname');
+
+      // 상대가 fcm token이 있을 경우에만 보내기
+      if (widget.message.fcmToken != null) {
+
+        final response2 = await http.post(Uri.parse("https://fcm.googleapis.com/v1/projects/${dotenv.env["PROJECT_ID"]}/messages:send"),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': "Bearer $firebaseAccessToken"
+            },
+            body: jsonEncode(
+                {
+                  "message": {
+                    "notification": {
+                      "title": "드래곤 불",
+                      "body": "${myNickname}님이 친구 요청을 수락했습니다."
+                    },
+                    "data": {
+                      "do": "friend"
+                    },
+                    "token": widget.message.fcmToken
+                  }
+
+                }
+            )
+        );
+        print(response2.statusCode);
+      }
       return true;
     }
     return false;

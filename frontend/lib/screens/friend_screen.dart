@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/friend_models/friend_model.dart';
 import 'package:frontend/models/friend_models/message_model.dart';
 import 'package:frontend/models/friend_models/search_result_model.dart';
+import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/widgets/friend_widgets/friend_widget.dart';
 import 'package:frontend/widgets/friend_widgets/message_widget.dart';
 import 'package:frontend/widgets/friend_widgets/search_result_widget.dart';
@@ -12,7 +13,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
-  const FriendScreen({super.key});
+  final friendSelected;
+  const FriendScreen({super.key, required this.friendSelected});
 
   @override
   _FriendScreenState createState() => _FriendScreenState();
@@ -139,9 +141,24 @@ class _FriendScreenState extends State<FriendScreen> {
   *
   * 신고 상세 정보 적고 제출
    */
+
+  Future<void> _checkLoginStatus() async {
+    // await tokenCheck();
+    Map<String, String> tokens = await readToken();
+    if (tokens.isEmpty) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+      );
+    }
+  }
+
   @override
   void initState() {
     // storage에 토큰을 확인하고 로그인 여부 불러오기
+    _checkLoginStatus();
+
     scrollController = ScrollController();
     scrollController.addListener(() {
       // maxheight에 도달했으면
@@ -158,6 +175,9 @@ class _FriendScreenState extends State<FriendScreen> {
     });
     getMyFriends();
     getMyMessages();
+    setState(() {
+      friendSelected = widget.friendSelected;
+    });
     super.initState();
   }
 
