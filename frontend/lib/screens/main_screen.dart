@@ -239,6 +239,26 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     _controller.forward().whenComplete(() {});
     init();
     updateFcmToken();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('공지'),
+            content: Text('업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    });
     super.initState();
   }
 
