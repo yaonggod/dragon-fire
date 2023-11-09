@@ -53,6 +53,15 @@ class _GameScreenState extends State<GameScreen> {
   bool isTel = false; // 텔레포트
   bool isBomb = false; // 원기옥
   bool isPan = false; // 몇 번째 판인지를 보여주기 위해서
+  String? nickname1;
+  int? myWin;
+  int? myLose;
+  int? myScore;
+  String? nickname2;
+  int? contenderWin;
+  int? contenderLose;
+  int? contenderScore;
+  bool countdownChange = true;
 
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
@@ -566,25 +575,35 @@ class _GameScreenState extends State<GameScreen> {
       // 현재 각자의 기가 몇 개 인지 확인하기 위해서
       destination: '/sub/${widget.roomId}/gameRecord',
       callback: (frame) {
+
         Map<String, dynamic> gameRecord = json.decode(frame.body!);
         print('받아온 전적 정보: $gameRecord');
-        String nickname1 = gameRecord['nickname1'];
-        int user1Win = gameRecord['user1Win'];
-        int user1Lose = gameRecord['user1Lose'];
-        int user1Score = gameRecord['user1Score'];
-        String nickname2 = gameRecord['nickname2'];
-        int user2Win = gameRecord['user2Win'];
-        int user2Lose = gameRecord['user2Lose'];
-        int user2Score = gameRecord['user2Score'];
+        nickname1 = gameRecord['nickname1'];
+        nickname2 = gameRecord['nickname2'];
 
+        if (widget.nickname == nickname1) {
+          myWin = gameRecord['user1Win'];
+          myLose = gameRecord['user1Lose'];
+          myScore = gameRecord['user1Score'];
+          contenderWin = gameRecord['user2Win'];
+          contenderLose = gameRecord['user2Lose'];
+          contenderScore = gameRecord['user2Score'];
+        } else {
+          contenderWin = gameRecord['user1Win'];
+          contenderLose = gameRecord['user1Lose'];
+          contenderScore = gameRecord['user1Score'];
+          myWin = gameRecord['user2Win'];
+          myLose = gameRecord['user2Lose'];
+          myScore = gameRecord['user2Score'];
+        }
         print(nickname1);
-        print(user1Win);
-        print(user1Lose);
-        print(user1Score);
+        print(myWin);
+        print(myLose);
+        print(myScore);
         print(nickname2);
-        print(user2Win);
-        print(user2Lose);
-        print(user2Score);
+        print(contenderWin);
+        print(contenderLose);
+        print(contenderScore);
       },
     );
 
@@ -848,15 +867,19 @@ class _GameScreenState extends State<GameScreen> {
               if (showTemp)
                 Positioned(
                   top: 0,
+                  height:MediaQuery.of(context).size.height*0.3,
                   child: Column(
                     children: [
                       SizedBox(
                         width:
                             MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
                         height: MediaQuery.of(context).size.height *
-                            0.5, // 원하는 높이 값으로 설정
+                            0.3, // 원하는 높이 값으로 설정
                         child: Lottie.asset(
                           'lib/assets/lottie/$youPick.json',
+                          fit: BoxFit.fitHeight,
+                          width:
+                          MediaQuery.of(context).size.width,
                           repeat: true,
                           onLoaded: (composition) {
                             Timer(const Duration(milliseconds: 1200), () {
@@ -865,13 +888,34 @@ class _GameScreenState extends State<GameScreen> {
                           },
                         ),
                       ),
+                    ],
+                  ),
+                ),
+              if (showTemp)
+                Positioned(
+                  height:MediaQuery.of(context).size.height*0.6,
+                  width:MediaQuery.of(context).size.width,
+                  child:Divider(
+                    thickness: 5,
+                  ),
+
+                ),
+              if (showTemp)
+                Positioned(
+                  top: MediaQuery.of(context).size.height*0.3,
+                  height:MediaQuery.of(context).size.height*0.3,
+                  child: Column(
+                    children: [
                       SizedBox(
                         width:
-                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                        MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
                         height: MediaQuery.of(context).size.height *
-                            0.5, // 원하는 높이 값으로 설정
+                            0.3, // 원하는 높이 값으로 설정
                         child: Lottie.asset(
                           'lib/assets/lottie/$mePick.json',
+                          fit: BoxFit.fitHeight,
+                          width:
+                          MediaQuery.of(context).size.width,
                           repeat: true,
                           onLoaded: (composition) {
                             Timer(const Duration(milliseconds: 2000), () {
@@ -1041,21 +1085,38 @@ class _GameScreenState extends State<GameScreen> {
                         Align(
                           alignment: Alignment.center,
                           child: Container(
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   contender!,
-                                  style: const TextStyle(fontSize: 40),
+                                  style: const TextStyle(fontSize: 30),
                                 ),
-                                const Text(
-                                  "랭킹: 1위",
-                                  style: TextStyle(fontSize: 18),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.55,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    //
+                                    // crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        'lib/assets/icons/trophyIcon.PNG',
+                                        height: 20,
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                      Text(
+                                        ": $contenderScore",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const Text(
-                                  "101승 25패",
-                                  style: TextStyle(fontSize: 18),
+                                Text(
+                                  "$contenderWin승 $contenderLose패",
+                                  style: TextStyle(fontSize: 20),
                                 ),
                               ],
                             ),
@@ -1066,7 +1127,7 @@ class _GameScreenState extends State<GameScreen> {
                         delay: const Duration(milliseconds: 900),
                         duration: const Duration(milliseconds: 350),
                         begin: 2,
-                        end: 0,
+                        end: -0.09,
                         curve: Curves.easeIn)),
               if (isConnected)
                 Positioned(
@@ -1097,23 +1158,41 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
                         ),
-                        Center(
+                        Align(
+                          alignment: Alignment.center,
                           child: Container(
+                            width: MediaQuery.of(context).size.width * 0.60,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   widget.nickname,
-                                  style: const TextStyle(fontSize: 40),
+                                  style: const TextStyle(fontSize: 30),
                                 ),
-                                const Text(
-                                  "랭킹: 1위",
-                                  style: TextStyle(fontSize: 18),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.55,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    //
+                                    // crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.asset(
+                                        'lib/assets/icons/trophyIcon.PNG',
+                                        height: 20,
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                      Text(
+                                        ": $myScore",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const Text(
-                                  "101승 25패",
-                                  style: TextStyle(fontSize: 18),
+                                Text(
+                                  "$myWin승 $myLose패",
+                                  style: TextStyle(fontSize: 20),
                                 ),
                               ],
                             ),
@@ -1124,7 +1203,7 @@ class _GameScreenState extends State<GameScreen> {
                         delay: const Duration(milliseconds: 900),
                         duration: const Duration(milliseconds: 350),
                         begin: -2,
-                        end: 0,
+                        end: 0.08,
                         curve: Curves.easeIn)),
               if (isConnected)
                 Positioned(
@@ -1175,29 +1254,53 @@ class _GameScreenState extends State<GameScreen> {
 
               if (isGameStart)
                 Positioned(
-                  top: -10,
-                  left: 0,
-                  right: 0,
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Text(
-                      countdown,
+                    top: MediaQuery.of(context).size.height * 0.3,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                        child: Text(
+                      '$countdown',
                       style: const TextStyle(
-                          fontSize: 60, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              if (isGi || isPa || isBlock || isTel || isBomb)
+                          fontSize: 65,
+                          height: 0.8,
+                          fontWeight: FontWeight.bold),
+                    )
+                            .animate(target: countdown == '3' ? 1 : 0)
+                            .scaleXY(
+                                duration: Duration(milliseconds: 100),
+                                begin: 2,
+                                end: 0.1,
+                                curve: Curves.bounceInOut)
+                            .animate(target: countdown == '2' ? 2 : 0)
+                            .scaleXY(
+                                duration: Duration(milliseconds: 100),
+                                begin: 2,
+                                end:0.1,
+                                curve: Curves.bounceInOut)
+                            .animate(target: countdown == '1' ? 2 : 0)
+                            .scaleXY(
+                                duration: Duration(milliseconds: 100),
+                                begin: 2,
+                                end:0.1,
+                                curve: Curves.bounceInOut)
+                            .animate(target: countdown == '0' ? 2 : 0)
+                            .scaleXY(
+                                duration: Duration(milliseconds: 100),
+                                begin: 2,
+                                end:0.1,
+                                curve: Curves.bounceInOut))),
+
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.35,
-                  left: 0,
+                  right: 0,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       if (giCnt == 0)
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          height: MediaQuery.of(context).size.width * 0.6,
+                          width: MediaQuery.of(context).size.width * 0.13,
+                          height: MediaQuery.of(context).size.width * 0.5,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(giIcon),
@@ -1207,9 +1310,9 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       if (giCnt == 1)
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: const BoxDecoration(
+                          width: MediaQuery.of(context).size.width * 0.13,
+                          height: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus1.png'),
@@ -1219,9 +1322,9 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       if (giCnt == 2)
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: const BoxDecoration(
+                          width: MediaQuery.of(context).size.width * 0.13,
+                          height: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus2.png'),
@@ -1231,9 +1334,9 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       if (giCnt >= 3)
                         Container(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: const BoxDecoration(
+                          width: MediaQuery.of(context).size.width * 0.13,
+                          height: MediaQuery.of(context).size.width * 0.5,
+                          decoration: BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus3.png'),
@@ -1250,10 +1353,10 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                 ),
-              if (isGi || isPa || isBlock || isTel || isBomb)
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.03,
-                  right: 20,
+                  top: MediaQuery.of(context).size.width * 0.09,
+                  right: 10,
                   child: Center(
                     child: Text(contender!,
                         style: const TextStyle(
@@ -1262,9 +1365,10 @@ class _GameScreenState extends State<GameScreen> {
                         textAlign: TextAlign.center),
                   ),
                 ),
-              if (isGi || isPa || isBlock || isTel || isBomb)
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.03,
+                  top: MediaQuery.of(context).size.height * 0.6 -
+                      MediaQuery.of(context).size.width * 0.075,
                   left: 20,
                   child: Center(
                     child: Text(widget.nickname,
@@ -1274,44 +1378,44 @@ class _GameScreenState extends State<GameScreen> {
                         textAlign: TextAlign.center),
                   ),
                 ),
-              if (isGi || isPa || isBlock || isTel || isBomb)
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                 Positioned(
                   top: 0,
-                  left: 0,
                   right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        height: MediaQuery.of(context).size.width * 0.065,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('lib/assets/icons/hp$myHp.png'),
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.65,
+                    height: MediaQuery.of(context).size.width * 0.09,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('lib/assets/icons/hp$youHp-1.png'),
+                        fit: BoxFit.fitWidth,
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        height: MediaQuery.of(context).size.width * 0.065,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image:
-                                AssetImage('lib/assets/icons/hp$youHp-1.png'),
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              if (isGi || isPa || isBlock || isTel || isBomb)
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.65,
+                  top: MediaQuery.of(context).size.height * 0.6,
+                  left: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.55,
+                    height: MediaQuery.of(context).size.width * 0.075,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('lib/assets/icons/hp$myHp.png'),
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ),
+                ),
+              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.70,
                   left: 0,
                   right: 0,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -1319,7 +1423,7 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt < 1)
                             Container(
                               width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   opacity: 0.5,
@@ -1357,7 +1461,7 @@ class _GameScreenState extends State<GameScreen> {
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.33,
                                 height:
-                                    MediaQuery.of(context).size.width * 0.33,
+                                    MediaQuery.of(context).size.width * 0.25,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     image: AssetImage(buttonTele),
@@ -1366,22 +1470,10 @@ class _GameScreenState extends State<GameScreen> {
                                 ),
                               ),
                             ),
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          //     // 순간이동을 하는 경우
-                          //     sendMessage('순간이동', widget.nickname);
-                          //     isGi = false;
-                          //     isPa = false;
-                          //     isBlock = false;
-                          //     isTel = false;
-                          //     isBomb = false;
-                          //   },
-                          //   child: const Text('순간이동'),
-                          // ),
                           if (giCnt < 3)
                             Container(
                               width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   opacity: 0.5,
@@ -1417,7 +1509,7 @@ class _GameScreenState extends State<GameScreen> {
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.33,
                                 height:
-                                    MediaQuery.of(context).size.width * 0.33,
+                                    MediaQuery.of(context).size.width * 0.25,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     image: AssetImage(buttonOne),
@@ -1426,18 +1518,6 @@ class _GameScreenState extends State<GameScreen> {
                                 ),
                               ),
                             ),
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          //     // 원기옥을 선택하는 경우
-                          //     sendMessage('원기옥', widget.nickname);
-                          //     isGi = false;
-                          //     isPa = false;
-                          //     isBlock = false;
-                          //     isTel = false;
-                          //     isBomb = false;
-                          //   },
-                          //   child: const Text('원기옥'),
-                          // ),
                         ],
                       ),
                       Row(
@@ -1467,7 +1547,7 @@ class _GameScreenState extends State<GameScreen> {
                             }),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: AssetImage(buttonGi),
@@ -1516,7 +1596,7 @@ class _GameScreenState extends State<GameScreen> {
                             }),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: AssetImage(buttonShield),
@@ -1552,7 +1632,7 @@ class _GameScreenState extends State<GameScreen> {
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.33,
                                 height:
-                                    MediaQuery.of(context).size.width * 0.33,
+                                    MediaQuery.of(context).size.width * 0.25,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
                                     image: AssetImage(buttonPa),
@@ -1564,7 +1644,7 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt < 1)
                             Container(
                               width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.25,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   opacity: 0.5,

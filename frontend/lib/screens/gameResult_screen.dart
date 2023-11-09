@@ -154,19 +154,31 @@ class _GameResultScreenState extends State<GameResultScreen>
                                           ? '+20'
                                           : '-20',
                                       style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
+                                          fontSize: 25, color: Colors.white),
                                     ),
                                     // Text(
                                     //   '랭킹 점수: $_currentValue',
                                     //   style: TextStyle(
                                     //       fontSize: 25, color: Colors.white),
                                     // ),
-                                    AnimatedDigitWidget(
-                                      controller: _controller2,
-                                      duration: Duration(milliseconds: 1000),
-                                      textStyle: TextStyle(
-                                          color: Colors.white, fontSize: 30),
-                                      enableSeparator: true,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'lib/assets/icons/trophyIcon.PNG',
+                                          height: 30,
+                                          fit: BoxFit.fitHeight,
+                                        ),
+                                        Text(" : ", style: TextStyle(color:Colors.white, fontSize: 25),),
+                                        AnimatedDigitWidget(
+                                          autoSize: true,
+                                          controller: _controller2,
+                                          duration: Duration(milliseconds: 1000),
+                                          textStyle: TextStyle(
+                                              color: Colors.white, fontSize: 35),
+                                          enableSeparator: true,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
