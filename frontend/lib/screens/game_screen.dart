@@ -532,6 +532,34 @@ class _GameScreenState extends State<GameScreen> {
         }
       },
     );
+    stompClient.subscribe(
+      // 현재 각자의 기가 몇 개 인지 확인하기 위해서
+      destination: '/sub/${widget.roomId}/gameRecord',
+      callback: (frame) {
+
+        Map<String, dynamic> gameRecord = json.decode(frame.body!);
+        print('받아온 전적 정보: $gameRecord');
+        String nickname1 = gameRecord['nickname1'];
+        int user1Win = gameRecord['user1Win'];
+        int user1Lose = gameRecord['user1Lose'];
+        int user1Score = gameRecord['user1Score'];
+        String nickname2 = gameRecord['nickname2'];
+        int user2Win = gameRecord['user2Win'];
+        int user2Lose = gameRecord['user2Lose'];
+        int user2Score = gameRecord['user2Score'];
+
+        print(nickname1);
+        print(user1Win);
+        print(user1Lose);
+        print(user1Score);
+        print(nickname2);
+        print(user2Win);
+        print(user2Lose);
+        print(user2Score);
+
+
+      },
+    );
 
     stompClient.subscribe(
       // 현재 각자의 기가 몇 개 인지 확인하기 위해서
@@ -751,9 +779,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        //url: socketUrl,
         // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
