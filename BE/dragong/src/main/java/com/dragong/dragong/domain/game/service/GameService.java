@@ -312,7 +312,7 @@ public class GameService {
 
         } else if (gameRoom[roomId].size() == 0) {
             // 둘 다 정보를 입력하지 않은 경우
-            answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다" + " 끝냅니다";
+            answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다" + " 나갑니다";
             return answer;
         }
         String player1 = grd1.getNickname();
