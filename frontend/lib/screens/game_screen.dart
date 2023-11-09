@@ -111,7 +111,7 @@ class _GameScreenState extends State<GameScreen> {
       if (exit == true) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false,
         );
         return true;
@@ -166,7 +166,7 @@ class _GameScreenState extends State<GameScreen> {
           });
           solo = 'false';
           round += 1;
-          Timer(Duration(milliseconds: 3000), () {
+          Timer(const Duration(milliseconds: 3000), () {
             showPan();
           });
         } else if (frame.body == '에러입니다') {
@@ -253,83 +253,83 @@ class _GameScreenState extends State<GameScreen> {
 
         if (widget.nickname == user1) {
           if (picked1 == '기') {
-            mePick = 'bottomfist';
+            mePick = 'charging';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
           } else if (picked1 == '파') {
-            mePick = 'bottomPa';
+            mePick = 'fireballPlayer';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
           } else if (picked1 == '막기') {
-            mePick = 'bottomBlock';
+            mePick = 'fireShield';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
           } else if (picked1 == '순간이동') {
-            mePick = 'bottomTel';
+            mePick = 'teleportation';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
             } else {
               youPick = '미처리';
             }
           } else if (picked1 == '원기옥') {
-            mePick = 'bottomPower';
+            mePick = 'meteorPlayer';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
               Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
               Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
               Vibration.vibrate(amplitude: 128);
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 200);
             } else {
               youPick = '미처리';
@@ -337,98 +337,98 @@ class _GameScreenState extends State<GameScreen> {
           } else {
             mePick = '미처리';
             if (picked2 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked2 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked2 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
             } else {
               youPick = '미처리';
             }
           }
         } else if (widget.nickname == user2) {
           if (picked2 == '기') {
-            mePick = 'bottomfist';
+            mePick = 'charging';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
           } else if (picked2 == '파') {
-            mePick = 'bottomPa';
+            mePick = 'fireballPlayer';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
               Vibration.vibrate(amplitude: 128);
-              youPick = 'upPower';
+              youPick = 'meteorRival';
             } else {
               youPick = '미처리';
             }
           } else if (picked2 == '막기') {
-            mePick = 'bottomBlock';
+            mePick = 'fireShield';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 128);
             } else {
               youPick = '미처리';
             }
           } else if (picked2 == '순간이동') {
-            mePick = 'bottomTel';
+            mePick = 'teleportation';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
             } else {
               youPick = '미처리';
             }
           } else if (picked2 == '원기옥') {
-            mePick = 'bottomPower';
+            mePick = 'meteorPlayer';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
               Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
               Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
               Vibration.vibrate(amplitude: 128);
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
               Vibration.vibrate(amplitude: 200);
             } else {
               youPick = '미처리';
@@ -436,15 +436,15 @@ class _GameScreenState extends State<GameScreen> {
           } else {
             mePick = '미처리';
             if (picked1 == '기') {
-              youPick = 'upfist';
+              youPick = 'charging';
             } else if (picked1 == '파') {
-              youPick = 'upPa';
+              youPick = 'fireballRival';
             } else if (picked1 == '막기') {
-              youPick = 'upBlock';
+              youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
-              youPick = 'upTel';
+              youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              youPick = 'upPower';
+              youPick = 'meteorRival';
             } else {
               youPick = '미처리';
             }
@@ -536,7 +536,6 @@ class _GameScreenState extends State<GameScreen> {
       // 현재 각자의 기가 몇 개 인지 확인하기 위해서
       destination: '/sub/${widget.roomId}/gameRecord',
       callback: (frame) {
-
         Map<String, dynamic> gameRecord = json.decode(frame.body!);
         print('받아온 전적 정보: $gameRecord');
         String nickname1 = gameRecord['nickname1'];
@@ -556,8 +555,6 @@ class _GameScreenState extends State<GameScreen> {
         print(user2Win);
         print(user2Lose);
         print(user2Score);
-
-
       },
     );
 
@@ -601,9 +598,9 @@ class _GameScreenState extends State<GameScreen> {
         if (frame.body != null) {
           if (winner == widget.nickname) {
             // 내가 승자인 경우
-            print("승자의 승: " + part4);
-            print("승자의 패: " + part5);
-            print("승자의 점수: " + part6);
+            print("승자의 승: $part4");
+            print("승자의 패: $part5");
+            print("승자의 점수: $part6");
             Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
@@ -621,9 +618,9 @@ class _GameScreenState extends State<GameScreen> {
             );
           } else {
             // 내가 패자인 경우
-            print("패자의 승: " + part1);
-            print("패자의 패: " + part2);
-            print("패자의 점수: " + part3);
+            print("패자의 승: $part1");
+            print("패자의 패: $part2");
+            print("패자의 점수: $part3");
             Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
@@ -874,7 +871,7 @@ class _GameScreenState extends State<GameScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 '게임 대기중',
                                 style: TextStyle(
                                     fontSize: 24, color: Colors.white),
@@ -883,7 +880,7 @@ class _GameScreenState extends State<GameScreen> {
                                 height:
                                     MediaQuery.of(context).size.width * 0.15,
                               ),
-                              CircularProgressIndicator(
+                              const CircularProgressIndicator(
                                 color: Colors.white,
                               ),
                               SizedBox(
@@ -898,7 +895,7 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
               if (isPan)
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: Center(
                     child: Dialog(
@@ -915,19 +912,19 @@ class _GameScreenState extends State<GameScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               if (pan == 1)
-                                Text(
+                                const Text(
                                   '1st Round!!',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 35),
                                 ),
                               if (pan == 2)
-                                Text(
+                                const Text(
                                   '2nd Round!!',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 35),
                                 ),
                               if (pan == 3)
-                                Text(
+                                const Text(
                                   '3rd Round!!',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 35),
@@ -958,7 +955,7 @@ class _GameScreenState extends State<GameScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 '적수 등장',
                                 style: TextStyle(
                                     fontSize: 24, color: Colors.white),
@@ -973,7 +970,7 @@ class _GameScreenState extends State<GameScreen> {
                                   .animate()
                                   .scaleXY(begin: 10, curve: Curves.bounceInOut)
                                   .shake(
-                                      delay: Duration(milliseconds: 500),
+                                      delay: const Duration(milliseconds: 500),
                                       curve: Curves.bounceInOut),
                             ],
                           ),
@@ -981,7 +978,7 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                   ),
-                ).animate().hide(delay: Duration(milliseconds: 800)),
+                ).animate().hide(delay: const Duration(milliseconds: 800)),
               if (isConnected)
                 Positioned(
                     top: 0,
@@ -1005,7 +1002,7 @@ class _GameScreenState extends State<GameScreen> {
                             filter:
                                 ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.transparent,
                               ),
                             ),
@@ -1020,13 +1017,13 @@ class _GameScreenState extends State<GameScreen> {
                               children: [
                                 Text(
                                   contender!,
-                                  style: TextStyle(fontSize: 40),
+                                  style: const TextStyle(fontSize: 40),
                                 ),
-                                Text(
+                                const Text(
                                   "랭킹: 1위",
                                   style: TextStyle(fontSize: 18),
                                 ),
-                                Text(
+                                const Text(
                                   "101승 25패",
                                   style: TextStyle(fontSize: 18),
                                 ),
@@ -1036,8 +1033,8 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       ],
                     ).animate().slideX(
-                        delay: Duration(milliseconds: 900),
-                        duration: Duration(milliseconds: 350),
+                        delay: const Duration(milliseconds: 900),
+                        duration: const Duration(milliseconds: 350),
                         begin: 2,
                         end: 0,
                         curve: Curves.easeIn)),
@@ -1064,7 +1061,7 @@ class _GameScreenState extends State<GameScreen> {
                             filter:
                                 ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.transparent,
                               ),
                             ),
@@ -1078,13 +1075,13 @@ class _GameScreenState extends State<GameScreen> {
                               children: [
                                 Text(
                                   widget.nickname,
-                                  style: TextStyle(fontSize: 40),
+                                  style: const TextStyle(fontSize: 40),
                                 ),
-                                Text(
+                                const Text(
                                   "랭킹: 1위",
                                   style: TextStyle(fontSize: 18),
                                 ),
-                                Text(
+                                const Text(
                                   "101승 25패",
                                   style: TextStyle(fontSize: 18),
                                 ),
@@ -1094,8 +1091,8 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       ],
                     ).animate().slideX(
-                        delay: Duration(milliseconds: 900),
-                        duration: Duration(milliseconds: 350),
+                        delay: const Duration(milliseconds: 900),
+                        duration: const Duration(milliseconds: 350),
                         begin: -2,
                         end: 0,
                         curve: Curves.easeIn)),
@@ -1106,27 +1103,32 @@ class _GameScreenState extends State<GameScreen> {
                   right: 0,
                   child: Center(
                     child: Container(
-                            child: Text("VS", style: TextStyle(fontSize: 60)))
+                            child: const Text("VS",
+                                style: TextStyle(fontSize: 60)))
                         .animate()
-                        .show(delay: Duration(milliseconds: 1100))
+                        .show(delay: const Duration(milliseconds: 1100))
                         .scaleXY(
-                            delay: Duration(milliseconds: 1150),
-                            duration: Duration(milliseconds: 400),
+                            delay: const Duration(milliseconds: 1150),
+                            duration: const Duration(milliseconds: 400),
                             begin: 10,
                             curve: Curves.bounceInOut)
                         .shake(
-                            delay: Duration(milliseconds: 1550),
-                            duration: Duration(milliseconds: 500),
+                            delay: const Duration(milliseconds: 1550),
+                            duration: const Duration(milliseconds: 500),
                             curve: Curves.bounceInOut)
                         .tint(
-                            color: Colors.amber,
-                            duration: Duration(milliseconds: 500),
-                            delay: Duration(milliseconds: 500),)
+                          color: Colors.amber,
+                          duration: const Duration(milliseconds: 500),
+                          delay: const Duration(milliseconds: 500),
+                        )
                         .tint(
-                            color: Colors.blue,
-                            duration: Duration(milliseconds: 500),
-                            delay: Duration(milliseconds: 500),)
-                        .tint(color: Colors.black, delay: Duration(milliseconds: 500)),
+                          color: Colors.blue,
+                          duration: const Duration(milliseconds: 500),
+                          delay: const Duration(milliseconds: 500),
+                        )
+                        .tint(
+                            color: Colors.black,
+                            delay: const Duration(milliseconds: 500)),
                   ),
                 ),
               // Column(
@@ -1148,10 +1150,10 @@ class _GameScreenState extends State<GameScreen> {
                   right: 0,
                   child: Align(
                     alignment: Alignment.topCenter,
-                          child: Text(
-                            '$countdown',
-                            style: const TextStyle(
-                                fontSize: 60, fontWeight: FontWeight.bold),
+                    child: Text(
+                      countdown,
+                      style: const TextStyle(
+                          fontSize: 60, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -1177,7 +1179,7 @@ class _GameScreenState extends State<GameScreen> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
                           height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus1.png'),
@@ -1189,7 +1191,7 @@ class _GameScreenState extends State<GameScreen> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
                           height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus2.png'),
@@ -1201,7 +1203,7 @@ class _GameScreenState extends State<GameScreen> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.15,
                           height: MediaQuery.of(context).size.width * 0.6,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             image: DecorationImage(
                               image:
                                   AssetImage('lib/assets/icons/giStatus3.png'),
@@ -1212,7 +1214,7 @@ class _GameScreenState extends State<GameScreen> {
                       Container(
                         child: Center(
                           child: Text(giCnt.toString(),
-                              style: TextStyle(fontSize: 28)),
+                              style: const TextStyle(fontSize: 28)),
                         ),
                       ),
                     ],
@@ -1224,7 +1226,7 @@ class _GameScreenState extends State<GameScreen> {
                   right: 20,
                   child: Center(
                     child: Text(contender!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                         ),
                         textAlign: TextAlign.center),
@@ -1236,7 +1238,7 @@ class _GameScreenState extends State<GameScreen> {
                   left: 20,
                   child: Center(
                     child: Text(widget.nickname,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                         ),
                         textAlign: TextAlign.center),
