@@ -261,13 +261,9 @@ public class MemberServiceImpl implements MemberService {
             member.addFcmToken(newFcmToken);
             fcmTokenRepository.save(newFcmToken);
         } else {
-            // 있으면 대조해보고~
-            if (!fcmToken.getFcmToken().equals(fcmTokenRequestDto.getFcmToken())) {
-                fcmToken.updateFcmToken(fcmTokenRequestDto.getFcmToken());
-                fcmTokenRepository.save(fcmToken);
-            }
+            fcmToken.updateFcmToken(fcmTokenRequestDto.getFcmToken());
+            fcmTokenRepository.save(fcmToken);
         }
-
     }
 
     @Transactional
