@@ -159,6 +159,7 @@ class _GameScreenState extends State<GameScreen> {
       destination: '/sub/${widget.roomId}/numCheck',
       callback: (frame) {
         // 원하는 작업 수행
+        print("numCheck 입장/ 2명 다 입장하였습니다");
         if (frame.body == '0') {
           setState(() {
             isWaiting = false;
@@ -172,7 +173,28 @@ class _GameScreenState extends State<GameScreen> {
         } else if (frame.body == '에러입니다') {
           // 내가 짝수번째 사람인데 방에 혼자 남아 있는경우?
           // 즉 내가 짝수번째로 들어가는 순간 홀수 번째 사람이 나가버린 경우
-          dispose();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('알림'),
+                content: Text('상대가 떠났습니다'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainScreen()),
+                            (route) => false,
+                      );
+                    },
+                    child: Text('확인'),
+                  ),
+                ],
+              );
+            },
+          );
+
         }
       },
     );
@@ -481,6 +503,7 @@ class _GameScreenState extends State<GameScreen> {
         print(shouldContinue); // 이게 게임을 끝낼지 여부를 선택하는 것이다.
         List<String> section1 = parts[1].split(':');
         String user1 = section1[0];
+        print(comparing);
         if (comparing == '비겼습니다') {
           // 비겼으니까 다시 게임을 진행해야함
           // 이 때 기를 가져온다.
@@ -489,22 +512,29 @@ class _GameScreenState extends State<GameScreen> {
         } else if (comparing == '무효입니다') {
           // 둘 다 선택을 하지 않은 경우
           // 몇 번 째 게임인지와 상관없이 무조건 게임을 끝냅니다.
-          winner = "무효입니다";
-          // winner = frame.body ?? '0';
-          setState(() {
-            showTemp = false;
-            isGameStart = false;
-            isPan = false;
-            showResult = true;
-            isGi = false; // 기
-            isPa = false; // 파
-            isBlock = false; // 막기
-            isTel = false; // 텔레포트
-            isBomb = false; // 원기옥
-            isTie = true;
-          });
+          print("둘 다 아무것도 선택하지 않았습니다.");
 
-          // dispose();
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('알림'),
+                content: Text('둘 다 선택을 안함'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainScreen()),
+                            (route) => false,
+                      );
+                    },
+                    child: Text('확인'),
+                  ),
+                ],
+              );
+            },
+          );
         } else {
           if (shouldContinue == '계속합니다') {
             // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
@@ -779,9 +809,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        //url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
