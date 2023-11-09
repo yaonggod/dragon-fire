@@ -90,6 +90,19 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
 
+      // 로그아웃할때 fcm token도 없애버리기
+      final response2 = await http.post(
+        Uri.parse('$baseUrl/api/member/fcm'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode({"fcmToken": null}),
+      );
+      print(response2.statusCode);
+      //
+
       Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(

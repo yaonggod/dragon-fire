@@ -49,6 +49,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     "lib/assets/icons/tutorial5.png",
   ];
 
+
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
 
@@ -207,7 +208,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const FriendScreen(),
+        builder: (context) => const FriendScreen(friendSelected: true,),
       ),
     );
   }
