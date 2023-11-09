@@ -6,6 +6,7 @@ import com.dragong.dragong.domain.game.dto.TokenData;
 import com.dragong.dragong.domain.game.dto.WinData;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,6 +14,8 @@ import java.util.*;
 @Service
 @Slf4j
 public class GameService {
+    @Autowired
+    private ResultUpdateService resultUpdateService;
     private final Set<GameRoomData> gameRoom[] = new HashSet[100000]; //
     private final ArrayList<GiData> giDataRoom[] = new ArrayList[100000]; // 기 정보를 저장하기 위해서
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
@@ -234,8 +237,6 @@ public class GameService {
     public void aliveCheck(int roomId) {
         // 들어있는 값이 짝수일 때 0을 return 한다는 것을 기억
         saving[roomId] += 1;
-//        return saving[Integer.parseInt(roomId)];
-
     }
 
     public int savingReturn(int roomId) {
@@ -573,6 +574,21 @@ public class GameService {
 
         return answer;
 
+    }
+
+    public Map<String,Object> getUserInfo(int roomId){
+        TokenData tokenData1 = accessTokenRoom[roomId].poll();
+        TokenData tokenData2 = accessTokenRoom[roomId].poll();
+
+        accessTokenRoom[roomId].add(tokenData1);
+        accessTokenRoom[roomId].add(tokenData2);
+
+        String access1 = tokenData1.getAccessToken();
+        String nick1 = tokenData1.getNickname();
+        String access2 = tokenData2.getAccessToken();
+        String nick2 = tokenData2.getNickname();
+
+        return resultUpdateService.gettingInfo(access1,nick1,access2,nick2);
     }
 
 }

@@ -62,9 +62,10 @@ public class GameController {
             // 0 일때 게임이 시작하니까
             // gi가 몇개인지 보내줘야겠지?
             log.info("gamestart 명령이 보내짐");
-
             gameService.gameStart();
             String giMessage = gameService.giReturn(roomID);
+            Map<String, Object> userInfo = gameService.getUserInfo(roomID);
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/gameRecord", userInfo);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
         } else {
             // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
@@ -240,7 +241,7 @@ public class GameController {
                     String answer = gameService.gameResult(roomID);
                     // 여기서 만약에 answer의 가장 끝부분이 "안끝남"이 아니라면 gi 정보를 초기화 해주면 되지 않을까?
 
-                     // 이제 승 정보를 반환해야지
+                    // 이제 승 정보를 반환해야지
                     String[] information = answer.split(" ");
                     System.out.println(information[3]); // 이게
                     if (information[3].equals("끝냅니다")) {

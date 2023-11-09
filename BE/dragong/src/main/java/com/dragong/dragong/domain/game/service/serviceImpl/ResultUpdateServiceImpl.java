@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -143,6 +145,33 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         log.info("점수"+score);
         answer += Integer.toString(win) + ":" + Integer.toString(lose) + ":" + Integer.toString(score);
         return answer;
+    }
+
+    @Override
+    public Map<String, Object> gettingInfo(String accessToken1,String nickname1, String accessToken2, String nickname2){
+        Map<String, Object> data = new HashMap<>();
+        UUID myUUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
+        UUID myUUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
+        log.info("사용자들의 승,패 정보를 가져옵니다");
+
+        Member member1 = memberRepository.findById(myUUID1).orElse(null);
+        PlayResultEmpId playResultEmpId1 = new PlayResultEmpId(season, member1);
+        PlayResult playResult1 = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId1).orElse(null);
+
+        Member member2 = memberRepository.findById(myUUID2).orElse(null);
+        PlayResultEmpId playResultEmpId2 = new PlayResultEmpId(season, member2);
+        PlayResult playResult2 = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId2).orElse(null);
+
+        data.put("nickname1",nickname1);
+        data.put("user1Win",playResult1.getWin());
+        data.put("user1Lose",playResult1.getLose());
+        data.put("user1Score",playResult1.getScore());
+        data.put("nickname2",nickname2);
+        data.put("user2Win",playResult2.getWin());
+        data.put("user2Lose",playResult2.getLose());
+        data.put("user2Score",playResult2.getScore());
+
+        return data;
     }
 
 
