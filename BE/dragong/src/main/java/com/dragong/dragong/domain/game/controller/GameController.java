@@ -166,12 +166,18 @@ public class GameController {
         int localCnt = gameService.evenReturn(roomID);
         boolean gameStart = false;
         int standard = 0;
-        if (Integer.parseInt(parts[1]) == 0) {
+        if (Integer.parseInt(parts[1]) == 1) {
             // 처음 들어오는 경우
             log.info("첫 게임인 경우");
+
             if (localCnt % 2 == 0) {
                 log.info("한 방에 두 명이 들어온 경우");
                 // 이 경우에 이제 gameService에서 winData를 초기화 해줘야 한다.
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
                 gameStart = true;
             }
         } else {
@@ -180,7 +186,7 @@ public class GameController {
             int cnt = 0;
             while (cnt < 3 && localCnt % 2 != 0) {
                 try {
-                    Thread.sleep(700);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -264,8 +270,13 @@ public class GameController {
                         }
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/selected", String.valueOf(j) + " " + answer);
                     }
-                    // 이게 결과값을 반환하는 것이다. // 이제는 단순하게 누
-                    messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
+                    // 이게 결과값을 반환하는 것이다. //
+                    if(information[3].equals("나갑니다")){
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
+                        return;
+                    }else{
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
+                    }
 
                 } else {
                     errorCnt = 0;
@@ -346,7 +357,6 @@ public class GameController {
             messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
         }
         gameService.cleanList(roomID);
-
     }
 
     @MessageMapping("/{roomId}/alive")
