@@ -92,6 +92,7 @@ public class GameService {
             while (visited[total]) {
                 total += 1;
             }
+            visited[total]=true;
         } else {
             // 빈 곳이라면?
             visited[total] = true;
