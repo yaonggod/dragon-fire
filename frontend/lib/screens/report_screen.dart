@@ -85,7 +85,7 @@ class _ReportScreenState extends State<ReportScreen> {
             'Authorization': 'Bearer ${tokens["Authorization"]!}',
             'refreshToken': 'Bearer ${tokens["refreshToken"]!}',
           },
-          body: jsonEncode({"suspect": otherId, "reportDetail": "hello"}));
+          body: jsonEncode({"suspect": otherId, "reportDetail": nickname}));
 
       if (response.statusCode == 200) {
         showDialog(
@@ -152,7 +152,7 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('신고',
+        title: const Text('피드백',
             style: TextStyle(
               fontWeight: FontWeight.bold,
             )),
@@ -164,30 +164,30 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '신고 회원',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    nickname,
-                    style: TextStyle(
-                      fontSize: 15.0,
-                    ),
-                  ),
-                ),
-              ),
+              // const Padding(
+              //   padding: EdgeInsets.only(left: 5.0),
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Text(
+              //       '신고 회원',
+              //       style: TextStyle(
+              //         fontSize: 15.0,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 5.0),
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Text(
+              //       nickname,
+              //       style: TextStyle(
+              //         fontSize: 15.0,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: MediaQuery.of(context).size.height / 15),
               SizedBox(height: MediaQuery.of(context).size.height / 20),
               const Padding(
@@ -195,7 +195,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '신고 사유',
+                    '피드백',
                     style: TextStyle(
                       fontSize: 15.0,
                     ),
@@ -225,7 +225,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     isDense: true,
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     contentPadding: const EdgeInsets.all(12),
-                    labelText: '신고 사유를 입력해주세요',
+                    labelText: '피드백을 자유롭게 남겨주세요',
                     labelStyle: const TextStyle(
                       color: Colors.grey,
                     ),
