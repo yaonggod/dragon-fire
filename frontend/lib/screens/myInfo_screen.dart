@@ -140,10 +140,26 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         storage.deleteAll();
         removeNickname();
         print("탈퇴 완료");
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (route) => false,
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('알림'),
+              content: Text('회원탈퇴 되었습니다.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          (route) => false,
+                    );
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
         );
       }
       setState(() {});
@@ -422,8 +438,29 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
-                  _out();
-                  print('회원탈퇴.');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('알림'),
+                        content: Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: const Text('취소'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _out();
+                            },
+                            child: Text('확인'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               )
             ],

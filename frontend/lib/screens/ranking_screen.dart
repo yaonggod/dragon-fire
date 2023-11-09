@@ -194,6 +194,16 @@ class RankingScreen extends StatelessWidget {
               },
             ),
           ),
+          Flexible(
+            flex: 0,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 10, top: 0),
+              child: Text(
+                "(랭킹은 1분마다 업데이트 됩니다)",
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ),
+          ),
         ],
       ),
     );
