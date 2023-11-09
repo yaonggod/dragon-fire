@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -165,7 +166,7 @@ class _GameScreenState extends State<GameScreen> {
           });
           solo = 'false';
           round += 1;
-          Timer(Duration(milliseconds: 1200), () {
+          Timer(Duration(milliseconds: 3000), () {
             showPan();
           });
         } else if (frame.body == '에러입니다') {
@@ -661,14 +662,14 @@ class _GameScreenState extends State<GameScreen> {
           // nick1이 나일 때
           int hpOfMe = 2 - int.parse(win2);
           int hpOfYou = 2 - int.parse(win1);
-          myHp= hpOfMe.toString();
-          youHp= hpOfYou.toString();
+          myHp = hpOfMe.toString();
+          youHp = hpOfYou.toString();
         } else {
           //nick2가 나일 때
           int hpOfMe = 2 - int.parse(win1);
-          int hpOfYou= 2- int.parse(win2);
-          myHp= hpOfMe.toString();
-          youHp= hpOfYou.toString();
+          int hpOfYou = 2 - int.parse(win2);
+          myHp = hpOfMe.toString();
+          youHp = hpOfYou.toString();
         }
       },
     );
@@ -782,529 +783,609 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: endApp,
-        child: Stack(
-          children: [
-            // Center(
-            //   child: Column(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            if (contender != null)
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.08,
-                right: 20,
-                child: Center(
-                  child: Text(contender!,
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.center),
-                ),
-              ),
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.08,
-              left: 20,
-              child: Center(
-                child: Text(widget.nickname,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                    textAlign: TextAlign.center),
-              ),
-            ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // Center(
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.center,
 
-            if (showTemp)
-              Positioned(
-                top: 0,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                      height: MediaQuery.of(context).size.height *
-                          0.5, // 원하는 높이 값으로 설정
-                      child: Lottie.asset(
-                        'lib/assets/lottie/$youPick.json',
-                        repeat: true,
-                        onLoaded: (composition) {
-                          Timer(const Duration(milliseconds: 1200), () {
-                            // 여기에 콜백 코드를 넣으세요
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                      height: MediaQuery.of(context).size.height *
-                          0.5, // 원하는 높이 값으로 설정
-                      child: Lottie.asset(
-                        'lib/assets/lottie/$mePick.json',
-                        repeat: true,
-                        onLoaded: (composition) {
-                          Timer(const Duration(milliseconds: 2000), () {
-                            // 여기에 콜백 코드를 넣으세요
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            if (isWaiting)
-              Container(
-                color: Colors.black.withOpacity(0.6),
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: Dialog(
-                    insetPadding: const EdgeInsets.all(10),
-                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.width * 0.5,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '게임 대기중',
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.15,
-                            ),
-                            CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.05,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            if (isPan)
-              Container(
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: Dialog(
-                    insetPadding: const EdgeInsets.all(10),
-                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.width * 0.5,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if(pan == 1)
-                              Text(
-                                 '1st Round!!',
-                                style: TextStyle(color: Colors.white, fontSize: 35),
-                              ),
-                            if(pan == 2)
-                              Text(
-                                '2nd Round!!',
-                                style: TextStyle(color: Colors.white, fontSize: 35),
-                              ),
-                            if(pan == 3)
-                              Text(
-                                '3rd Round!!',
-                                style: TextStyle(color: Colors.white, fontSize: 35),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ).animate().fade().slideY(curve: Curves.bounceOut),
-
-            if (isConnected)
-              Container(
-                color: Colors.black.withOpacity(0.6),
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: Dialog(
-                    insetPadding: const EdgeInsets.all(10),
-                    backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.width * 0.5,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              '적수 등장',
-                              style:
-                                  TextStyle(fontSize: 24, color: Colors.white),
-                            ),
-                            FractionallySizedBox(
-                              widthFactor: 0.41,
-                              child: Image.asset(
-                                'lib/assets/icons/connected.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ).animate().scaleXY(begin:10, curve: Curves.bounceInOut).shake(delay:Duration(milliseconds: 500),curve: Curves.bounceInOut),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            // Column(
-            //   children: [
-            //     ElevatedButton(
-            //       onPressed: () {
-            //         sendMessage('대기 화면 입니다', widget.nickname);
-            //       },
-            //       child: const Text('이건 연결 테스트용 버튼'),
-            //     ),
-            //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
-            //   ],
-            // ),
-
-            if (isGameStart)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Center(
+              if (showTemp)
+                Positioned(
+                  top: 0,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          '$countdown',
-                          style: const TextStyle(
-                              fontSize: 60, fontWeight: FontWeight.bold),
+                      SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                        height: MediaQuery.of(context).size.height *
+                            0.5, // 원하는 높이 값으로 설정
+                        child: Lottie.asset(
+                          'lib/assets/lottie/$youPick.json',
+                          repeat: true,
+                          onLoaded: (composition) {
+                            Timer(const Duration(milliseconds: 1200), () {
+                              // 여기에 콜백 코드를 넣으세요
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                        height: MediaQuery.of(context).size.height *
+                            0.5, // 원하는 높이 값으로 설정
+                        child: Lottie.asset(
+                          'lib/assets/lottie/$mePick.json',
+                          repeat: true,
+                          onLoaded: (composition) {
+                            Timer(const Duration(milliseconds: 2000), () {
+                              // 여기에 콜백 코드를 넣으세요
+                            });
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            if (isGi || isPa || isBlock || isTel || isBomb)
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.35,
-                left: 0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (giCnt == 0)
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        height: MediaQuery.of(context).size.width * 0.6,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(giIcon),
-                            fit: BoxFit.fitHeight,
+              if (isWaiting)
+                Container(
+                  color: Colors.black.withOpacity(0.6),
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: Dialog(
+                      insetPadding: const EdgeInsets.all(10),
+                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.width * 0.5,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '게임 대기중',
+                                style: TextStyle(
+                                    fontSize: 24, color: Colors.white),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.width * 0.15,
+                              ),
+                              CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.width * 0.05,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    if (giCnt == 1)
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        height: MediaQuery.of(context).size.width * 0.6,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('lib/assets/icons/giStatus1.png'),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      ),
-                    if (giCnt == 2)
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        height: MediaQuery.of(context).size.width * 0.6,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('lib/assets/icons/giStatus2.png'),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      ),
-                    if (giCnt >= 3)
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        height: MediaQuery.of(context).size.width * 0.6,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('lib/assets/icons/giStatus3.png'),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      ),
-                    Container(
-                      child: Center(
-                        child: Text(giCnt.toString(),
-                            style: TextStyle(fontSize: 28)),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            if (isGi || isPa || isBlock || isTel || isBomb)
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.05,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      height: MediaQuery.of(context).size.width * 0.065,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp$myHp.png'),
-                          fit: BoxFit.fitWidth,
+              if (isPan)
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: Dialog(
+                      insetPadding: const EdgeInsets.all(10),
+                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.width * 0.5,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (pan == 1)
+                                Text(
+                                  '1st Round!!',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 35),
+                                ),
+                              if (pan == 2)
+                                Text(
+                                  '2nd Round!!',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 35),
+                                ),
+                              if (pan == 3)
+                                Text(
+                                  '3rd Round!!',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 35),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      height: MediaQuery.of(context).size.width * 0.065,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/hp$youHp-1.png'),
-                          fit: BoxFit.fitWidth,
+                  ),
+                ).animate().fade().slideY(curve: Curves.bounceOut),
+
+              if (isConnected)
+                Container(
+                  color: Colors.black.withOpacity(0.6),
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: Dialog(
+                      insetPadding: const EdgeInsets.all(10),
+                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.width * 0.5,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '적수 등장',
+                                style: TextStyle(
+                                    fontSize: 24, color: Colors.white),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: 0.41,
+                                child: Image.asset(
+                                  'lib/assets/icons/connected.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              )
+                                  .animate()
+                                  .scaleXY(begin: 10, curve: Curves.bounceInOut)
+                                  .shake(
+                                      delay: Duration(milliseconds: 500),
+                                      curve: Curves.bounceInOut),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            if (isGi || isPa || isBlock || isTel || isBomb)
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.65,
-                left: 0,
-                right: 0,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                  ),
+                ).animate().hide(delay: Duration(milliseconds: 800)),
+              if (isConnected)
+                Positioned(
+                    top: 0,
+                    right: -50,
+                    height: 100 * 2,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Stack(
                       children: [
-                        if (giCnt < 1)
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.33,
-                            height: MediaQuery.of(context).size.width * 0.33,
+                        Center(
+                          child: Container(
+                            height: 100 * 1.5,
+                            width: MediaQuery.of(context).size.width * 0.65,
                             decoration: BoxDecoration(
-                              image: DecorationImage(
-                                opacity: 0.5,
-                                image: AssetImage(buttonTele),
-                                fit: BoxFit.fitWidth,
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ),
+                        ClipRRect(
+                          child: BackdropFilter(
+                            filter:
+                                ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
                               ),
                             ),
                           ),
-                        if (giCnt >= 1)
-                          GestureDetector(
-                            onTap: () {
-                              // 순간이동을 하는 경우
-                              sendMessage('순간이동', widget.nickname);
-                              isGi = false;
-                              isPa = false;
-                              isBlock = false;
-                              isTel = false;
-                              isBomb = false;
-                            },
-                            onTapDown: (_) {
-                              setState(() {
-                                buttonTele = 'lib/assets/icons/buttonTele2.png';
-                              });
-                            },
-                            onTapUp: (_) {
-                              setState(() {
-                                buttonTele = 'lib/assets/icons/buttonTele.png';
-                              });
-                            },
-                            onTapCancel: () => setState(() {
-                              buttonTele = 'lib/assets/icons/buttonTele.png';
-                            }),
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  contender!,
+                                  style: TextStyle(fontSize: 40),
+                                ),
+                                Text(
+                                  "랭킹: 1위",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                Text(
+                                  "101승 25패",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ).animate().slideX(
+                        delay: Duration(milliseconds: 900),
+                        duration: Duration(milliseconds: 350),
+                        begin: 2,
+                        end: 0,
+                        curve: Curves.easeIn)),
+              if (isConnected)
+                Positioned(
+                    top: MediaQuery.of(context).size.height * 0.5,
+                    left: -50,
+                    height: 100 * 2,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Container(
+                            height: 100 * 1.5,
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Colors.amber,
+                            ),
+                          ),
+                        ),
+                        ClipRRect(
+                          child: BackdropFilter(
+                            filter:
+                                ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                             child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  widget.nickname,
+                                  style: TextStyle(fontSize: 40),
+                                ),
+                                Text(
+                                  "랭킹: 1위",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                Text(
+                                  "101승 25패",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ).animate().slideX(
+                        delay: Duration(milliseconds: 900),
+                        duration: Duration(milliseconds: 350),
+                        begin: -2,
+                        end: 0,
+                        curve: Curves.easeIn)),
+              if (isConnected)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.3,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                            child: Text("VS", style: TextStyle(fontSize: 60)))
+                        .animate()
+                        .show(delay: Duration(milliseconds: 1100))
+                        .scaleXY(
+                            delay: Duration(milliseconds: 1150),
+                            duration: Duration(milliseconds: 400),
+                            begin: 10,
+                            curve: Curves.bounceInOut)
+                        .shake(
+                            delay: Duration(milliseconds: 1550),
+                            duration: Duration(milliseconds: 500),
+                            curve: Curves.bounceInOut)
+                        .tint(
+                            color: Colors.amber,
+                            duration: Duration(milliseconds: 500),
+                            delay: Duration(milliseconds: 500),)
+                        .tint(
+                            color: Colors.blue,
+                            duration: Duration(milliseconds: 500),
+                            delay: Duration(milliseconds: 500),)
+                        .tint(color: Colors.black, delay: Duration(milliseconds: 500)),
+                  ),
+                ),
+              // Column(
+              //   children: [
+              //     ElevatedButton(
+              //       onPressed: () {
+              //         sendMessage('대기 화면 입니다', widget.nickname);
+              //       },
+              //       child: const Text('이건 연결 테스트용 버튼'),
+              //     ),
+              //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
+              //   ],
+              // ),
+
+              if (isGameStart)
+                Positioned(
+                  top: -10,
+                  left: 0,
+                  right: 0,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                          child: Text(
+                            '$countdown',
+                            style: const TextStyle(
+                                fontSize: 60, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              if (isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.35,
+                  left: 0,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      if (giCnt == 0)
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.width * 0.6,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(giIcon),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      if (giCnt == 1)
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.width * 0.6,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage('lib/assets/icons/giStatus1.png'),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      if (giCnt == 2)
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.width * 0.6,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage('lib/assets/icons/giStatus2.png'),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      if (giCnt >= 3)
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.width * 0.6,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage('lib/assets/icons/giStatus3.png'),
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      Container(
+                        child: Center(
+                          child: Text(giCnt.toString(),
+                              style: TextStyle(fontSize: 28)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.03,
+                  right: 20,
+                  child: Center(
+                    child: Text(contender!,
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              if (isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.03,
+                  left: 20,
+                  child: Center(
+                    child: Text(widget.nickname,
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              if (isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        height: MediaQuery.of(context).size.width * 0.065,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('lib/assets/icons/hp$myHp.png'),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        height: MediaQuery.of(context).size.width * 0.065,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image:
+                                AssetImage('lib/assets/icons/hp$youHp-1.png'),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              if (isGi || isPa || isBlock || isTel || isBomb)
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.65,
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (giCnt < 1)
+                            Container(
                               width: MediaQuery.of(context).size.width * 0.33,
                               height: MediaQuery.of(context).size.width * 0.33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
+                                  opacity: 0.5,
                                   image: AssetImage(buttonTele),
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),
                             ),
-                          ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     // 순간이동을 하는 경우
-                        //     sendMessage('순간이동', widget.nickname);
-                        //     isGi = false;
-                        //     isPa = false;
-                        //     isBlock = false;
-                        //     isTel = false;
-                        //     isBomb = false;
-                        //   },
-                        //   child: const Text('순간이동'),
-                        // ),
-                        if (giCnt < 3)
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.33,
-                            height: MediaQuery.of(context).size.width * 0.33,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                opacity: 0.5,
-                                image: AssetImage(buttonOne),
-                                fit: BoxFit.fitWidth,
+                          if (giCnt >= 1)
+                            GestureDetector(
+                              onTap: () {
+                                // 순간이동을 하는 경우
+                                sendMessage('순간이동', widget.nickname);
+                                isGi = false;
+                                isPa = false;
+                                isBlock = false;
+                                isTel = false;
+                                isBomb = false;
+                              },
+                              onTapDown: (_) {
+                                setState(() {
+                                  buttonTele =
+                                      'lib/assets/icons/buttonTele2.png';
+                                });
+                              },
+                              onTapUp: (_) {
+                                setState(() {
+                                  buttonTele =
+                                      'lib/assets/icons/buttonTele.png';
+                                });
+                              },
+                              onTapCancel: () => setState(() {
+                                buttonTele = 'lib/assets/icons/buttonTele.png';
+                              }),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(buttonTele),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        if (giCnt >= 3)
-                          GestureDetector(
-                            onTap: () {
-                              // 원기옥을 선택하는 경우
-                              sendMessage('원기옥', widget.nickname);
-                              isGi = false;
-                              isPa = false;
-                              isBlock = false;
-                              isTel = false;
-                              isBomb = false;
-                            },
-                            onTapDown: (_) {
-                              setState(() {
-                                buttonOne = 'lib/assets/icons/buttonOne2.png';
-                              });
-                            },
-                            onTapUp: (_) {
-                              setState(() {
-                                buttonOne = 'lib/assets/icons/buttonOne.png';
-                              });
-                            },
-                            onTapCancel: () => setState(() {
-                              buttonOne = 'lib/assets/icons/buttonOne.png';
-                            }),
-                            child: Container(
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     // 순간이동을 하는 경우
+                          //     sendMessage('순간이동', widget.nickname);
+                          //     isGi = false;
+                          //     isPa = false;
+                          //     isBlock = false;
+                          //     isTel = false;
+                          //     isBomb = false;
+                          //   },
+                          //   child: const Text('순간이동'),
+                          // ),
+                          if (giCnt < 3)
+                            Container(
                               width: MediaQuery.of(context).size.width * 0.33,
                               height: MediaQuery.of(context).size.width * 0.33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
+                                  opacity: 0.5,
                                   image: AssetImage(buttonOne),
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),
                             ),
-                          ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     // 원기옥을 선택하는 경우
-                        //     sendMessage('원기옥', widget.nickname);
-                        //     isGi = false;
-                        //     isPa = false;
-                        //     isBlock = false;
-                        //     isTel = false;
-                        //     isBomb = false;
-                        //   },
-                        //   child: const Text('원기옥'),
-                        // ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            sendMessage('기', widget.nickname);
-                            isGi = false;
-                            isPa = false;
-                            isBlock = false;
-                            isTel = false;
-                            isBomb = false;
-                          },
-                          onTapDown: (_) {
-                            setState(() {
-                              buttonGi = 'lib/assets/icons/buttonGi2.png';
-                            });
-                          },
-                          onTapUp: (_) {
-                            setState(() {
-                              buttonGi = 'lib/assets/icons/buttonGi.png';
-                            });
-                          },
-                          onTapCancel: () => setState(() {
-                            buttonGi = 'lib/assets/icons/buttonGi.png';
-                          }),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.33,
-                            height: MediaQuery.of(context).size.width * 0.33,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(buttonGi),
-                                fit: BoxFit.fitWidth,
+                          if (giCnt >= 3)
+                            GestureDetector(
+                              onTap: () {
+                                // 원기옥을 선택하는 경우
+                                sendMessage('원기옥', widget.nickname);
+                                isGi = false;
+                                isPa = false;
+                                isBlock = false;
+                                isTel = false;
+                                isBomb = false;
+                              },
+                              onTapDown: (_) {
+                                setState(() {
+                                  buttonOne = 'lib/assets/icons/buttonOne2.png';
+                                });
+                              },
+                              onTapUp: (_) {
+                                setState(() {
+                                  buttonOne = 'lib/assets/icons/buttonOne.png';
+                                });
+                              },
+                              onTapCancel: () => setState(() {
+                                buttonOne = 'lib/assets/icons/buttonOne.png';
+                              }),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(buttonOne),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     // 가위를 선택한 경우
-                        //     sendMessage('기', widget.nickname);
-                        //     isGi = false;
-                        //     isPa = false;
-                        //     isBlock = false;
-                        //     isTel = false;
-                        //     isBomb = false;
-                        //   },
-                        //   child: const Text('기'),
-                        // ),
-                        GestureDetector(
-                          onTap: () {
-                            //막기를 선택 하는 경우
-                            sendMessage('막기', widget.nickname);
-                            isGi = false;
-                            isPa = false;
-                            isBlock = false;
-                            isTel = false;
-                            isBomb = false;
-                          },
-                          onTapDown: (_) {
-                            setState(() {
-                              buttonShield =
-                                  'lib/assets/icons/buttonShield2.png';
-                            });
-                          },
-                          onTapUp: (_) {
-                            setState(() {
-                              buttonShield =
-                                  'lib/assets/icons/buttonShield.png';
-                            });
-                          },
-                          onTapCancel: () => setState(() {
-                            buttonShield = 'lib/assets/icons/buttonShield.png';
-                          }),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.33,
-                            height: MediaQuery.of(context).size.width * 0.33,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(buttonShield),
-                                fit: BoxFit.fitWidth,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (giCnt >= 1)
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     // 원기옥을 선택하는 경우
+                          //     sendMessage('원기옥', widget.nickname);
+                          //     isGi = false;
+                          //     isPa = false;
+                          //     isBlock = false;
+                          //     isTel = false;
+                          //     isBomb = false;
+                          //   },
+                          //   child: const Text('원기옥'),
+                          // ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
                           GestureDetector(
                             onTap: () {
-                              // 바위를 선택한 경우
-                              sendMessage('파', widget.nickname);
+                              sendMessage('기', widget.nickname);
                               isGi = false;
                               isPa = false;
                               isBlock = false;
@@ -1313,72 +1394,158 @@ class _GameScreenState extends State<GameScreen> {
                             },
                             onTapDown: (_) {
                               setState(() {
-                                buttonPa = 'lib/assets/icons/buttonPa2.png';
+                                buttonGi = 'lib/assets/icons/buttonGi2.png';
                               });
                             },
                             onTapUp: (_) {
                               setState(() {
-                                buttonPa = 'lib/assets/icons/buttonPa.png';
+                                buttonGi = 'lib/assets/icons/buttonGi.png';
                               });
                             },
                             onTapCancel: () => setState(() {
-                              buttonPa = 'lib/assets/icons/buttonPa.png';
+                              buttonGi = 'lib/assets/icons/buttonGi.png';
                             }),
                             child: Container(
                               width: MediaQuery.of(context).size.width * 0.33,
                               height: MediaQuery.of(context).size.width * 0.33,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: AssetImage(buttonPa),
+                                  image: AssetImage(buttonGi),
                                   fit: BoxFit.fitWidth,
                                 ),
                               ),
                             ),
                           ),
-                        if (giCnt < 1)
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.33,
-                            height: MediaQuery.of(context).size.width * 0.33,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                opacity: 0.5,
-                                image: AssetImage(buttonPa),
-                                fit: BoxFit.fitWidth,
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     // 가위를 선택한 경우
+                          //     sendMessage('기', widget.nickname);
+                          //     isGi = false;
+                          //     isPa = false;
+                          //     isBlock = false;
+                          //     isTel = false;
+                          //     isBomb = false;
+                          //   },
+                          //   child: const Text('기'),
+                          // ),
+                          GestureDetector(
+                            onTap: () {
+                              //막기를 선택 하는 경우
+                              sendMessage('막기', widget.nickname);
+                              isGi = false;
+                              isPa = false;
+                              isBlock = false;
+                              isTel = false;
+                              isBomb = false;
+                            },
+                            onTapDown: (_) {
+                              setState(() {
+                                buttonShield =
+                                    'lib/assets/icons/buttonShield2.png';
+                              });
+                            },
+                            onTapUp: (_) {
+                              setState(() {
+                                buttonShield =
+                                    'lib/assets/icons/buttonShield.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonShield =
+                                  'lib/assets/icons/buttonShield.png';
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonShield),
+                                  fit: BoxFit.fitWidth,
+                                ),
                               ),
                             ),
                           ),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     // 바위를 선택한 경우
-                        //     sendMessage('파', widget.nickname);
-                        //     isGi = false;
-                        //     isPa = false;
-                        //     isBlock = false;
-                        //     isTel = false;
-                        //     isBomb = false;
-                        //   },
-                        //   child: const Text('파'),
-                        // ),
+                          if (giCnt >= 1)
+                            GestureDetector(
+                              onTap: () {
+                                // 바위를 선택한 경우
+                                sendMessage('파', widget.nickname);
+                                isGi = false;
+                                isPa = false;
+                                isBlock = false;
+                                isTel = false;
+                                isBomb = false;
+                              },
+                              onTapDown: (_) {
+                                setState(() {
+                                  buttonPa = 'lib/assets/icons/buttonPa2.png';
+                                });
+                              },
+                              onTapUp: (_) {
+                                setState(() {
+                                  buttonPa = 'lib/assets/icons/buttonPa.png';
+                                });
+                              },
+                              onTapCancel: () => setState(() {
+                                buttonPa = 'lib/assets/icons/buttonPa.png';
+                              }),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.33,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.33,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(buttonPa),
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (giCnt < 1)
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.33,
+                              height: MediaQuery.of(context).size.width * 0.33,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  opacity: 0.5,
+                                  image: AssetImage(buttonPa),
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
+                            ),
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     // 바위를 선택한 경우
+                          //     sendMessage('파', widget.nickname);
+                          //     isGi = false;
+                          //     isPa = false;
+                          //     isBlock = false;
+                          //     isTel = false;
+                          //     isBomb = false;
+                          //   },
+                          //   child: const Text('파'),
+                          // ),
 
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     //막기를 선택 하는 경우
-                        //     sendMessage('막기', widget.nickname);
-                        //     isGi = false;
-                        //     isPa = false;
-                        //     isBlock = false;
-                        //     isTel = false;
-                        //     isBomb = false;
-                        //   },
-                        //   child: const Text('막기'),
-                        // ),
-                      ],
-                    ),
-                  ],
+                          // ElevatedButton(
+                          //   onPressed: () {
+                          //     //막기를 선택 하는 경우
+                          //     sendMessage('막기', widget.nickname);
+                          //     isGi = false;
+                          //     isPa = false;
+                          //     isBlock = false;
+                          //     isTel = false;
+                          //     isBomb = false;
+                          //   },
+                          //   child: const Text('막기'),
+                          // ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            // ),
-          ],
+              // ),
+            ],
+          ),
         ),
       ),
     );
