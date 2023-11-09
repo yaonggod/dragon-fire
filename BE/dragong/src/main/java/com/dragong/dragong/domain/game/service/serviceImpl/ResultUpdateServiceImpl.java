@@ -148,14 +148,19 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
     }
 
     @Override
-    public Map<String, Object> gettingInfo(String accessToken1,String nickname1, String accessToken2, String nickname2){
+    public Map<String, Object> gettingInfo(String accessToken1, String nickname1, String accessToken2, String nickname2){
         Map<String, Object> data = new HashMap<>();
         UUID myUUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
         UUID myUUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
         log.info("사용자들의 승,패 정보를 가져옵니다");
-
+        log.info("첫번째 사용자의 nickname: "+nickname1);
+        log.info("첫번째 사용자의 accessToken: "+accessToken1);
+        log.info("두번째 사용자의 nickname: "+nickname2);
+        log.info("두번째 사용자의 accessToken: "+accessToken2);
         Member member1 = memberRepository.findById(myUUID1).orElse(null);
+        log.info("member1 :"+member1);
         PlayResultEmpId playResultEmpId1 = new PlayResultEmpId(season, member1);
+        log.info("playResultEmpId1:"+playResultEmpId1);
         PlayResult playResult1 = resultUpdateRepository.findByPlayResultEmpId(playResultEmpId1).orElse(null);
 
         Member member2 = memberRepository.findById(myUUID2).orElse(null);
