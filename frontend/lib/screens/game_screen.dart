@@ -68,7 +68,6 @@ class _GameScreenState extends State<GameScreen> {
   bool isBlockPressed = false; // 막기
   bool isTelPressed = false; // 텔레포트
   bool isBombPressed = false; // 원기옥
-  bool isPanPressed = false; // 몇 번째 판인지를 보여주기 위해서
 
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
@@ -224,6 +223,11 @@ class _GameScreenState extends State<GameScreen> {
           countdown = frame.body ?? '0'; // frame.body가 null이면 '0'을 할당
           if (countdown == '3') {
             setState(() {
+              isGiPressed = false;
+              isBlockPressed = false;
+              isBombPressed = false;
+              isPaPressed = false;
+              isTelPressed = false;
               youPick = '';
               mePick = '';
               showTemp = false;
@@ -1442,19 +1446,13 @@ class _GameScreenState extends State<GameScreen> {
                                 if (!showTemp && !isTelPressed) {
                                   // 순간이동을 하는 경우
                                   sendMessage('순간이동', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
+                                  // isGi = false;
+                                  // isPa = false;
+                                  // isBlock = false;
+                                  // isTel = false;
+                                  // isBomb = false;
                                   setState(() {
                                     isTelPressed = true;
-                                  });
-
-                                  Timer(const Duration(milliseconds: 3000), () {
-                                    setState(() {
-                                      isTelPressed = false;
-                                    });
                                   });
                                 }
                               },
@@ -1503,20 +1501,15 @@ class _GameScreenState extends State<GameScreen> {
                                 if (!showTemp && !isBombPressed) {
                                   // 원기옥을 선택하는 경우
                                   sendMessage('원기옥', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
+                                  // isGi = false;
+                                  // isPa = false;
+                                  // isBlock = false;
+                                  // isTel = false;
+                                  // isBomb = false;
                                   setState(() {
                                     isBombPressed = true;
                                   });
 
-                                  Timer(const Duration(milliseconds: 3000), () {
-                                    setState(() {
-                                      isBombPressed = false;
-                                    });
-                                  });
                                 }
                               },
                               onTapDown: (_) {
@@ -1553,20 +1546,16 @@ class _GameScreenState extends State<GameScreen> {
                             onTap: () {
                               if (!showTemp && !isGiPressed) {
                                 sendMessage('기', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
+                                print("기");
+                                // isGi = false;
+                                // isPa = false;
+                                // isBlock = false;
+                                // isTel = false;
+                                // isBomb = false;
                                 setState(() {
                                   isGiPressed = true;
                                 });
 
-                                Timer(const Duration(milliseconds: 3000), () {
-                                  setState(() {
-                                    isGiPressed = false;
-                                  });
-                                });
                               }
                             },
                             onTapDown: (_) {
@@ -1610,20 +1599,15 @@ class _GameScreenState extends State<GameScreen> {
                               if (!showTemp && !isBlockPressed) {
                                 //막기를 선택 하는 경우
                                 sendMessage('막기', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
+                                // isGi = false;
+                                // isPa = false;
+                                // isBlock = false;
+                                // isTel = false;
+                                // isBomb = false;
                                 setState(() {
                                   isBlockPressed = true;
                                 });
 
-                                Timer(const Duration(milliseconds: 3000), () {
-                                  setState(() {
-                                    isBlockPressed = false;
-                                  });
-                                });
                               }
                             },
                             onTapDown: (_) {
@@ -1659,20 +1643,15 @@ class _GameScreenState extends State<GameScreen> {
                                 if (!showTemp  && !isPaPressed) {
                                   // 바위를 선택한 경우
                                   sendMessage('파', widget.nickname);
-                                  isGi = false;
-                                  isPa = false;
-                                  isBlock = false;
-                                  isTel = false;
-                                  isBomb = false;
+                                  // isGi = false;
+                                  // isPa = false;
+                                  // isBlock = false;
+                                  // isTel = false;
+                                  // isBomb = false;
                                   setState(() {
                                     isPaPressed = true;
                                   });
 
-                                  Timer(const Duration(milliseconds: 3000), () {
-                                    setState(() {
-                                      isPaPressed = false;
-                                    });
-                                  });
                                 }
                               },
                               onTapDown: (_) {
