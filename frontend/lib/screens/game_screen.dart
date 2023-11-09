@@ -63,6 +63,13 @@ class _GameScreenState extends State<GameScreen> {
   int? contenderScore;
   bool countdownChange = true;
 
+  bool isGiPressed = false; // 기
+  bool isPaPressed = false; // 파
+  bool isBlockPressed = false; // 막기
+  bool isTelPressed = false; // 텔레포트
+  bool isBombPressed = false; // 원기옥
+  bool isPanPressed = false; // 몇 번째 판인지를 보여주기 위해서
+
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
 
@@ -193,8 +200,9 @@ class _GameScreenState extends State<GameScreen> {
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const MainScreen()),
-                            (route) => false,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                        (route) => false,
                       );
                     },
                     child: Text('확인'),
@@ -203,7 +211,6 @@ class _GameScreenState extends State<GameScreen> {
               );
             },
           );
-
         }
       },
     );
@@ -534,8 +541,9 @@ class _GameScreenState extends State<GameScreen> {
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const MainScreen()),
-                            (route) => false,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                        (route) => false,
                       );
                     },
                     child: Text('확인'),
@@ -575,7 +583,6 @@ class _GameScreenState extends State<GameScreen> {
       // 현재 각자의 기가 몇 개 인지 확인하기 위해서
       destination: '/sub/${widget.roomId}/gameRecord',
       callback: (frame) {
-
         Map<String, dynamic> gameRecord = json.decode(frame.body!);
         print('받아온 전적 정보: $gameRecord');
         nickname1 = gameRecord['nickname1'];
@@ -867,7 +874,7 @@ class _GameScreenState extends State<GameScreen> {
               if (showTemp)
                 Positioned(
                   top: 0,
-                  height:MediaQuery.of(context).size.height*0.3,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: Column(
                     children: [
                       SizedBox(
@@ -878,8 +885,7 @@ class _GameScreenState extends State<GameScreen> {
                         child: Lottie.asset(
                           'lib/assets/lottie/$youPick.json',
                           fit: BoxFit.fitHeight,
-                          width:
-                          MediaQuery.of(context).size.width,
+                          width: MediaQuery.of(context).size.width,
                           repeat: true,
                           onLoaded: (composition) {
                             Timer(const Duration(milliseconds: 1200), () {
@@ -893,29 +899,27 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               if (showTemp)
                 Positioned(
-                  height:MediaQuery.of(context).size.height*0.6,
-                  width:MediaQuery.of(context).size.width,
-                  child:Divider(
-                    thickness: 5,
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  width: MediaQuery.of(context).size.width,
+                  child: Divider(
+                    thickness: 3,
                   ),
-
                 ),
               if (showTemp)
                 Positioned(
-                  top: MediaQuery.of(context).size.height*0.3,
-                  height:MediaQuery.of(context).size.height*0.3,
+                  top: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: Column(
                     children: [
                       SizedBox(
                         width:
-                        MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
+                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
                         height: MediaQuery.of(context).size.height *
                             0.3, // 원하는 높이 값으로 설정
                         child: Lottie.asset(
                           'lib/assets/lottie/$mePick.json',
                           fit: BoxFit.fitHeight,
-                          width:
-                          MediaQuery.of(context).size.width,
+                          width: MediaQuery.of(context).size.width,
                           repeat: true,
                           onLoaded: (composition) {
                             Timer(const Duration(milliseconds: 2000), () {
@@ -1275,19 +1279,19 @@ class _GameScreenState extends State<GameScreen> {
                             .scaleXY(
                                 duration: Duration(milliseconds: 100),
                                 begin: 2,
-                                end:0.1,
+                                end: 0.1,
                                 curve: Curves.bounceInOut)
                             .animate(target: countdown == '1' ? 2 : 0)
                             .scaleXY(
                                 duration: Duration(milliseconds: 100),
                                 begin: 2,
-                                end:0.1,
+                                end: 0.1,
                                 curve: Curves.bounceInOut)
                             .animate(target: countdown == '0' ? 2 : 0)
                             .scaleXY(
                                 duration: Duration(milliseconds: 100),
                                 begin: 2,
-                                end:0.1,
+                                end: 0.1,
                                 curve: Curves.bounceInOut))),
 
               if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
@@ -1435,13 +1439,24 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt >= 1)
                             GestureDetector(
                               onTap: () {
-                                // 순간이동을 하는 경우
-                                sendMessage('순간이동', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
+                                if (!showTemp && !isTelPressed) {
+                                  // 순간이동을 하는 경우
+                                  sendMessage('순간이동', widget.nickname);
+                                  isGi = false;
+                                  isPa = false;
+                                  isBlock = false;
+                                  isTel = false;
+                                  isBomb = false;
+                                  setState(() {
+                                    isTelPressed = true;
+                                  });
+
+                                  Timer(const Duration(milliseconds: 3000), () {
+                                    setState(() {
+                                      isTelPressed = false;
+                                    });
+                                  });
+                                }
                               },
                               onTapDown: (_) {
                                 setState(() {
@@ -1485,13 +1500,24 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt >= 3)
                             GestureDetector(
                               onTap: () {
-                                // 원기옥을 선택하는 경우
-                                sendMessage('원기옥', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
+                                if (!showTemp && !isBombPressed) {
+                                  // 원기옥을 선택하는 경우
+                                  sendMessage('원기옥', widget.nickname);
+                                  isGi = false;
+                                  isPa = false;
+                                  isBlock = false;
+                                  isTel = false;
+                                  isBomb = false;
+                                  setState(() {
+                                    isBombPressed = true;
+                                  });
+
+                                  Timer(const Duration(milliseconds: 3000), () {
+                                    setState(() {
+                                      isBombPressed = false;
+                                    });
+                                  });
+                                }
                               },
                               onTapDown: (_) {
                                 setState(() {
@@ -1525,12 +1551,23 @@ class _GameScreenState extends State<GameScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              sendMessage('기', widget.nickname);
-                              isGi = false;
-                              isPa = false;
-                              isBlock = false;
-                              isTel = false;
-                              isBomb = false;
+                              if (!showTemp && !isGiPressed) {
+                                sendMessage('기', widget.nickname);
+                                isGi = false;
+                                isPa = false;
+                                isBlock = false;
+                                isTel = false;
+                                isBomb = false;
+                                setState(() {
+                                  isGiPressed = true;
+                                });
+
+                                Timer(const Duration(milliseconds: 3000), () {
+                                  setState(() {
+                                    isGiPressed = false;
+                                  });
+                                });
+                              }
                             },
                             onTapDown: (_) {
                               setState(() {
@@ -1570,13 +1607,24 @@ class _GameScreenState extends State<GameScreen> {
                           // ),
                           GestureDetector(
                             onTap: () {
-                              //막기를 선택 하는 경우
-                              sendMessage('막기', widget.nickname);
-                              isGi = false;
-                              isPa = false;
-                              isBlock = false;
-                              isTel = false;
-                              isBomb = false;
+                              if (!showTemp && !isBlockPressed) {
+                                //막기를 선택 하는 경우
+                                sendMessage('막기', widget.nickname);
+                                isGi = false;
+                                isPa = false;
+                                isBlock = false;
+                                isTel = false;
+                                isBomb = false;
+                                setState(() {
+                                  isBlockPressed = true;
+                                });
+
+                                Timer(const Duration(milliseconds: 3000), () {
+                                  setState(() {
+                                    isBlockPressed = false;
+                                  });
+                                });
+                              }
                             },
                             onTapDown: (_) {
                               setState(() {
@@ -1608,13 +1656,24 @@ class _GameScreenState extends State<GameScreen> {
                           if (giCnt >= 1)
                             GestureDetector(
                               onTap: () {
-                                // 바위를 선택한 경우
-                                sendMessage('파', widget.nickname);
-                                isGi = false;
-                                isPa = false;
-                                isBlock = false;
-                                isTel = false;
-                                isBomb = false;
+                                if (!showTemp  && !isPaPressed) {
+                                  // 바위를 선택한 경우
+                                  sendMessage('파', widget.nickname);
+                                  isGi = false;
+                                  isPa = false;
+                                  isBlock = false;
+                                  isTel = false;
+                                  isBomb = false;
+                                  setState(() {
+                                    isPaPressed = true;
+                                  });
+
+                                  Timer(const Duration(milliseconds: 3000), () {
+                                    setState(() {
+                                      isPaPressed = false;
+                                    });
+                                  });
+                                }
                               },
                               onTapDown: (_) {
                                 setState(() {
