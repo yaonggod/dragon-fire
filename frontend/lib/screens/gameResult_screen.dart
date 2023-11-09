@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animated_digit/animated_digit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -162,7 +163,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                                     // ),
                                     AnimatedDigitWidget(
                                       controller: _controller2,
-                                      duration: Duration(milliseconds: 800),
+                                      duration: Duration(milliseconds: 1000),
                                       textStyle: TextStyle(
                                           color: Colors.white, fontSize: 30),
                                       enableSeparator: true,
@@ -173,7 +174,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                             ],
                           ),
                         ),
-                      ),
+                      ).animate().fade().scaleXY(begin:0, curve: Curves.bounceInOut),
                     ),
                   ),
                 ],
