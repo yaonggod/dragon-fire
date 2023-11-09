@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   bool _isFirstAccess = true; // 첫 접속 여부
 
-  List<String> assetList =[
+  List<String> assetList = [
     "lib/assets/icons/tutorial0.png",
     "lib/assets/icons/tutorial1.png",
     "lib/assets/icons/tutorial2.png",
@@ -119,14 +119,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       if (data.containsKey("roomId")) {
         int roomId = data["roomId"];
         int nowNumber = data["nowNumber"];
-        print("나는 "+'$nowNumber'+"번 째 사람입니다");
+        print("나는 " '$nowNumber' "번 째 사람입니다");
         print('roomId: $roomId');
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => GameScreen(
-                roomId: roomId, nickname: nickname!, nowNumber: nowNumber), // 이건 game.dart에 있다.
+                roomId: roomId,
+                nickname: nickname!,
+                nowNumber: nowNumber), // 이건 game.dart에 있다.
           ),
         );
       } else {
@@ -141,7 +143,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MyInfoScreen(),
+        builder: (context) => const MyInfoScreen(),
       ),
     );
   }
@@ -160,7 +162,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: RankingScreen(),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned(
+                right: 0,
+                left: 0,
+                top: -85,
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Image.asset('lib/assets/icons/trophyIcon.PNG'),
+                ),
+              ),
+              RankingScreen()
+            ],
+          ),
         );
       },
     );
@@ -173,7 +190,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       await prefs.setBool('isFirstAccess', false);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => TutorialScreen()),
+        MaterialPageRoute(builder: (context) => const TutorialScreen()),
       );
     }
   }
@@ -191,7 +208,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FriendScreen(friendSelected: true),
+        builder: (context) => const FriendScreen(friendSelected: true,),
       ),
     );
   }
@@ -200,7 +217,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TowerEnterScreen(),
+        builder: (context) => const TowerEnterScreen(),
       ),
     );
   }
@@ -209,7 +226,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     );
 
     _animation = Tween<double>(begin: 1.0, end: 0.0).animate(
@@ -246,7 +263,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
     print(response.statusCode);
   }
-
 
   @override
   void dispose() {
@@ -294,7 +310,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 fit: BoxFit.cover,
               ),
               begin: Offset(0, MediaQuery.of(context).size.height * 2 / 7),
-              end: Offset(0, 0),
+              end: const Offset(0, 0),
             ),
             Column(
               children: [
