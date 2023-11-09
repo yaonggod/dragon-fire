@@ -35,65 +35,43 @@ class RankingScreen extends StatelessWidget {
                   }
                   if (snapshot.hasData) {
                     var userInfo = snapshot.data!;
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: Stack(
+                    return Container(
+                      width: MediaQuery.of(context).size.width - 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width - 20,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 15,
+                              bottom: 15,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 15,
-                                    bottom: 15,
-                                  ),
-                                  child: Text(
-                                    userInfo.nickname,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 40,
-                                    ),
-                                  ),
-                                ),
-                                Column(
-                                  children: [
-                                    userRankingScore(
-                                      rankInfo: userInfo.rank,
-                                      scoreInfo: userInfo.score,
-                                    ),
-                                    userWinLose(
-                                      winInfo: userInfo.win,
-                                      loseInfo: userInfo.lose,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                            child: Text(
+                              userInfo.nickname,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 40,
+                              ),
                             ),
                           ),
-                          const Align(
-                            alignment: Alignment.topRight,
-                            child: Padding(
-                              padding: EdgeInsets.all(10.0),
-                              child: Text(
-                                '비무대회 등록증',
-                                style: TextStyle(
-                                  color: Color.fromRGBO(238, 58, 58, 1),
-                                  fontSize: 16,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          Column(
+                            children: [
+                              userRankingScore(
+                                rankInfo: userInfo.rank,
+                                scoreInfo: userInfo.score,
                               ),
-                            ),
-                          )
+                              userWinLose(
+                                winInfo: userInfo.win,
+                                loseInfo: userInfo.lose,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     );
@@ -154,6 +132,7 @@ class RankingScreen extends StatelessWidget {
                         ),
                         itemBuilder: (context, index) {
                           var userInfo = snapshot.data![index];
+
                           return Container(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -162,21 +141,7 @@ class RankingScreen extends StatelessWidget {
                               ),
                             ),
                             child: ListTile(
-                              leading: Text(
-                                '${userInfo.rank}등',
-                                style: const TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromRGBO(238, 58, 58, 1),
-                                  shadows: [
-                                    Shadow(
-                                      offset: Offset(0.5, 0.5),
-                                      blurRadius: 3.0,
-                                      color: Colors.red,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              leading: topRanking(userInfo),
                               title: Text(
                                 userInfo.nickname,
                                 style: const TextStyle(
@@ -185,7 +150,7 @@ class RankingScreen extends StatelessWidget {
                                 ),
                               ),
                               subtitle: Text(
-                                '${userInfo.score}점  win: ${userInfo.win}  lose: ${userInfo.lose}',
+                                '${userInfo.score}점\nwin: ${userInfo.win}  lose: ${userInfo.lose}',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -228,6 +193,31 @@ class RankingScreen extends StatelessWidget {
                 }
               },
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget topRanking(TotalRankingModel userInfo) {
+    if (userInfo.rank == '1') {
+      return Image.asset('lib/assets/icons/rankFirst.png');
+    } else if (userInfo.rank == '2') {
+      return Image.asset('lib/assets/icons/rankSecond.png');
+    } else if (userInfo.rank == '3') {
+      return Image.asset('lib/assets/icons/rankThird.png');
+    }
+    return Text(
+      '${userInfo.rank}등',
+      style: const TextStyle(
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+        color: Color.fromRGBO(238, 58, 58, 1),
+        shadows: [
+          Shadow(
+            offset: Offset(0.5, 0.5),
+            blurRadius: 3.0,
+            color: Colors.red,
           ),
         ],
       ),

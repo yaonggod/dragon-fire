@@ -84,6 +84,7 @@ flutter:
     - .env
     - lib/assets/lottie/
     - lib/assets/icons/
+    - lib/assets/skills/
     - assets/
 
   fonts:
