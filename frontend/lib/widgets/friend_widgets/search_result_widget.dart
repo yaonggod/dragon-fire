@@ -114,6 +114,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
                       "title": "드래곤 불",
                       "body": "${myNickname}님이 친구 추가 요청을 보냈습니다."
                     },
+                    "data": {
+                      "do": "friend"
+                    },
                     "token": widget.searchResult.fcmToken
                   }
                 }
