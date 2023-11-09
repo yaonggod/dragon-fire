@@ -71,8 +71,8 @@ public class GameController {
             // 해당 roomId는 가지고 있으니까
             while (true) {
                 // 내가 들어왔는데 만약에 내가 짝수 번째 사람인데 여기서 돌고 있는 경우라면? => 바로 나가야 한다.
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/stillConnect", "still");
                 int compare = gameService.savingReturn(roomID); // 보내기 전의 값
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/stillConnect", "still");
                 int whoIam = gameService.whoisInThere(roomID); // 나는 누구인가?
                 if (whoIam % 2 == 0) {
                     //내가 짝수 번째 사람인데 여기 있다?  => 바로 탈출 해야 한다.
