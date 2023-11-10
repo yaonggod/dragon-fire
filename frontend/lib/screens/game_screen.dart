@@ -867,9 +867,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        //url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -1213,7 +1213,7 @@ class _GameScreenState extends State<GameScreen> {
                                   children: [
                                     Text(
                                       contender!,
-                                      style: const TextStyle(fontSize: 30),
+                                      style: const TextStyle(fontSize: 25),
                                     ),
                                     Container(
                                       width: MediaQuery.of(context).size.width *
@@ -1290,7 +1290,7 @@ class _GameScreenState extends State<GameScreen> {
                                   children: [
                                     Text(
                                       widget.nickname,
-                                      style: const TextStyle(fontSize: 30),
+                                      style: const TextStyle(fontSize: 25),
                                     ),
                                     Container(
                                       width: MediaQuery.of(context).size.width *
@@ -1495,7 +1495,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Text(widget.nickname,
                             style: const TextStyle(color:Colors.white,
-                                fontSize: 20, fontWeight: FontWeight.w700),
+                                fontSize: 18, fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center),
                       ),
                     ),

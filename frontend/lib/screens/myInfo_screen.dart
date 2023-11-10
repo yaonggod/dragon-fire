@@ -438,7 +438,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                             height: MediaQuery.of(context).size.height / 4),
                         Center(
                           child: Text(
-                              style: TextStyle(fontSize: 50),
+                              style: TextStyle(fontSize: 45),
                               nickname != null ? nickname! : "null"),
                         ),
                         SizedBox(

@@ -56,7 +56,7 @@ class RankingScreen extends StatelessWidget {
                               userInfo.nickname,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 40,
+                                fontSize: 35,
                               ),
                             ),
                           ),
