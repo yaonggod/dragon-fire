@@ -6,6 +6,7 @@ import 'package:frontend/models/friend_models/friend_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -78,6 +79,58 @@ class _FriendWidgetState extends State<FriendWidget> {
     }
     return false;
 
+  }
+
+  Future<bool> friendFight() async {
+    Map<String, String> list = await readToken();
+    // 친구랑 싸우자!
+    Uri uri = Uri.parse("$baseUrl/friend-game/wait");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        });
+    // 성공하면 룸넘버랑 firebase AT 가져옴
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+      // 친구랑 싸울 방 번호
+      final roomId = jsonMap["roomId"];
+      // 친구한테 알림보낼 firebase AT
+      final firebaseAccessToken = response.headers["firebase"]!.substring(7);
+      // 내 닉네임
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final myNickname = prefs.getString('nickname');
+
+      // 일단 친구한테 알림을 보내고
+      if (widget.friend.fcmToken != null) {
+
+        final response2 = await http.post(Uri.parse("https://fcm.googleapis.com/v1/projects/${dotenv.env["PROJECT_ID"]}/messages:send"),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': "Bearer $firebaseAccessToken"
+            },
+            body: jsonEncode(
+                {
+                  "message": {
+                    "data": {
+                      "do": "friend-fight",
+                      "nickname": "$myNickname"
+                    },
+                    "token": widget.friend.fcmToken
+                  }
+                }
+            )
+        );
+        // 알람을 보내고 성공할 경우 친구대전 가넝~
+        if (response2.statusCode == 200) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @override
