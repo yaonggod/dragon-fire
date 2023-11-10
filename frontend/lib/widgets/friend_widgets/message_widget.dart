@@ -256,7 +256,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                   Expanded(
                     child: Text(
                       messageText,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                       overflow: TextOverflow.clip,
                     ),
                   ),

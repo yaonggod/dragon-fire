@@ -129,15 +129,15 @@ class _FriendWidgetState extends State<FriendWidget> {
                             Text(
                               widget.friend.toNickname,
                               style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                                  const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             Text(
                               '지존 ${widget.friend.score}점',
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(fontSize: 12, color: Colors.white),
                             ),
                             Text(
                               '상대 전적 ${widget.friend.friendWin}승 ${widget.friend.friendLose}패',
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(fontSize: 12, color: Colors.white),
                             ),
                           ],
                         ),

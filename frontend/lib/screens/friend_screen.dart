@@ -14,6 +14,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FriendScreen extends StatefulWidget {
   final friendSelected;
+
   const FriendScreen({super.key, required this.friendSelected});
 
   @override
@@ -26,14 +27,17 @@ class _FriendScreenState extends State<FriendScreen> {
 
   // 검색할 닉네임
   String searchNickname = "";
+
   // 검색 결과 상태: 검색 안함(NONE), 검색 결과 없음(FAIL), 검색 결과 있음(SUCCESS)
   String searched = "NONE";
+
   void showSearch() {
     setState(() {
       searched = "NONE";
     });
     print(searched);
   }
+
   // 검색 결과
   SearchResultModel? searchResult;
 
@@ -42,14 +46,11 @@ class _FriendScreenState extends State<FriendScreen> {
     Map<String, String> list = await readToken();
     if (searchNickname.trim() != "") {
       Uri uri = Uri.parse("$baseUrl/friend/search/$searchNickname");
-      final response = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${list["Authorization"]!}',
-          'refreshToken': 'Bearer ${list['refreshToken']!}'
-        }
-      );
+      final response = await http.get(uri, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${list["Authorization"]!}',
+        'refreshToken': 'Bearer ${list['refreshToken']!}'
+      });
       if (response.statusCode == 200) {
         var jsonString = utf8.decode(response.bodyBytes);
         Map<String, dynamic> jsonMap = jsonDecode(jsonString);
@@ -64,7 +65,6 @@ class _FriendScreenState extends State<FriendScreen> {
         });
       }
     }
-
   }
 
   bool friendSelected = true;
@@ -76,14 +76,11 @@ class _FriendScreenState extends State<FriendScreen> {
   Future<void> getMyFriends() async {
     Map<String, String> list = await readToken();
     Uri uri = Uri.parse("$baseUrl/friend/friends");
-    final response = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${list["Authorization"]!}',
-          'refreshToken': 'Bearer ${list['refreshToken']!}'
-        }
-    );
+    final response = await http.get(uri, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${list["Authorization"]!}',
+      'refreshToken': 'Bearer ${list['refreshToken']!}'
+    });
 
     if (response.statusCode == 200) {
       var jsonString = utf8.decode(response.bodyBytes);
@@ -107,14 +104,11 @@ class _FriendScreenState extends State<FriendScreen> {
   Future<void> getMyMessages() async {
     Map<String, String> list = await readToken();
     Uri uri = Uri.parse("$baseUrl/friend/messages");
-    final response = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${list["Authorization"]!}',
-          'refreshToken': 'Bearer ${list['refreshToken']!}'
-        }
-    );
+    final response = await http.get(uri, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${list["Authorization"]!}',
+      'refreshToken': 'Bearer ${list['refreshToken']!}'
+    });
     if (response.statusCode == 200) {
       var jsonString = utf8.decode(response.bodyBytes);
       List<dynamic> jsonMap = jsonDecode(jsonString);
@@ -133,7 +127,6 @@ class _FriendScreenState extends State<FriendScreen> {
   late ScrollController scrollController;
   bool isMaxHeightReached = false;
 
-
   /*
   * 대전전적의 각 전적의 신고버튼으로 이 화면으로 올 수 있음
   *
@@ -149,7 +142,7 @@ class _FriendScreenState extends State<FriendScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
+        (route) => false,
       );
     }
   }
@@ -206,137 +199,184 @@ class _FriendScreenState extends State<FriendScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('호적수',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        searchNickname = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      hintText: "닉네임으로 검색하기",
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        borderSide: BorderSide(width: 1, color: Colors.black),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        borderSide: BorderSide(width: 1, color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                GestureDetector(
-                  onTap: search,
-                  child: const Icon(
-                    Icons.search,
-                    size: 40,
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            searched == "FAIL" ? const Text(
-              "존재하지 않는 유저입니다.",
-              style: TextStyle(color: Colors.red),
-            ) : Container(),
-            searched == "SUCCESS" ? SearchResultWidget(searchResult: searchResult!, onEvent: showSearch) : Container(),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        // 친구 불러오는 api 쏘기
-                        getMyFriends();
-                        friendSelected = true;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                          color: !friendSelected ? Colors.white : Colors.red,
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10))),
-                      child: const Text(
-                        "나의 호적수",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        getMyMessages();
-                        friendSelected = false;
-                      });
-                    },
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                            color: !friendSelected ? Colors.red : Colors.white,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10))),
-                        child: const Text(
-                          "메시지",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20),
-                        )),
-                  ),
-                )
-              ],
-            ),
-            Expanded(
+      body: Stack(
+        children: [
+          Positioned(
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height,
               child: Container(
-                decoration:
-                    BoxDecoration(border: Border.all(color: Colors.red)),
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount:
-                        friendSelected ? friendList.length : messageList.length,
-                    itemBuilder: (context, index) {
-                      if (friendSelected) {
-                        return FriendWidget(friend: friendList[index]);
-                      }
-                      return MessageWidget(message: messageList[index]);
-                    }),
-              ),
+                child: Image.asset(
+                  'lib/assets/icons/background.png',
+                  fit: BoxFit.fitHeight,
+                ),
+              )),
+          SafeArea(
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              onChanged: (value) {
+                                setState(() {
+                                  searchNickname = value;
+                                });
+                              },
+                              maxLength: 12,
+                              style: TextStyle(fontSize: 20),
+                              decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 1),
+                                hintText: "닉네임으로 검색하기",
+                                hintStyle: TextStyle(fontSize: 20),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0)),
+                                  borderSide:
+                                      BorderSide(width: 3, color: Colors.black),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0)),
+                                  borderSide:
+                                      BorderSide(width: 3, color: Colors.black),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0)),
+                                  borderSide:
+                                      BorderSide(width: 3, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          GestureDetector(
+                            onTap: search,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical:3),
+                              child: const Icon(
+                                Icons.search,
+                                size: 40,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      searched == "FAIL"
+                          ? const Text(
+                              "존재하지 않는 유저입니다.",
+                              style: TextStyle(color: Colors.red),
+                            )
+                          : Container(),
+                      searched == "SUCCESS"
+                          ? SearchResultWidget(
+                              searchResult: searchResult!, onEvent: showSearch)
+                          : Container(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  // 친구 불러오는 api 쏘기
+                                  getMyFriends();
+                                  friendSelected = true;
+                                });
+                              },
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                    color: !friendSelected
+                                        ? Colors.white
+                                        : Colors.red,
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10))),
+                                child: const Text(
+                                  "나의 호적수",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  getMyMessages();
+                                  friendSelected = false;
+                                });
+                              },
+                              child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                      color: !friendSelected
+                                          ? Colors.red
+                                          : Colors.white,
+                                      borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(10),
+                                          topRight: Radius.circular(10))),
+                                  child: const Text(
+                                    "메시지",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 20),
+                                  )),
+                            ),
+                          )
+                        ],
+                      ),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.red)),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: friendSelected
+                                  ? friendList.length
+                                  : messageList.length,
+                              itemBuilder: (context, index) {
+                                if (friendSelected) {
+                                  return FriendWidget(
+                                      friend: friendList[index]);
+                                }
+                                return MessageWidget(
+                                    message: messageList[index]);
+                              }),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 10,
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

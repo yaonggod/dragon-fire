@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:frontend/screens/regist_screen.dart';
 import 'package:http/http.dart' as http;
@@ -100,8 +101,9 @@ class _ReportScreenState extends State<ReportScreen> {
                     Navigator.of(context).pop();
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const MainScreen()),
-                            (route) => false);
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                        (route) => false);
                   },
                   child: Text('확인'),
                 ),
@@ -151,105 +153,110 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('피드백',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // const Padding(
-              //   padding: EdgeInsets.only(left: 5.0),
-              //   child: Align(
-              //     alignment: Alignment.centerLeft,
-              //     child: Text(
-              //       '신고 회원',
-              //       style: TextStyle(
-              //         fontSize: 15.0,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 5.0),
-              //   child: Align(
-              //     alignment: Alignment.centerLeft,
-              //     child: Text(
-              //       nickname,
-              //       style: TextStyle(
-              //         fontSize: 15.0,
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              SizedBox(height: MediaQuery.of(context).size.height / 15),
-              SizedBox(height: MediaQuery.of(context).size.height / 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '피드백',
-                    style: TextStyle(
-                      fontSize: 15.0,
+      body: Stack(
+        children: [
+          Positioned(
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height,
+              child: Container(
+                child: Image.asset(
+                  'lib/assets/icons/background.png',
+                  fit: BoxFit.fitHeight,
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 5.0),
+                //   child: Align(
+                //     alignment: Alignment.centerLeft,
+                //     child: Text(
+                //       '신고 회원',
+                //       style: TextStyle(
+                //         fontSize: 15.0,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Padding(
+                //   padding: EdgeInsets.only(left: 5.0),
+                //   child: Align(
+                //     alignment: Alignment.centerLeft,
+                //     child: Text(
+                //       nickname,
+                //       style: TextStyle(
+                //         fontSize: 15.0,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '피드백',
+                      style: TextStyle(
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.bold
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
-              Container(
-                child: TextField(
-                  controller: detailController,
-                  minLines: 10, // 최소 라인 수 설정
-                  maxLines: 10, // 최대 라인 수 설정
-                  decoration: InputDecoration(
-                    alignLabelWithHint: true,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFF6766E),
+                SizedBox(height: MediaQuery.of(context).size.height / 100),
+                Container(
+                  child: TextField(
+                    controller: detailController,
+                    minLines: 10, // 최소 라인 수 설정
+                    maxLines: 10, // 최대 라인 수 설정
+                    decoration: InputDecoration(
+                      alignLabelWithHint: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFF6766E),
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
                       ),
-                    ),
-                    isDense: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    contentPadding: const EdgeInsets.all(12),
-                    labelText: '피드백을 자유롭게 남겨주세요',
-                    labelStyle: const TextStyle(
-                      color: Colors.grey,
+                      isDense: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      contentPadding: const EdgeInsets.all(12),
+                      labelText: '피드백을 자유롭게 남겨주세요',
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
-              ElevatedButton(
-                onPressed: () {
-                  // print(widget.code);
-                  if (detailController.text.isEmpty) {
-                    // 경고 메시지 표시 로직
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("신고 사유는 필수사항입니다!")),
-                    );
-                  } else {
-                    sendReport();
-                  }
-                },
-                child: const Text('등록'),
-              ),
-            ],
+                SizedBox(height: MediaQuery.of(context).size.height / 100),
+                ElevatedButton(
+                  onPressed: () {
+                    // print(widget.code);
+                    if (detailController.text.isEmpty) {
+                      // 경고 메시지 표시 로직
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("신고 사유는 필수사항입니다!")),
+                      );
+                    } else {
+                      sendReport();
+                    }
+                  },
+                  child: const Text('등록'),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
