@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:frontend/screens/regist_screen.dart';
 import 'package:http/http.dart' as http;
@@ -412,82 +413,107 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          "로그인",
-          style: TextStyle(
-            fontSize: 22,
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 3),
-              GestureDetector(
-                onTap: naverLogin,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.25),
-                        offset: Offset(0, 3),
-                        blurRadius: 5,
-                        spreadRadius: 0,
+      body: Stack(
+        children: [
+          Positioned(
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height,
+              child: Container(
+                child: Image.asset(
+                  'lib/assets/icons/background.png',
+                  fit: BoxFit.fitHeight,
+                ),
+              )).animate().fade(),
+          Positioned(
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: Center(
+                  child: Text(
+                "비무대회\n입장",
+                style: TextStyle(
+                    shadows: <Shadow>[
+                      Shadow(
+                        offset: Offset(10.0, 10.0),
+                        blurRadius: 3.0,
+                        color: Color.fromRGBO(0, 0, 0, 0.1),
+                      ),
+                      Shadow(
+                        offset: Offset(10.0, 10.0),
+                        blurRadius: 8.0,
+                        color: Color.fromRGBO(0, 0, 0, 0.1),
                       ),
                     ],
-                  ),
-                  child: Image.asset(
-                    'lib/assets/icons/naverButton.png',
-                    width: MediaQuery.of(context).size.width * 0.8,
-                  ),
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 60),
-              GestureDetector(
-                onTap: googleLogin,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.15),
-                        offset: Offset(0, 5),
-                        blurRadius: 5,
-                        spreadRadius: 0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 60),
+                    textAlign: TextAlign.center,
+              ))),
+          Positioned(
+            top: MediaQuery.of(context).size.height * 0.55,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // SizedBox(height: MediaQuery.of(context).size.height / 3),
+                  GestureDetector(
+                    onTap: naverLogin,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.25),
+                            offset: Offset(0, 3),
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Image.asset(
+                        'lib/assets/icons/naverButton.png',
+                        width: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                    ),
                   ),
-                  child: Image.asset(
-                    'lib/assets/icons/googleButton.png',
-                    width: MediaQuery.of(context).size.width * 0.8,
+                  SizedBox(height: MediaQuery.of(context).size.height / 60),
+                  GestureDetector(
+                    onTap: googleLogin,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.15),
+                            offset: Offset(0, 5),
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        'lib/assets/icons/googleButton.png',
+                        width: MediaQuery.of(context).size.width * 0.8,
+                      ),
+                    ),
                   ),
-                ),
+                  SizedBox(height: MediaQuery.of(context).size.height / 60),
+                  (_isIos)
+                      ? SignInWithAppleButton(
+                          text: "Continue with Apple",
+                          borderRadius: BorderRadius.all(Radius.circular(7)),
+                          style: SignInWithAppleButtonStyle.black,
+                          iconAlignment: IconAlignment.center,
+                          onPressed: () async {},
+                        )
+                      : Container(),
+                ],
               ),
-              SizedBox(height: MediaQuery.of(context).size.height / 60),
-              (_isIos)
-                  ? SignInWithAppleButton(
-                      text: "Continue with Apple",
-                      borderRadius: BorderRadius.all(Radius.circular(7)),
-                      style: SignInWithAppleButtonStyle.black,
-                      iconAlignment: IconAlignment.center,
-                      onPressed: () async {},
-                    )
-                  : Container(),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

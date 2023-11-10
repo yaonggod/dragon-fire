@@ -43,8 +43,8 @@ class _RegistScreenState extends State<RegistScreen> {
   Future<void> nicknameCheck() async {
     String nicknameCur = nicknameController.text;
     String baseUrl = dotenv.env['BASE_URL']!;
-    final response = await http.get(Uri.parse(
-            '$baseUrl/api/member/nickname-duplicate/$nicknameCur')
+    final response = await http.get(
+        Uri.parse('$baseUrl/api/member/nickname-duplicate/$nicknameCur')
         // Uri.parse('http://10.0.2.2:8080/member/nickname-duplicate/'+nickname)
         );
     if (response.statusCode == 200) {
@@ -96,8 +96,7 @@ class _RegistScreenState extends State<RegistScreen> {
   void sendDataToServer() async {
     final String nicknameCur = nicknameController.text;
     String baseUrl = dotenv.env['BASE_URL']!;
-    if(nicknameCur == nicknameTemp){
-
+    if (nicknameCur == nicknameTemp) {
       final response = await http.post(
           Uri.parse('$baseUrl/api/oauth/${widget.socialType}'),
           // Uri.parse('http://10.0.2.2:8080/oauth/GOOGLE'),
@@ -110,7 +109,7 @@ class _RegistScreenState extends State<RegistScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
       } else {
         print("Failed to send data to server");
@@ -132,8 +131,8 @@ class _RegistScreenState extends State<RegistScreen> {
           },
         );
       }
-    }else{
-      setState((){
+    } else {
+      setState(() {
         nicknameChecked = false;
       });
       showDialog(
@@ -156,114 +155,119 @@ class _RegistScreenState extends State<RegistScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('회원가입',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(25.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height / 15),
-              SizedBox(height: MediaQuery.of(context).size.height / 20),
-              const Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '닉네임',
-                    style: TextStyle(
-                      fontSize: 15.0,
+      body: Stack(
+        children: [
+          Positioned(
+              left: 0,
+              right: 0,
+              height: MediaQuery.of(context).size.height,
+              child: Container(
+                child: Image.asset(
+                  'lib/assets/icons/background.png',
+                  fit: BoxFit.fitHeight,
+                ),
+              )),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height / 15),
+                SizedBox(height: MediaQuery.of(context).size.height / 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '닉네임',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height / 100),
-              TextField(
-                  controller: nicknameController,
-                  maxLength: 8,
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFF6766E),
+                SizedBox(height: MediaQuery.of(context).size.height / 100),
+                TextField(
+                    controller: nicknameController,
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFF6766E),
+                        ),
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      borderSide: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
                       ),
-                    ),
-                    isDense: true,
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    contentPadding: const EdgeInsets.all(12),
-                    labelText: '닉네임을 입력해주세요',
-                    labelStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                  )),
-              ElevatedButton(
-                onPressed: () {
-                  if (nicknameController.text.isEmpty) {
-                    // 경고 메시지 표시 로직
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
-                    );
-                  } else if (containsWhitespace(nicknameController.text)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
-                    );
-                  } else {
-                    nicknameCheck();
-                  }
-                },
-                child: const Text('중복체크'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // print(widget.code);
-                  if (nicknameChecked == false) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('알림'),
-                          content: Text('닉네임 중복체크를 해주세요.'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('확인'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    if (containsWhitespace(nicknameController.text)) {
+                      isDense: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      contentPadding: const EdgeInsets.all(12),
+                      labelText: '닉네임을 입력해주세요',
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    )),
+                ElevatedButton(
+                  onPressed: () {
+                    if (nicknameController.text.isEmpty) {
+                      // 경고 메시지 표시 로직
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
+                      );
+                    } else if (containsWhitespace(nicknameController.text)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
                       );
                     } else {
-                      sendDataToServer();
+                      nicknameCheck();
                     }
-                  }
-                },
-                child: const Text('등록'),
-              ),
-            ],
+                  },
+                  child: const Text('중복체크'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // print(widget.code);
+                    if (nicknameChecked == false) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('알림'),
+                            content: Text('닉네임 중복체크를 해주세요.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('확인'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      if (containsWhitespace(nicknameController.text)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
+                        );
+                      } else {
+                        sendDataToServer();
+                      }
+                    }
+                  },
+                  child: const Text('등록'),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
