@@ -11,6 +11,7 @@ import lombok.Setter;
 public class FriendListDto {
     private UUID toMember;
     private String toNickname;
+    private String fcmToken;
 
     // 이 사람의 전적
     private int score;

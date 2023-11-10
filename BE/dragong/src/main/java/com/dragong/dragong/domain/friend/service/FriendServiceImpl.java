@@ -13,7 +13,6 @@ import com.dragong.dragong.domain.member.entity.Member;
 import com.dragong.dragong.domain.member.entity.MemberInfo;
 import com.dragong.dragong.domain.member.repository.MemberRepository;
 import com.dragong.dragong.domain.member.repository.MemberInfoRepository;
-import com.dragong.dragong.domain.member.repository.FcmTokenRepository;
 import com.dragong.dragong.domain.playResult.entity.PlayResult;
 import com.dragong.dragong.domain.playResult.entity.PlayResultEmpId;
 import com.dragong.dragong.domain.playResult.repository.PlayResultRepository;
@@ -381,12 +380,17 @@ public class FriendServiceImpl implements FriendService {
                 lose = playResult.get().getLose();
             }
 
+
             FriendListDto friendListDto = FriendListDto.builder()
                     .toMember(toMember)
                     .toNickname(memberInfoRepository.findMemberInfoByMemberId(toMember).get().getNickname())
                     .score(score).win(win).lose(lose)
                     .friendWin(f.getWin()).friendLose(f.getLose())
                     .build();
+
+            if (to.get().getFcmToken() != null) {
+                friendListDto.setFcmToken(to.get().getFcmToken().getFcmToken());
+            }
             friendListDtoList.add(friendListDto);
         }
         return friendListDtoList;
