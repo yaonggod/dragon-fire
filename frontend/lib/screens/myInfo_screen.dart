@@ -35,6 +35,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   NaverLoginResult? _naverLoginResult;
 
   String? nickname;
+  String? email;
 
   List<String> assetList =[
     "lib/assets/icons/tutorial0.png",
@@ -55,6 +56,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   // initState할때 토큰 존재 여부 확인해서 로그인 status 상태 저장하기
   Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
+    email = await getEmail();
     print("nickname ${nickname == null}");
     print(nickname);
 
@@ -87,6 +89,19 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       if (_naverLoginStatus == true) {
         _naverLoginResult = await FlutterNaverLogin.logOutAndDeleteToken();
       }
+
+      // 로그아웃할때 fcm token도 없애버리기
+      final response2 = await http.post(
+        Uri.parse('$baseUrl/api/member/fcm'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        body: jsonEncode({"fcmToken": null}),
+      );
+      print(response2.statusCode);
+      //
 
       Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
       // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
@@ -182,6 +197,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Future<String?> getNickname() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('nickname');
+  }
+
+  Future<String?> getEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('email');
   }
 
   removeNickname() async {
@@ -399,6 +419,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                     nickname != null ? nickname! : "null"),
               ),
               SizedBox(height: MediaQuery.of(context).size.height / 3),
+              Center(
+                child: Text(
+                    style: TextStyle(fontSize: 20),
+                    email != null ? email! : "null"),
+              ),
               SizedBox(height: MediaQuery.of(context).size.height / 100),
               if (_naverLoginStatus == true || _googleLoggedIn == true)
                 MaterialButton(

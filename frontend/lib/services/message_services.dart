@@ -2,6 +2,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:frontend/main.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(NotificationResponse details) {
@@ -55,9 +56,14 @@ void initializeNotification() async {
     const InitializationSettings(android: AndroidInitializationSettings('appicontrans')),
 
     // 포그라운드에서 noti를 받을 때
-    onDidReceiveNotificationResponse: (details) {
+    onDidReceiveNotificationResponse: (details) async {
       print('foreground ${details.payload}');
+
+      final route = details.payload!.split(":")[1].trim().replaceAll("}", "");
       // 받은 데이터로 리다이렉트하기
+      if (route == "friend") {
+        DragonG.navigatorKey.currentState!.pushNamed('/friend');
+      }
     },
 
     // 백그라운드에서 noti를 받을 때
@@ -90,7 +96,12 @@ void initializeNotification() async {
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
     print("background opened ${message.data}");
+
+    final route = message.data["do"];
     // 받은 데이터로 리다이렉트하기
+    if (route == "friend") {
+      DragonG.navigatorKey.currentState!.pushNamed('/friend');
+    }
   });
 
 }
