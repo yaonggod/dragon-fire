@@ -271,10 +271,10 @@ public class GameController {
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/selected", String.valueOf(j) + " " + answer);
                     }
                     // 이게 결과값을 반환하는 것이다. //
-                    if(information[3].equals("나갑니다")){
+                    if (information[3].equals("나갑니다")) {
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
                         return;
-                    }else{
+                    } else {
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
                     }
 
@@ -356,10 +356,9 @@ public class GameController {
             log.info("최종 결과를 도출합니다" + info);
 
 
-
             // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
             messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
-            gameService.updateLog(roomID,winner);
+            gameService.updateLog(roomID, winner);
             log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
         }
         gameService.cleanList(roomID);
@@ -379,7 +378,29 @@ public class GameController {
         int roomID = Integer.parseInt(roomId);
         gameService.messageInsert(roomID, nickname);
         int cnt = gameService.evenReturn(roomID);
-        if (cnt == 2) {
+        if (cnt == 1) {
+            // 혼자 명령이 들어왔을 때 => 정상적으로 작동했을 때는 2명이 들어오는 순간 나갈 수 있을 것이다.
+            // 하지만 만약에 게임이 시작한 이후 갑자기 한 명이 나가버린다면 명령을 받지 못하는 경우가 발생한다.
+            int errorCnt=0;
+            while(true){
+                System.out.println("실행중");
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                int temp = gameService.evenReturn(roomID);
+                if(temp==2){
+                    break;
+                }
+                if(errorCnt>=5){
+                    System.out.println("메시지 보냄");
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/escape", "escape");
+                    break;
+                }
+                errorCnt+=1;
+            }
+        } else if (cnt == 2) {
             gameService.cleanList(roomID);
             try {
                 Thread.sleep(1000);
