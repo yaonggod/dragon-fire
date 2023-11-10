@@ -725,6 +725,37 @@ class _GameScreenState extends State<GameScreen> {
       },
     );
     stompClient.subscribe(
+      // 판을 1.5초 동안 보여준 이후 명령이 들어오면 startgame 을 실행한다.
+      destination: '/sub/${widget.roomId}/escape',
+      callback: (frame) {
+        // 게임 매칭이 된 직후 한 사람이 나가버린 경우
+        if (frame.body == 'escape') {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('알림'),
+                content: Text('상대가 떠났습니다'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MainScreen()),
+                            (route) => false,
+                      );
+                    },
+                    child: Text('확인'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+    );
+    stompClient.subscribe(
       // 현재 각자의 기가 몇 개 인지 확인하기 위해서
       destination: '/sub/${widget.roomId}/winData',
       callback: (frame) {
@@ -836,9 +867,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        //url: socketUrl,
         // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -853,10 +884,6 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
-    // final Map<String, dynamic> messageBody ={
-    //   "solo" : solo,
-    //   "nowNumber": widget.nowNumber,
-    // };
     stompClient.send(
         destination: '/pub/${widget.roomId}/dispose', body: '', headers: {});
     stompClient.deactivate();
