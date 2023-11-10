@@ -110,12 +110,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
             body: jsonEncode(
                 {
                   "message": {
-                    "notification": {
-                      "title": "드래곤 불",
-                      "body": "${myNickname}님이 친구 추가 요청을 보냈습니다."
-                    },
                     "data": {
-                      "do": "friend"
+                      "do": "friend-add",
+                      "nickname": "$myNickname"
                     },
                     "token": widget.searchResult.fcmToken
                   }

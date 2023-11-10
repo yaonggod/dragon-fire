@@ -1,5 +1,4 @@
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:frontend/main.dart';
@@ -8,24 +7,28 @@ import 'package:frontend/main.dart';
 void backgroundHandler(NotificationResponse details) {
   // print('background111 ${details.payload}');
   print("1111111");
-
 }
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // 앱이 백그라운드에 있을 시 여기로 옴, firebase를 시작하고
-  await Firebase.initializeApp();
-  // 알림을 보여주자 
+
   final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
+
+  String notiBody = "멍멍";
+  if (message.data["do"] == "friend-add") {
+    notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
+  } else if (message.data["do"] == "friend-accept") {
+    notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
+  }
+
   flutterLocalNotificationPlugin.show(
-      message.notification.hashCode,
-      // 메시지에서 지정한 title과 body
-      message.notification!.title,
-      message.notification!.body,
+      0,
+      "드래곤 불",
+      notiBody,
       const NotificationDetails(
           android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
       ),
-      payload: message.data.toString()
+      payload: message.data["do"]
   );
 }
 
@@ -59,9 +62,8 @@ void initializeNotification() async {
     onDidReceiveNotificationResponse: (details) async {
       print('foreground ${details.payload}');
 
-      final route = details.payload!.split(":")[1].trim().replaceAll("}", "");
       // 받은 데이터로 리다이렉트하기
-      if (route == "friend") {
+      if (details.payload == "friend-add" || details.payload == "friend-accept") {
         DragonG.navigatorKey.currentState!.pushNamed('/friend');
       }
     },
@@ -73,20 +75,22 @@ void initializeNotification() async {
 
   // 포그라운드에서 firebase message를 듣기
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    if (message.notification != null) {
-      // 메시지를 보여줘
-      flutterLocalNotificationPlugin.show(
-        message.notification.hashCode,
-        // 메시지에서 지정한 title과 body
-        message.notification!.title,
-        message.notification!.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
-        ),
-        payload: message.data.toString()
-      );
+    String notiBody = "멍멍";
+    if (message.data["do"] == "friend-add") {
+      notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
+    } else if (message.data["do"] == "friend-accept") {
+      notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
     }
 
+    flutterLocalNotificationPlugin.show(
+        0,
+        "드래곤 불",
+        notiBody,
+        const NotificationDetails(
+            android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
+        ),
+        payload: message.data["do"]
+    );
   });
 
   RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
@@ -99,7 +103,7 @@ void initializeNotification() async {
 
     final route = message.data["do"];
     // 받은 데이터로 리다이렉트하기
-    if (route == "friend") {
+    if (route == "friend-add" || route == "friend-accept")  {
       DragonG.navigatorKey.currentState!.pushNamed('/friend');
     }
   });
