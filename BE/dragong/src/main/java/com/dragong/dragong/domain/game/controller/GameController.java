@@ -86,7 +86,7 @@ public class GameController {
                     return "에러입니다";
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(220);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -350,11 +350,17 @@ public class GameController {
             log.info(parts[0]); // 이게 패자의 accessToken
             resultUpdateService.updateWinner(parts[0]);
             resultUpdateService.updateLoser(parts[1]);
-            log.info("여기까지 실행됨");
+            log.info("DB에 승자와 패자 정보를 갱신합니다");
             String info = "";
             info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getLoserInfo(parts[0]);
             log.info("최종 결과를 도출합니다" + info);
+
+
+
+            // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
             messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+            gameService.updateLog(roomID,winner);
+            log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
         }
         gameService.cleanList(roomID);
     }
