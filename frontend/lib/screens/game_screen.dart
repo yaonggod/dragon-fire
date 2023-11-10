@@ -46,7 +46,7 @@ class _GameScreenState extends State<GameScreen> {
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
-  String? contender;
+  String? contender="동탄불주먹";
   bool isGi = false; // 기
   bool isPa = false; // 파
   bool isBlock = false; // 막기
