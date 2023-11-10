@@ -110,6 +110,9 @@ class _AccessScreen2State extends State<AccessScreen2>
         onWillPop: endApp,
         child: Stack(
           children: [
+            Container(
+              color: Colors.black,
+            ),
             slidingWidget(
               context,
               _animation,

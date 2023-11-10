@@ -895,868 +895,966 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       body: WillPopScope(
         onWillPop: endApp,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              // Center(
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          children: [
+            Positioned(
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).size.height,
+                child: Container(
+                  child: Image.asset(
+                    'lib/assets/icons/background.png',
+                    fit: BoxFit.fitHeight,
+                  ),
+                )),
+            SafeArea(
+              child: Stack(
+                children: [
+                  // Center(
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
 
-              if (showTemp)
-                Positioned(
-                  top: 0,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width:
-                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                        height: MediaQuery.of(context).size.height *
-                            0.3, // 원하는 높이 값으로 설정
-                        // child: Lottie.asset(
-                        //   'lib/assets/lottie/$youPick.json',
-                        //   fit: BoxFit.fitHeight,
-                        //   width: MediaQuery.of(context).size.width,
-                        //   repeat: true,
-                        //   onLoaded: (composition) {
-                        //     Timer(const Duration(milliseconds: 1200), () {
-                        //       // 여기에 콜백 코드를 넣으세요
-                        //     });
-                        //   },
-                        // ),
-                        child: Image.asset(
-                          'lib/assets/skills/$youPick.gif',
-                          fit: BoxFit.fitHeight,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (showTemp)
-                Positioned(
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  width: MediaQuery.of(context).size.width,
-                  child: Divider(
-                    thickness: 3,
-                  ),
-                ),
-              if (showTemp)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.3,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width:
-                            MediaQuery.of(context).size.width, // 원하는 너비 값으로 설정
-                        height: MediaQuery.of(context).size.height *
-                            0.3, // 원하는 높이 값으로 설정
-                        // child: Lottie.asset(
-                        //   'lib/assets/lottie/$mePick.json',
-                        //   fit: BoxFit.fitHeight,
-                        //   width: MediaQuery.of(context).size.width,
-                        //   repeat: true,
-                        //   onLoaded: (composition) {
-                        //     Timer(const Duration(milliseconds: 2000), () {
-                        //       // 여기에 콜백 코드를 넣으세요
-                        //     });
-                        //   },
-                        // ),
-                        child: Image.asset(
-                          'lib/assets/skills/$mePick.gif',
-                          fit: BoxFit.fitHeight,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (isWaiting)
-                Container(
-                  color: Colors.black.withOpacity(0.6),
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                    child: Dialog(
-                      insetPadding: const EdgeInsets.all(10),
-                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.width * 0.5,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                '게임 대기중',
-                                style: TextStyle(
-                                    fontSize: 24, color: Colors.white),
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width * 0.15,
-                              ),
-                              const CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.width * 0.05,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              if (isPan)
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                    child: Dialog(
-                      insetPadding: const EdgeInsets.all(10),
-                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.width * 0.5,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (pan == 1)
-                                const Text(
-                                  '1st Round!!',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 35),
-                                ),
-                              if (pan == 2)
-                                const Text(
-                                  '2nd Round!!',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 35),
-                                ),
-                              if (pan == 3)
-                                const Text(
-                                  '3rd Round!!',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 35),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ).animate().fade().slideY(curve: Curves.bounceOut),
-
-              if (isConnected)
-                Container(
-                  color: Colors.black.withOpacity(0.6),
-                  height: MediaQuery.of(context).size.height,
-                  child: Center(
-                    child: Dialog(
-                      insetPadding: const EdgeInsets.all(10),
-                      backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.width * 0.5,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                '적수 등장',
-                                style: TextStyle(
-                                    fontSize: 24, color: Colors.white),
-                              ),
-                              FractionallySizedBox(
-                                widthFactor: 0.41,
-                                child: Image.asset(
-                                  'lib/assets/icons/connected.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              )
-                                  .animate()
-                                  .scaleXY(begin: 10, curve: Curves.bounceInOut)
-                                  .shake(
-                                      delay: const Duration(milliseconds: 500),
-                                      curve: Curves.bounceInOut),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ).animate().hide(delay: const Duration(milliseconds: 800)),
-              if (isConnected)
-                Positioned(
-                    top: 0,
-                    right: -50,
-                    height: 100 * 2,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 100 * 1.5,
-                            width: MediaQuery.of(context).size.width * 0.65,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.amber,
-                            ),
-                          ),
-                        ),
-                        ClipRRect(
-                          child: BackdropFilter(
-                            filter:
-                                ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                            left: 0,
+                            right: 0,
+                            height: MediaQuery.of(context).size.height * 0.67,
                             child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
+                              child: Image.asset(
+                                'lib/assets/icons/background.png',
+                                fit: BoxFit.fitHeight,
                               ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.60,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  contender!,
-                                  style: const TextStyle(fontSize: 30),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.55,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    //
-                                    // crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        'lib/assets/icons/trophyIcon.PNG',
-                                        height: 20,
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                      Text(
-                                        ": $contenderScore",
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Text(
-                                  "$contenderWin승 $contenderLose패",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).animate().slideX(
-                        delay: const Duration(milliseconds: 900),
-                        duration: const Duration(milliseconds: 350),
-                        begin: 2,
-                        end: -0.09,
-                        curve: Curves.easeIn)),
-              if (isConnected)
-                Positioned(
-                    top: MediaQuery.of(context).size.height * 0.5,
-                    left: -50,
-                    height: 100 * 2,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Container(
-                            height: 100 * 1.5,
-                            width: MediaQuery.of(context).size.width * 0.65,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.amber,
-                            ),
-                          ),
-                        ),
-                        ClipRRect(
-                          child: BackdropFilter(
-                            filter:
-                                ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.60,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  widget.nickname,
-                                  style: const TextStyle(fontSize: 30),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.55,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    //
-                                    // crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                        'lib/assets/icons/trophyIcon.PNG',
-                                        height: 20,
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                      Text(
-                                        ": $myScore",
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Text(
-                                  "$myWin승 $myLose패",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).animate().slideX(
-                        delay: const Duration(milliseconds: 900),
-                        duration: const Duration(milliseconds: 350),
-                        begin: -2,
-                        end: 0.08,
-                        curve: Curves.easeIn)),
-              if (isConnected)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.3,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Container(
-                            child: const Text("VS",
-                                style: TextStyle(fontSize: 60)))
+                            ))
                         .animate()
-                        .show(delay: const Duration(milliseconds: 1100))
+                        .fade()
                         .scaleXY(
-                            delay: const Duration(milliseconds: 1150),
-                            duration: const Duration(milliseconds: 400),
-                            begin: 10,
-                            curve: Curves.bounceInOut)
-                        .shake(
-                            delay: const Duration(milliseconds: 1550),
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.bounceInOut)
-                        .tint(
-                          color: Colors.amber,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
-                        .tint(
-                          color: Colors.blue,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
-                        .tint(
-                            color: Colors.black,
-                            delay: const Duration(milliseconds: 500)),
-                  ),
-                ),
-              // Column(
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: () {
-              //         sendMessage('대기 화면 입니다', widget.nickname);
-              //       },
-              //       child: const Text('이건 연결 테스트용 버튼'),
-              //     ),
-              //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
-              //   ],
-              // ),
-
-              if (isGameStart)
-                Positioned(
-                    top: MediaQuery.of(context).size.height * 0.3,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                        child: Text(
-                      '$countdown',
-                      style: const TextStyle(
-                          fontSize: 65,
-                          height: 0.8,
-                          fontWeight: FontWeight.bold),
-                    )
-                            .animate(target: countdown == '3' ? 1 : 0)
-                            .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
-                            .animate(target: countdown == '2' ? 2 : 0)
-                            .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
-                            .animate(target: countdown == '1' ? 2 : 0)
-                            .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
-                            .animate(target: countdown == '0' ? 2 : 0)
-                            .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut))),
-
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.35,
-                  right: 0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      if (giCnt == 0)
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.13,
-                          height: MediaQuery.of(context).size.width * 0.5,
+                            curve: Curves.linear,
+                            duration: Duration(milliseconds: 800),
+                            begin: 1.5),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                        top: MediaQuery.of(context).size.height * 0.67,
+                        left: 0,
+                        right: 0,
+                        height: MediaQuery.of(context).size.height * 0.33,
+                        child: Container(
+                          color: Colors.black,
+                        )),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                        top: MediaQuery.of(context).size.height * 0.67 - MediaQuery.of(context).size.width * 0.1,
+                        left: 0,
+                        height: MediaQuery.of(context).size.height * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.67,
+                        child: Container(
                           decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(giIcon),
-                              fit: BoxFit.fitHeight,
-                            ),
+                              color: Colors.black,
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(15))
                           ),
-                        ),
-                      if (giCnt == 1)
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.13,
-                          height: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image:
-                                  AssetImage('lib/assets/icons/giStatus1.png'),
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      if (giCnt == 2)
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.13,
-                          height: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image:
-                                  AssetImage('lib/assets/icons/giStatus2.png'),
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      if (giCnt >= 3)
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.13,
-                          height: MediaQuery.of(context).size.width * 0.5,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image:
-                                  AssetImage('lib/assets/icons/giStatus3.png'),
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      Container(
-                        child: Center(
-                          child: Text(giCnt.toString(),
-                              style: const TextStyle(fontSize: 28)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: MediaQuery.of(context).size.width * 0.09,
-                  right: 10,
-                  child: Center(
-                    child: Text(contender!,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                        textAlign: TextAlign.center),
-                  ),
-                ),
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.6 -
-                      MediaQuery.of(context).size.width * 0.075,
-                  left: 20,
-                  child: Center(
-                    child: Text(widget.nickname,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                        textAlign: TextAlign.center),
-                  ),
-                ),
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.65,
-                    height: MediaQuery.of(context).size.width * 0.09,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('lib/assets/icons/hp$youHp-1.png'),
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                  ),
-                ),
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.6,
-                  left: 0,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.55,
-                    height: MediaQuery.of(context).size.width * 0.075,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('lib/assets/icons/hp$myHp.png'),
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                  ),
-                ),
-              if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.70,
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        )),
+                  if (showTemp)
+                    Positioned(
+                      top: 0,
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: Column(
                         children: [
-                          if (giCnt < 1)
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.25,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  opacity: 0.5,
-                                  image: AssetImage(buttonTele),
-                                  fit: BoxFit.fitWidth,
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            // 원하는 너비 값으로 설정
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            // 원하는 높이 값으로 설정
+                            // child: Lottie.asset(
+                            //   'lib/assets/lottie/$youPick.json',
+                            //   fit: BoxFit.fitHeight,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   repeat: true,
+                            //   onLoaded: (composition) {
+                            //     Timer(const Duration(milliseconds: 1200), () {
+                            //       // 여기에 콜백 코드를 넣으세요
+                            //     });
+                            //   },
+                            // ),
+                            child: Image.asset(
+                              'lib/assets/skills/$youPick.gif',
+                              fit: BoxFit.fitHeight,
+                              width: MediaQuery.of(context).size.width,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                        top:0,
+                        right: 0,
+                        height: MediaQuery.of(context).size.width * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.68,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
+                          ),
+                        )),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                        top: MediaQuery.of(context).size.width * 0.1,
+                        right: 0,
+                        height: MediaQuery.of(context).size.width * 0.09,
+                        width: MediaQuery.of(context).size.width * 0.47,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
+                          ),
+                        )),
+                  if (showTemp)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.3,
+                      width: MediaQuery.of(context).size.width,
+                      child: Divider(
+                        thickness: 3,
+                      ),
+                    ),
+                  if (showTemp)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            // 원하는 너비 값으로 설정
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            // 원하는 높이 값으로 설정
+                            // child: Lottie.asset(
+                            //   'lib/assets/lottie/$mePick.json',
+                            //   fit: BoxFit.fitHeight,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   repeat: true,
+                            //   onLoaded: (composition) {
+                            //     Timer(const Duration(milliseconds: 2000), () {
+                            //       // 여기에 콜백 코드를 넣으세요
+                            //     });
+                            //   },
+                            // ),
+                            child: Image.asset(
+                              'lib/assets/skills/$mePick.gif',
+                              fit: BoxFit.fitHeight,
+                              width: MediaQuery.of(context).size.width,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (isWaiting)
+                    Container(
+                      color: Colors.black.withOpacity(0.6),
+                      height: MediaQuery.of(context).size.height,
+                      child: Center(
+                        child: Dialog(
+                          insetPadding: const EdgeInsets.all(10),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.width * 0.5,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '게임 대기중',
+                                    style: TextStyle(
+                                        fontSize: 24, color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.width *
+                                        0.15,
+                                  ),
+                                  const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.width *
+                                        0.05,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (isPan)
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: Center(
+                        child: Dialog(
+                          insetPadding: const EdgeInsets.all(10),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.width * 0.5,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (pan == 1)
+                                    const Text(
+                                      '1st Round!!',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 35),
+                                    ),
+                                  if (pan == 2)
+                                    const Text(
+                                      '2nd Round!!',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 35),
+                                    ),
+                                  if (pan == 3)
+                                    const Text(
+                                      '3rd Round!!',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 35),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ).animate().fade().slideY(curve: Curves.bounceOut),
+
+                  if (isConnected)
+                    Container(
+                      color: Colors.black.withOpacity(0.6),
+                      height: MediaQuery.of(context).size.height,
+                      child: Center(
+                        child: Dialog(
+                          insetPadding: const EdgeInsets.all(10),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.width * 0.5,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '적수 등장',
+                                    style: TextStyle(
+                                        fontSize: 24, color: Colors.white),
+                                  ),
+                                  FractionallySizedBox(
+                                    widthFactor: 0.41,
+                                    child: Image.asset(
+                                      'lib/assets/icons/connected.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  )
+                                      .animate()
+                                      .scaleXY(
+                                          begin: 10, curve: Curves.bounceInOut)
+                                      .shake(
+                                          delay:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.bounceInOut),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ).animate().hide(delay: const Duration(milliseconds: 800)),
+                  if (isConnected)
+                    Positioned(
+                        top: 0,
+                        right: -50,
+                        height: 100 * 2,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 100 * 1.5,
+                                width: MediaQuery.of(context).size.width * 0.65,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.amber,
                                 ),
                               ),
                             ),
-                          if (giCnt >= 1)
-                            GestureDetector(
-                              onTap: () {
-                                if (!showTemp && !isTelPressed) {
-                                  // 순간이동을 하는 경우
-                                  sendMessage('순간이동', widget.nickname);
-                                  // isGi = false;
-                                  // isPa = false;
-                                  // isBlock = false;
-                                  // isTel = false;
-                                  // isBomb = false;
-                                  setState(() {
-                                    isTelPressed = true;
-                                  });
-                                }
-                              },
-                              onTapDown: (_) {
-                                setState(() {
-                                  buttonTele =
-                                      'lib/assets/icons/buttonTele2.png';
-                                });
-                              },
-                              onTapUp: (_) {
-                                setState(() {
-                                  buttonTele =
-                                      'lib/assets/icons/buttonTele.png';
-                                });
-                              },
-                              onTapCancel: () => setState(() {
-                                buttonTele = 'lib/assets/icons/buttonTele.png';
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height:
-                                    MediaQuery.of(context).size.width * 0.25,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(buttonTele),
-                                    fit: BoxFit.fitWidth,
+                            ClipRRect(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                    sigmaX: 15.0, sigmaY: 15.0),
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.transparent,
                                   ),
                                 ),
                               ),
                             ),
-                          if (giCnt < 3)
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.60,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      contender!,
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.55,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        //
+                                        // crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Image.asset(
+                                            'lib/assets/icons/trophyIcon.PNG',
+                                            height: 20,
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                          Text(
+                                            ": $contenderScore",
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "$contenderWin승 $contenderLose패",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ).animate().slideX(
+                            delay: const Duration(milliseconds: 900),
+                            duration: const Duration(milliseconds: 350),
+                            begin: 2,
+                            end: -0.09,
+                            curve: Curves.easeIn)),
+                  if (isConnected)
+                    Positioned(
+                        top: MediaQuery.of(context).size.height * 0.5,
+                        left: -50,
+                        height: 100 * 2,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 100 * 1.5,
+                                width: MediaQuery.of(context).size.width * 0.65,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Colors.amber,
+                                ),
+                              ),
+                            ),
+                            ClipRRect(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                    sigmaX: 15.0, sigmaY: 15.0),
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.60,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      widget.nickname,
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.55,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        //
+                                        // crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Image.asset(
+                                            'lib/assets/icons/trophyIcon.PNG',
+                                            height: 20,
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                          Text(
+                                            ": $myScore",
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      "$myWin승 $myLose패",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ).animate().slideX(
+                            delay: const Duration(milliseconds: 900),
+                            duration: const Duration(milliseconds: 350),
+                            begin: -2,
+                            end: 0.08,
+                            curve: Curves.easeIn)),
+                  if (isConnected)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.35,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Container(
+                                child: const Text("VS",
+                                    style: TextStyle(fontSize: 60)))
+                            .animate()
+                            .show(delay: const Duration(milliseconds: 1100))
+                            .scaleXY(
+                                delay: const Duration(milliseconds: 1150),
+                                duration: const Duration(milliseconds: 400),
+                                begin: 10,
+                                curve: Curves.bounceInOut)
+                            .shake(
+                                delay: const Duration(milliseconds: 1550),
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.bounceInOut)
+                            .tint(
+                              color: Colors.amber,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
+                            .tint(
+                              color: Colors.blue,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
+                            .tint(
+                                color: Colors.black,
+                                delay: const Duration(milliseconds: 500)),
+                      ),
+                    ),
+                  // Column(
+                  //   children: [
+                  //     ElevatedButton(
+                  //       onPressed: () {
+                  //         sendMessage('대기 화면 입니다', widget.nickname);
+                  //       },
+                  //       child: const Text('이건 연결 테스트용 버튼'),
+                  //     ),
+                  //     const Text('대기 화면 입니다'), // 조건이 참일 때 추가
+                  //   ],
+                  // ),
+
+                  if (isGameStart)
+                    Positioned(
+                        top: MediaQuery.of(context).size.height * 0.3,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                            child: Text(
+                          '$countdown',
+                          style: const TextStyle(
+                              fontSize: 65,
+                              height: 0.8,
+                              fontWeight: FontWeight.bold),
+                        )
+                                .animate(target: countdown == '3' ? 1 : 0)
+                                .scaleXY(
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
+                                .animate(target: countdown == '2' ? 2 : 0)
+                                .scaleXY(
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
+                                .animate(target: countdown == '1' ? 2 : 0)
+                                .scaleXY(
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
+                                .animate(target: countdown == '0' ? 2 : 0)
+                                .scaleXY(
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut))),
+
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.38,
+                      right: 0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (giCnt == 0)
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.25,
+                              width: MediaQuery.of(context).size.width * 0.13,
+                              height: MediaQuery.of(context).size.width * 0.5,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  opacity: 0.5,
-                                  image: AssetImage(buttonOne),
-                                  fit: BoxFit.fitWidth,
+                                  image: AssetImage(giIcon),
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                            ),
+                          if (giCnt == 1)
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.13,
+                              height: MediaQuery.of(context).size.width * 0.5,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'lib/assets/icons/giStatus1.png'),
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                            ),
+                          if (giCnt == 2)
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.13,
+                              height: MediaQuery.of(context).size.width * 0.5,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                      'lib/assets/icons/giStatus2.png'),
+                                  fit: BoxFit.fitHeight,
                                 ),
                               ),
                             ),
                           if (giCnt >= 3)
-                            GestureDetector(
-                              onTap: () {
-                                if (!showTemp && !isBombPressed) {
-                                  // 원기옥을 선택하는 경우
-                                  sendMessage('원기옥', widget.nickname);
-                                  // isGi = false;
-                                  // isPa = false;
-                                  // isBlock = false;
-                                  // isTel = false;
-                                  // isBomb = false;
-                                  setState(() {
-                                    isBombPressed = true;
-                                  });
-                                }
-                              },
-                              onTapDown: (_) {
-                                setState(() {
-                                  buttonOne = 'lib/assets/icons/buttonOne2.png';
-                                });
-                              },
-                              onTapUp: (_) {
-                                setState(() {
-                                  buttonOne = 'lib/assets/icons/buttonOne.png';
-                                });
-                              },
-                              onTapCancel: () => setState(() {
-                                buttonOne = 'lib/assets/icons/buttonOne.png';
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height:
-                                    MediaQuery.of(context).size.width * 0.25,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(buttonOne),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              if (!showTemp && !isGiPressed) {
-                                sendMessage('기', widget.nickname);
-                                print("기");
-                                // isGi = false;
-                                // isPa = false;
-                                // isBlock = false;
-                                // isTel = false;
-                                // isBomb = false;
-                                setState(() {
-                                  isGiPressed = true;
-                                });
-                              }
-                            },
-                            onTapDown: (_) {
-                              setState(() {
-                                buttonGi = 'lib/assets/icons/buttonGi2.png';
-                              });
-                            },
-                            onTapUp: (_) {
-                              setState(() {
-                                buttonGi = 'lib/assets/icons/buttonGi.png';
-                              });
-                            },
-                            onTapCancel: () => setState(() {
-                              buttonGi = 'lib/assets/icons/buttonGi.png';
-                            }),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.25,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(buttonGi),
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                            ),
-                          ),
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          //     // 가위를 선택한 경우
-                          //     sendMessage('기', widget.nickname);
-                          //     isGi = false;
-                          //     isPa = false;
-                          //     isBlock = false;
-                          //     isTel = false;
-                          //     isBomb = false;
-                          //   },
-                          //   child: const Text('기'),
-                          // ),
-                          GestureDetector(
-                            onTap: () {
-                              if (!showTemp && !isBlockPressed) {
-                                //막기를 선택 하는 경우
-                                sendMessage('막기', widget.nickname);
-                                // isGi = false;
-                                // isPa = false;
-                                // isBlock = false;
-                                // isTel = false;
-                                // isBomb = false;
-                                setState(() {
-                                  isBlockPressed = true;
-                                });
-                              }
-                            },
-                            onTapDown: (_) {
-                              setState(() {
-                                buttonShield =
-                                    'lib/assets/icons/buttonShield2.png';
-                              });
-                            },
-                            onTapUp: (_) {
-                              setState(() {
-                                buttonShield =
-                                    'lib/assets/icons/buttonShield.png';
-                              });
-                            },
-                            onTapCancel: () => setState(() {
-                              buttonShield =
-                                  'lib/assets/icons/buttonShield.png';
-                            }),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.25,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(buttonShield),
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (giCnt >= 1)
-                            GestureDetector(
-                              onTap: () {
-                                if (!showTemp && !isPaPressed) {
-                                  // 바위를 선택한 경우
-                                  sendMessage('파', widget.nickname);
-                                  // isGi = false;
-                                  // isPa = false;
-                                  // isBlock = false;
-                                  // isTel = false;
-                                  // isBomb = false;
-                                  setState(() {
-                                    isPaPressed = true;
-                                  });
-                                }
-                              },
-                              onTapDown: (_) {
-                                setState(() {
-                                  buttonPa = 'lib/assets/icons/buttonPa2.png';
-                                });
-                              },
-                              onTapUp: (_) {
-                                setState(() {
-                                  buttonPa = 'lib/assets/icons/buttonPa.png';
-                                });
-                              },
-                              onTapCancel: () => setState(() {
-                                buttonPa = 'lib/assets/icons/buttonPa.png';
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.33,
-                                height:
-                                    MediaQuery.of(context).size.width * 0.25,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(buttonPa),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (giCnt < 1)
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.33,
-                              height: MediaQuery.of(context).size.width * 0.25,
+                              width: MediaQuery.of(context).size.width * 0.13,
+                              height: MediaQuery.of(context).size.width * 0.5,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  opacity: 0.5,
-                                  image: AssetImage(buttonPa),
-                                  fit: BoxFit.fitWidth,
+                                  image: AssetImage(
+                                      'lib/assets/icons/giStatus3.png'),
+                                  fit: BoxFit.fitHeight,
                                 ),
                               ),
                             ),
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          //     // 바위를 선택한 경우
-                          //     sendMessage('파', widget.nickname);
-                          //     isGi = false;
-                          //     isPa = false;
-                          //     isBlock = false;
-                          //     isTel = false;
-                          //     isBomb = false;
-                          //   },
-                          //   child: const Text('파'),
-                          // ),
-
-                          // ElevatedButton(
-                          //   onPressed: () {
-                          //     //막기를 선택 하는 경우
-                          //     sendMessage('막기', widget.nickname);
-                          //     isGi = false;
-                          //     isPa = false;
-                          //     isBlock = false;
-                          //     isTel = false;
-                          //     isBomb = false;
-                          //   },
-                          //   child: const Text('막기'),
-                          // ),
+                          Container(
+                            child: Center(
+                              child: Text(giCnt.toString(),
+                                  style: const TextStyle(fontSize: 28, color: Colors.white)),
+                            ),
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              // ),
-            ],
-          ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: MediaQuery.of(context).size.width * 0.09,
+                      right: 10,
+                      child: Center(
+                        child: Text(contender!,
+                            style: const TextStyle( color: Colors.white,
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.64 +
+                          MediaQuery.of(context).size.width * 0.075,
+                      left: 10,
+                      child: Center(
+                        child: Text(widget.nickname,
+                            style: const TextStyle(color:Colors.white,
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.65,
+                        height: MediaQuery.of(context).size.width * 0.09,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image:
+                                AssetImage('lib/assets/icons/hp$youHp-1.png'),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.64,
+                      left: 0,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.61,
+                        height: MediaQuery.of(context).size.width * 0.075,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('lib/assets/icons/hp$myHp.png'),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.70,
+                      left: 0,
+                      right: 0,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (giCnt < 1)
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonTele),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                              if (giCnt >= 1)
+                                GestureDetector(
+                                  onTap: () {
+                                    if (!showTemp && !isTelPressed) {
+                                      // 순간이동을 하는 경우
+                                      sendMessage('순간이동', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
+                                      setState(() {
+                                        isTelPressed = true;
+                                      });
+                                    }
+                                  },
+                                  onTapDown: (_) {
+                                    setState(() {
+                                      buttonTele =
+                                          'lib/assets/icons/buttonTele2.png';
+                                    });
+                                  },
+                                  onTapUp: (_) {
+                                    setState(() {
+                                      buttonTele =
+                                          'lib/assets/icons/buttonTele.png';
+                                    });
+                                  },
+                                  onTapCancel: () => setState(() {
+                                    buttonTele =
+                                        'lib/assets/icons/buttonTele.png';
+                                  }),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonTele),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (giCnt < 3)
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonOne),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                              if (giCnt >= 3)
+                                GestureDetector(
+                                  onTap: () {
+                                    if (!showTemp && !isBombPressed) {
+                                      // 원기옥을 선택하는 경우
+                                      sendMessage('원기옥', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
+                                      setState(() {
+                                        isBombPressed = true;
+                                      });
+                                    }
+                                  },
+                                  onTapDown: (_) {
+                                    setState(() {
+                                      buttonOne =
+                                          'lib/assets/icons/buttonOne2.png';
+                                    });
+                                  },
+                                  onTapUp: (_) {
+                                    setState(() {
+                                      buttonOne =
+                                          'lib/assets/icons/buttonOne.png';
+                                    });
+                                  },
+                                  onTapCancel: () => setState(() {
+                                    buttonOne =
+                                        'lib/assets/icons/buttonOne.png';
+                                  }),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonOne),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (!showTemp && !isGiPressed) {
+                                    sendMessage('기', widget.nickname);
+                                    print("기");
+                                    // isGi = false;
+                                    // isPa = false;
+                                    // isBlock = false;
+                                    // isTel = false;
+                                    // isBomb = false;
+                                    setState(() {
+                                      isGiPressed = true;
+                                    });
+                                  }
+                                },
+                                onTapDown: (_) {
+                                  setState(() {
+                                    buttonGi = 'lib/assets/icons/buttonGi2.png';
+                                  });
+                                },
+                                onTapUp: (_) {
+                                  setState(() {
+                                    buttonGi = 'lib/assets/icons/buttonGi.png';
+                                  });
+                                },
+                                onTapCancel: () => setState(() {
+                                  buttonGi = 'lib/assets/icons/buttonGi.png';
+                                }),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(buttonGi),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     // 가위를 선택한 경우
+                              //     sendMessage('기', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('기'),
+                              // ),
+                              GestureDetector(
+                                onTap: () {
+                                  if (!showTemp && !isBlockPressed) {
+                                    //막기를 선택 하는 경우
+                                    sendMessage('막기', widget.nickname);
+                                    // isGi = false;
+                                    // isPa = false;
+                                    // isBlock = false;
+                                    // isTel = false;
+                                    // isBomb = false;
+                                    setState(() {
+                                      isBlockPressed = true;
+                                    });
+                                  }
+                                },
+                                onTapDown: (_) {
+                                  setState(() {
+                                    buttonShield =
+                                        'lib/assets/icons/buttonShield2.png';
+                                  });
+                                },
+                                onTapUp: (_) {
+                                  setState(() {
+                                    buttonShield =
+                                        'lib/assets/icons/buttonShield.png';
+                                  });
+                                },
+                                onTapCancel: () => setState(() {
+                                  buttonShield =
+                                      'lib/assets/icons/buttonShield.png';
+                                }),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(buttonShield),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (giCnt >= 1)
+                                GestureDetector(
+                                  onTap: () {
+                                    if (!showTemp && !isPaPressed) {
+                                      // 바위를 선택한 경우
+                                      sendMessage('파', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
+                                      setState(() {
+                                        isPaPressed = true;
+                                      });
+                                    }
+                                  },
+                                  onTapDown: (_) {
+                                    setState(() {
+                                      buttonPa =
+                                          'lib/assets/icons/buttonPa2.png';
+                                    });
+                                  },
+                                  onTapUp: (_) {
+                                    setState(() {
+                                      buttonPa =
+                                          'lib/assets/icons/buttonPa.png';
+                                    });
+                                  },
+                                  onTapCancel: () => setState(() {
+                                    buttonPa = 'lib/assets/icons/buttonPa.png';
+                                  }),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonPa),
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (giCnt < 1)
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonPa),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     // 바위를 선택한 경우
+                              //     sendMessage('파', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('파'),
+                              // ),
+
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     //막기를 선택 하는 경우
+                              //     sendMessage('막기', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('막기'),
+                              // ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  // ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

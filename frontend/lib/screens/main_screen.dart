@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -321,6 +322,19 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         onWillPop: endApp,
         child: Stack(
           children: [
+            Container(
+              color: Colors.black
+            ),
+            Positioned(
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).size.height,
+                child: Container(
+                  child: Image.asset(
+                    'lib/assets/icons/background.png',
+                    fit: BoxFit.fitHeight,
+                  ),
+                )).animate().fade(),
             slidingWidget(
               context,
               _animation,
