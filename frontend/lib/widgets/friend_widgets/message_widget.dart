@@ -143,12 +143,9 @@ class _MessageWidgetState extends State<MessageWidget> {
             body: jsonEncode(
                 {
                   "message": {
-                    "notification": {
-                      "title": "드래곤 불",
-                      "body": "${myNickname}님이 친구 요청을 수락했습니다."
-                    },
                     "data": {
-                      "do": "friend"
+                      "do": "friend-accept",
+                      "nickname": "$myNickname"
                     },
                     "token": widget.message.fcmToken
                   }
