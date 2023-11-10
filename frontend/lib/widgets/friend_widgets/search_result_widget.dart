@@ -48,9 +48,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
             widget.onEvent();
             _requestResultDialog(context, result);
           },
-          child: const Text("친구 신청하기"));
+          child: const Text("친구 신청하기", style: TextStyle(color: Colors.white),));
     } else if (widget.searchResult.friendStatus == "WAITING") {
-      return const Text("수락 대기중");
+      return const Text("수락 대기중", style: TextStyle(color: Colors.white));
     }
 
     return Container();
@@ -156,12 +156,12 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(widget.searchResult.toNickname,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     Text(
-                        "${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패"),
+                        "${widget.searchResult.score.toString()}점 ${widget.searchResult.win.toString()}승 ${widget.searchResult.lose.toString()}패", style: TextStyle(color: Colors.white)),
                     widget.searchResult.friendStatus == "FRIEND"
                         ? Text(
-                            "상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패")
+                            "상대 전적 ${widget.searchResult.friendWin}승 ${widget.searchResult.friendLose}패", style: TextStyle(color: Colors.white))
                         : Container(),
                   ],
                 ),
