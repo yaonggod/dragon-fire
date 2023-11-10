@@ -1,9 +1,11 @@
 package com.dragong.dragong.domain.game.service;
 
-import com.dragong.dragong.domain.game.dto.GameRoomData;
-import com.dragong.dragong.domain.game.dto.GiData;
-import com.dragong.dragong.domain.game.dto.TokenData;
-import com.dragong.dragong.domain.game.dto.WinData;
+import com.dragong.dragong.domain.game.dto.*;
+import com.dragong.dragong.domain.game.repository.LogUpdateRepository;
+import com.dragong.dragong.domain.member.entity.Member;
+import com.dragong.dragong.domain.member.repository.MemberRepository;
+import com.dragong.dragong.domain.playLog.entity.PlayLog;
+import com.dragong.dragong.global.util.JwtUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,12 @@ import java.util.*;
 public class GameService {
     @Autowired
     private ResultUpdateService resultUpdateService;
+    @Autowired
+    private LogUpdateRepository logUpdateRepository;
+    @Autowired
+    JwtUtil jwtUtil;
+    @Autowired
+    MemberRepository memberRepository;
     private final Set<GameRoomData> gameRoom[] = new HashSet[100000]; //
     private final ArrayList<GiData> giDataRoom[] = new ArrayList[100000]; // 기 정보를 저장하기 위해서
     private final ArrayList<String> countDownandstartGame[] = new ArrayList[100000]; //54321
@@ -28,6 +36,8 @@ public class GameService {
 
     private final ArrayList<WinData> winInfo[] = new ArrayList[100000]; // 각 게임에서 승자 정보를 저장하기 위해서!
 
+    private final ArrayList<LogData> logs[] = new ArrayList[100000]; // 로그를 담기 위한 arraylist
+
     @PostConstruct
     public void initializeGameRoom() {
         // 처음 한번 초기화를 해준다.
@@ -37,6 +47,7 @@ public class GameService {
             countDownandstartGame[i] = new ArrayList<>();
             accessTokenRoom[i] = new LinkedList<>();
             winInfo[i] = new ArrayList<>();
+            logs[i] = new ArrayList<>();
             whoisIn[i] = 1;
         }
     }
@@ -71,6 +82,9 @@ public class GameService {
         TokenData tokenData1 = accessTokenRoom[roomId].poll();
         TokenData tokenData2 = accessTokenRoom[roomId].poll();
 
+        accessTokenRoom[roomId].add(tokenData1);
+        accessTokenRoom[roomId].add(tokenData2);
+
         if (tokenData1.getNickname().equals(nickname)) {
             // tokenData1이 승자의 nickname과 일치할 경우
             log.info("결과 업데이트를 위해 값을 반환합니다");
@@ -95,7 +109,7 @@ public class GameService {
             while (visited[total]) {
                 total += 1;
             }
-            visited[total]=true;
+            visited[total] = true;
         } else {
             // 빈 곳이라면?
             visited[total] = true;
@@ -266,22 +280,30 @@ public class GameService {
             grd1 = list.get(0);
             grd2 = list.get(1);
         } else if (gameRoom[roomId].size() == 1) {
-            // 한 명만 정보를 입력한 경우 // 이건 바로 게임 중단 시킨다.
             ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
             gameRoom[roomId].clear();
             //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
             grd1 = list.get(0);
-//            if (grd1.getNickname().equals(countDownandstartGame[roomId].get(0))) {
-//
-//            } else {
-//                answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[roomId].get(0) + ":" + "미처리" + " " + grd1.getNickname();
-//                winner = grd1.getNickname();
-//            }
-            //
             answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[roomId].get(1) + ":" + "미처리" + " " + grd1.getNickname();
             winner = grd1.getNickname();
+
+            // logs 추가하는 부분
+            String p1 = logs[roomId].get(0).getNickname();
+            String p2 = logs[roomId].get(1).getNickname();
+            if (grd1.getNickname().equals(p1)) {
+                // 이 부분 converter 만들어서 돌리자
+                // 남아있는 사람이랑 p1이 같은 경우
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + grd1.getPicked() + ":"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "노:"));
+            } else {
+                // 남아있는 사람이랑 p2가 같은 경우
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + grd1.getPicked() + ":"));
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "노:"));
+            }
+
+
             if (winner != null) {
-                System.out.println("이거실행");
+                log.info("승자가 정해졌습니다");
                 if (winInfo[roomId].get(0).getNickname().equals(winner)) {
                     // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
                     int win = winInfo[roomId].get(0).getWin();
@@ -304,6 +326,9 @@ public class GameService {
                         answer += " 계속합니다";
                     }
                 }
+
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
             } else {
                 answer += " 안끝남";
             }
@@ -319,6 +344,19 @@ public class GameService {
         String picked1 = grd1.getPicked();
         String player2 = grd2.getNickname();
         String picked2 = grd2.getPicked();
+
+        // logs 넣는 부분
+        String p1 = logs[roomId].get(0).getNickname();
+        String p2 = logs[roomId].get(1).getNickname();
+        if (player1.equals(p1)) {
+            // 이 부분 converter 만들어서 돌리자
+            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked1+":"));
+            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked2+":"));
+        } else {
+            // player1 == p2
+            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked2+":"));
+            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked1+":"));
+        }
 
         answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2 + " ";
         String nick1 = giDataRoom[roomId].get(0).getNickname();
@@ -568,6 +606,10 @@ public class GameService {
                     answer += " 계속합니다";
                 }
             }
+            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
+            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
+
+
         } else {
             answer += " 안끝남";
         }
@@ -576,7 +618,7 @@ public class GameService {
 
     }
 
-    public Map<String,Object> getUserInfo(int roomId){
+    public Map<String, Object> getUserInfo(int roomId) {
         TokenData tokenData1 = accessTokenRoom[roomId].poll();
         TokenData tokenData2 = accessTokenRoom[roomId].poll();
 
@@ -587,8 +629,88 @@ public class GameService {
         String nick1 = tokenData1.getNickname();
         String access2 = tokenData2.getAccessToken();
         String nick2 = tokenData2.getNickname();
+        // 이게 게임 시작 전에 실행되는거니까 로그를 넣어준다.
+        logs[roomId].add(new LogData(nick1, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
+        logs[roomId].add(new LogData(nick2, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
+        return resultUpdateService.gettingInfo(access1, nick1, access2, nick2);
+    }
 
-        return resultUpdateService.gettingInfo(access1,nick1,access2,nick2);
+    public void updateLog(int roomId, String winner) {
+        TokenData tokenData1 = accessTokenRoom[roomId].poll();
+        TokenData tokenData2 = accessTokenRoom[roomId].poll();
+
+        LogData logData1 = logs[roomId].get(0);
+        LogData logData2 = logs[roomId].get(1);
+
+        String accessToken1 = tokenData1.getAccessToken();
+        String accessToken2 = tokenData2.getAccessToken();
+        UUID UUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
+        UUID UUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
+        String nick1 = tokenData1.getNickname();
+        String nick2 = tokenData2.getNickname();
+
+        String lognick1 = logData1.getNickname();
+        String lognick2 = logData2.getNickname();
+
+        String log1 = logData1.getLog();
+        String log2 = logData2.getLog();
+        boolean isWin = false;
+
+        PlayLog playlog1 = new PlayLog();
+        PlayLog playlog2 = new PlayLog();
+        if (nick1.equals(lognick1)) {
+            // 만약에 nick1과 lognick1이 같다면?
+            UUID myUUID = UUID1;
+            UUID yourUUID = UUID2;
+            String myPlay = log1;
+            String yourPlay = log2;
+            if(nick1.equals(winner)){
+                isWin=true;
+            }else{
+                isWin= false;
+            }
+            Member meMember = memberRepository.findById(myUUID).orElse(null);
+            Member youMember = memberRepository.findById(yourUUID).orElse(null);
+            playlog1.setMyUUID(meMember);
+            playlog1.setOpponentUUID(youMember);
+            playlog1.setMyPlay(myPlay);
+            playlog1.setOpponentPlay(yourPlay);
+            playlog1.setPlayResult(isWin);
+
+            playlog2.setMyUUID(youMember);
+            playlog2.setOpponentUUID(meMember);
+            playlog2.setMyPlay(yourPlay);
+            playlog2.setOpponentPlay(myPlay);
+            playlog2.setPlayResult(!isWin);
+        } else{
+            UUID myUUID = UUID1;
+            UUID yourUUID = UUID2;
+            String myPlay = log2;
+            String yourPlay = log1;
+            if(nick1.equals(winner)){
+                isWin=true;
+            }else{
+                isWin=false;
+            }
+            Member meMember = memberRepository.findById(myUUID).orElse(null);
+            Member youMember = memberRepository.findById(yourUUID).orElse(null);
+            log.info(myPlay);
+            log.info(yourPlay);
+            playlog1.setMyUUID(meMember);
+            playlog1.setOpponentUUID(youMember);
+            playlog1.setMyPlay(myPlay);
+            playlog1.setOpponentPlay(yourPlay);
+            playlog1.setPlayResult(isWin);
+
+            playlog2.setMyUUID(youMember);
+            playlog2.setOpponentUUID(meMember);
+            playlog2.setMyPlay(yourPlay);
+            playlog2.setOpponentPlay(myPlay);
+            playlog2.setPlayResult(!isWin);
+
+        }
+        logUpdateRepository.save(playlog1);
+        logUpdateRepository.save(playlog2);
     }
 
 }
