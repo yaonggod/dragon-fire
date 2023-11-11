@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 @RestController
@@ -138,10 +139,17 @@ public class GameController {
                     int computerNumber = gameService.enter(); // 컴퓨터도 사람처럼 입장하는데, 몇 번째로 입장한건지 확인한다.
                     log.info("컴퓨터를 집어넣습니다");
                     int computerRoomId = (computerNumber + 1) / 2;
-                    gameService.initWinData(computerRoomId,"동탄불주먹");
-                    gameService.giInit(computerRoomId,"동탄불주먹");
-                    gameService.accessTokenUpdate(computerRoomId,"computerToken","동탄불주먹");
+                    gameService.initWinData(computerRoomId, "동탄불주먹");
+                    gameService.giInit(computerRoomId, "동탄불주먹");
+                    gameService.accessTokenUpdate(computerRoomId, "computerToken", "동탄불주먹");
                     gameService.computerUpdate(computerRoomId); // 컴퓨터와의 대전인지 업데이트 해주는 것!
+
+                    gameService.gameStart();
+                    String giMessage = gameService.giReturn(roomID);
+                    Map<String, Object> userInfo = gameService.getUserInfo(roomID);
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/gameRecord", userInfo);
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+
                     return String.valueOf("0");
                 }
             }
@@ -155,8 +163,8 @@ public class GameController {
         log.info("선택한 값 저장을 위해 controller 입장");
         log.info("받아온 값 출력: " + message);
         int roomID = Integer.parseInt(roomId);
-        int comCheck= gameService.isComputer(roomID);
-        if(comCheck==1){
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
             //컴퓨터와 하는 경우
             String[] parts = message.split(":");
             if (parts.length == 2) {
@@ -164,13 +172,13 @@ public class GameController {
                 String picked = parts[1].trim();
                 gameService.gameStack(roomID, nickname, picked);
                 // 이제 여기서 동탄불주먹에게 기 같은 것들을 넣어줘야 한다.
-                String input="";
+                String input = "";
                 input = gameService.getTop(roomID);
-                gameService.gameStack(roomID,"동탄불주먹",input); // 여기가 컴퓨터의 픽 정보를 넣는 곳이다.
+                gameService.gameStack(roomID, "동탄불주먹", input); // 여기가 컴퓨터의 픽 정보를 넣는 곳이다.
             } else {
                 log.info("올바른 메시지 형식이 아닙니다");
             }
-        }else{
+        } else {
             String[] parts = message.split(":");
             if (parts.length == 2) {
                 String nickname = parts[0].trim();
@@ -192,12 +200,12 @@ public class GameController {
         int errorCnt = 0;
         int roomID = Integer.parseInt(roomId);
 
-        int comCheck= gameService.isComputer(roomID);
+        int comCheck = gameService.isComputer(roomID);
         log.info("Count를 시작합니다.");
         String[] parts = nicknameRound.split(":");
         log.info("닉네임 부분:" + parts[0]);
         log.info("몇번째 라운드인가?:" + parts[1]);
-        if(comCheck==1){
+        if (comCheck == 1) {
             // Computer와 하는 경우
             log.info("컴퓨터와의 게임 시작! 현재 Count 안");
 
@@ -301,7 +309,7 @@ public class GameController {
             messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
 
 
-        }else{
+        } else {
             // 사람과 하는 경우
             gameService.messageInsert(roomID, parts[0]);
             int localCnt = gameService.evenReturn(roomID);
@@ -476,16 +484,16 @@ public class GameController {
     @MessageMapping("/{roomId}/timereturn")
     public void gotTime(@DestinationVariable String roomId, String nickname) {
         int roomID = Integer.parseInt(roomId);
-        int comCheck= gameService.isComputer(roomID);
+        int comCheck = gameService.isComputer(roomID);
         System.out.println("timereturn 입장");
-        if(comCheck==1){
+        if (comCheck == 1) {
             System.out.println("컴퓨터 대전 timereturn 입장");
             // 컴퓨터와의 대전인 경우
             // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
             log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
             gameService.messageInsert(roomID, nickname);
-            gameService.messageInsert(roomID,"동탄불주먹");
-        }else{
+            gameService.messageInsert(roomID, "동탄불주먹");
+        } else {
             // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
             log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
             gameService.messageInsert(roomID, nickname);
@@ -497,11 +505,39 @@ public class GameController {
     public void updateRecord(@DestinationVariable String roomId, String winner) {
         // 이제 결과를 받아올건데
         int roomID = Integer.parseInt(roomId);
-        int comCheck= gameService.isComputer(roomID);
-        if(comCheck==1){
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
             //컴퓨터랑 하는 경우
             log.info("게임이 끝났습니다 어떻게 하실래연?");
-        }else{
+            String result = gameService.winnerAndLoserToken(roomID, winner);
+            String[] parts = result.split(":");
+            System.out.println("승자는" + winner);
+            log.info(parts[1]); // 이게 승자의 accessToken
+            log.info(parts[0]); // 이게 패자의 accessToken
+            String uuidString = "5dd9ba46-2588-489e-8cfc-a32f59942868";
+            UUID uuid = UUID.fromString(uuidString);
+            if (parts[1].equals("computerToken")) {
+                //승자가 컴퓨터인 경우
+                resultUpdateService.updateWinComputer(uuid);
+                resultUpdateService.updateLoser(parts[0]);
+                String info = "";
+                info += resultUpdateService.getComWinnerInfo(uuid) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+                log.info("최종 결과를 도출합니다" + info);
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+            } else {
+                // 승자가 사용자인 경우
+                resultUpdateService.updateWinner(parts[1]);
+                resultUpdateService.updateLoseComputer(uuid);
+                String info = "";
+                info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getComLoserInfo(uuid);
+                log.info("최종 결과를 도출합니다" + info);
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+            }
+
+            log.info("컴퓨터와 게임할 때 점수 업데이트까지 완료");
+
+
+        } else {
             // 사람이랑 하는 경우
             gameService.messageInsert(roomID, winner);
 
@@ -540,8 +576,8 @@ public class GameController {
     public void showingPan(@DestinationVariable String roomId, String nickname) {
         // 1.5 초를 쉬고 명령을 보내줄 것이다. // 근데 이 명령이 2번 들어올테니 이것도 처리를 해줘야 한다.
         int roomID = Integer.parseInt(roomId);
-        int comCheck= gameService.isComputer(roomID);
-        if(comCheck==1){
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
             // 컴퓨터와의 대전이다!
             try {
                 Thread.sleep(500);
@@ -549,7 +585,7 @@ public class GameController {
                 Thread.currentThread().interrupt();
             }
             messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
-        }else{
+        } else {
             // 사람끼리의 대전이다
             gameService.messageInsert(roomID, nickname);
             int cnt = gameService.evenReturn(roomID);
@@ -584,7 +620,6 @@ public class GameController {
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
             }
         }
-
 
 
     }
