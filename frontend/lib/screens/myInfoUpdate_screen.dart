@@ -246,6 +246,12 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.red,
+        appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.black),
+        ),
       body: Stack(
         children: [
           Positioned(
@@ -352,6 +358,18 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                   child: const Text('등록'),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            top:0,
+            height: MediaQuery.of(context).size.height*0.1,
+            child: AppBar(
+              toolbarHeight: MediaQuery.of(context).size.height*0.1,
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.black,
+              iconTheme: const IconThemeData(
+                color: Colors.black,
+              ),
             ),
           ),
         ],
