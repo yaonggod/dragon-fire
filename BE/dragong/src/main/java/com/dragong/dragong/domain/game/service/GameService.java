@@ -35,6 +35,8 @@ public class GameService {
     private boolean isComputerRoom[] = new boolean[1000000]; // 지금 내가 컴퓨터랑 하고 있는지 아닌지를 확인하기 위해서
     private final int[] whoisIn = new int[1000000];
     private Stack<String> whatPick[] = new Stack[1000000]; // 해당 방에 컴퓨터가 무엇을 pick할 것인지
+    private final ComData ComInfo[] = new ComData[1000000]; // 각 방에 컴퓨터가 들어간다면 어떤 닉네임과 uuid를
+    //가지는 컴퓨터가 들어갈것인지 정하는것.
     private final String[][] computerPick = {
             {"파", "기"},
             {"원기옥", "기", "기", "기"},
@@ -42,6 +44,15 @@ public class GameService {
             {"파", "막기", "기"},
             {"막기", "원기옥", "기", "막기", "기", "기"},
             {"파", "막기", "막기", "기"},
+    };
+
+    private final String[][] comUser = {
+            {"밀리언조각", "27da5029-112d-48bf-a93a-a494616a4b78"},
+            {"동탄불주먹", "5dd9ba46-2588-489e-8cfc-a32f59942868"},
+            {"싸피2번대대장", "6119c53b-9c79-4143-882d-3741f63bb200"},
+            {"앗뜨거", "8b76907f-98a6-4be2-a9a6-62c476e6fffe"},
+            {"김민지", "cd2a50d2-92c8-4dc4-abed-ae405b53a5d1"},
+            {"핏빛과거", "1f7625f0-858a-4caa-a022-9c4446e5523c"},
     };
 
     private final ArrayList<WinData> winInfo[] = new ArrayList[100000]; // 각 게임에서 승자 정보를 저장하기 위해서!
@@ -958,7 +969,7 @@ public class GameService {
 
 
             //access1
-            String uuidString = "5dd9ba46-2588-489e-8cfc-a32f59942868";
+            String uuidString = ComInfo[roomId].getUuid();
             UUID uuid = UUID.fromString(uuidString);
             return resultUpdateService.getComAndMe(access1, nick1, uuid, nick2);
 
@@ -1083,6 +1094,26 @@ public class GameService {
             whatPick[roomId].push(pick);
         }
 
+    }
+
+    public void chooseCom(int roomId) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(6);
+        String comName = comUser[randomIndex][0];
+        String comUUID = comUser[randomIndex][1];
+
+        ComInfo[roomId] = new ComData(comName, comUUID);
+    }
+
+    public Map<String, Object> getCom(int roomId) {
+        Map<String, Object> data = new HashMap<>();
+        ComData comData = ComInfo[roomId];
+        String comName = comData.getNickname();
+        String uuid = comData.getUuid();
+        data.put("comName",comName);
+        data.put("uuid",uuid);
+
+        return data;
     }
 
     public String getTop(int roomId) {
