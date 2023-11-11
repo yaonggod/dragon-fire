@@ -139,9 +139,17 @@ public class GameController {
                     int computerNumber = gameService.enter(); // 컴퓨터도 사람처럼 입장하는데, 몇 번째로 입장한건지 확인한다.
                     log.info("컴퓨터를 집어넣습니다");
                     int computerRoomId = (computerNumber + 1) / 2;
-                    gameService.initWinData(computerRoomId, "동탄불주먹");
-                    gameService.giInit(computerRoomId, "동탄불주먹");
-                    gameService.accessTokenUpdate(computerRoomId, "computerToken", "동탄불주먹");
+                    // 여기서 어떤 컴퓨터를 선택할 것인지를 정해줘야 하겠지?
+
+                    gameService.chooseCom(computerRoomId); // 어떤 컴퓨터를 매칭 시킬 것인지 정한다.
+                    Map<String,Object>computerInfo = gameService.getCom(computerRoomId);
+
+                    String comName = (String) computerInfo.get("comName");
+                    String uuid = (String) computerInfo.get("uuid");
+
+                    gameService.initWinData(computerRoomId, comName);
+                    gameService.giInit(computerRoomId, comName);
+                    gameService.accessTokenUpdate(computerRoomId, "computerToken", comName);
                     gameService.computerUpdate(computerRoomId); // 컴퓨터와의 대전인지 업데이트 해주는 것!
 
                     gameService.gameStart();
@@ -164,6 +172,10 @@ public class GameController {
         log.info("받아온 값 출력: " + message);
         int roomID = Integer.parseInt(roomId);
         int comCheck = gameService.isComputer(roomID);
+        Map<String,Object>computerInfo = gameService.getCom(roomID);
+
+        String comName = (String) computerInfo.get("comName");
+//        String uuid = (String) computerInfo.get("uuid");
         if (comCheck == 1) {
             //컴퓨터와 하는 경우
             String[] parts = message.split(":");
@@ -174,7 +186,7 @@ public class GameController {
                 // 이제 여기서 동탄불주먹에게 기 같은 것들을 넣어줘야 한다.
                 String input = "";
                 input = gameService.getTop(roomID);
-                gameService.gameStack(roomID, "동탄불주먹", input); // 여기가 컴퓨터의 픽 정보를 넣는 곳이다.
+                gameService.gameStack(roomID, comName, input); // 여기가 컴퓨터의 픽 정보를 넣는 곳이다.
             } else {
                 log.info("올바른 메시지 형식이 아닙니다");
             }
@@ -235,7 +247,10 @@ public class GameController {
                         if (errorCnt >= 7) {
                             if (gameService.evenReturn(roomID) == 0) {
                                 log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + "동탄불주먹");
+                                Map<String,Object>computerInfo = gameService.getCom(roomID);
+
+                                String comName = (String) computerInfo.get("comName");
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + comName);
                                 return;
                             }
                         }
@@ -293,8 +308,12 @@ public class GameController {
                         if (errorCnt >= 7) {
                             if (gameService.evenReturn(roomID) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
+                                Map<String,Object>computerInfo = gameService.getCom(roomID);
+
+                                String comName = (String) computerInfo.get("comName");
+
                                 log.info("현재 연결이 끊긴 상황입니다.");
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + "동탄불주먹");
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + comName);
                                 return;
                             }
                         }
@@ -490,9 +509,13 @@ public class GameController {
             System.out.println("컴퓨터 대전 timereturn 입장");
             // 컴퓨터와의 대전인 경우
             // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
+            Map<String,Object>computerInfo = gameService.getCom(roomID);
+
+            String comName = (String) computerInfo.get("comName");
+
             log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
             gameService.messageInsert(roomID, nickname);
-            gameService.messageInsert(roomID, "동탄불주먹");
+            gameService.messageInsert(roomID, comName);
         } else {
             // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
             log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
@@ -514,7 +537,11 @@ public class GameController {
             System.out.println("승자는" + winner);
             log.info(parts[1]); // 이게 승자의 accessToken
             log.info(parts[0]); // 이게 패자의 accessToken
-            String uuidString = "5dd9ba46-2588-489e-8cfc-a32f59942868";
+
+            Map<String,Object>computerInfo = gameService.getCom(roomID);
+
+//            String comName = (String) computerInfo.get("comName");
+            String uuidString = (String) computerInfo.get("uuid");
             UUID uuid = UUID.fromString(uuidString);
             if (parts[1].equals("computerToken")) {
                 //승자가 컴퓨터인 경우
