@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 @RestController
@@ -70,6 +70,7 @@ public class GameController {
         } else {
             // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
             // 해당 roomId는 가지고 있으니까
+            int computerMeet = 0;
             while (true) {
                 // 내가 들어왔는데 만약에 내가 짝수 번째 사람인데 여기서 돌고 있는 경우라면? => 바로 나가야 한다.
                 int compare = gameService.savingReturn(roomID); // 보내기 전의 값
@@ -86,7 +87,7 @@ public class GameController {
                     return "에러입니다";
                 }
                 try {
-                    Thread.sleep(220);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -130,6 +131,27 @@ public class GameController {
 
                     break;
                 }
+                // 여기가 컴퓨터를 넣기 위해서 추가한 코드
+                computerMeet += 1;
+                if (computerMeet >= 15) {
+                    // 이제 일정 시간 이상 기다렸을 때는 컴퓨터와 만나게 된다.
+                    log.info("컴퓨터와 매칭됩니다.");
+                    int computerNumber = gameService.enter(); // 컴퓨터도 사람처럼 입장하는데, 몇 번째로 입장한건지 확인한다.
+                    log.info("컴퓨터를 집어넣습니다");
+                    int computerRoomId = (computerNumber + 1) / 2;
+                    gameService.initWinData(computerRoomId, "동탄불주먹");
+                    gameService.giInit(computerRoomId, "동탄불주먹");
+                    gameService.accessTokenUpdate(computerRoomId, "computerToken", "동탄불주먹");
+                    gameService.computerUpdate(computerRoomId); // 컴퓨터와의 대전인지 업데이트 해주는 것!
+
+                    gameService.gameStart();
+                    String giMessage = gameService.giReturn(roomID);
+                    Map<String, Object> userInfo = gameService.getUserInfo(roomID);
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/gameRecord", userInfo);
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+
+                    return String.valueOf("0");
+                }
             }
         }
         return String.valueOf(standard); // 처리된 메시지 다시 클라이언트로 전송
@@ -138,17 +160,36 @@ public class GameController {
     @MessageMapping("/{roomId}/pickwhat")
     public void handleChatMessage(@DestinationVariable String roomId, String message) {
         // 무엇을 선택했는지 저장하기 위해서
-        int roomID = Integer.parseInt(roomId);
         log.info("선택한 값 저장을 위해 controller 입장");
         log.info("받아온 값 출력: " + message);
-        String[] parts = message.split(":");
-        if (parts.length == 2) {
-            String nickname = parts[0].trim();
-            String picked = parts[1].trim();
-            gameService.gameStack(roomID, nickname, picked);
+        int roomID = Integer.parseInt(roomId);
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
+            //컴퓨터와 하는 경우
+            String[] parts = message.split(":");
+            if (parts.length == 2) {
+                String nickname = parts[0].trim();
+                String picked = parts[1].trim();
+                gameService.gameStack(roomID, nickname, picked);
+                // 이제 여기서 동탄불주먹에게 기 같은 것들을 넣어줘야 한다.
+                String input = "";
+                input = gameService.getTop(roomID);
+                gameService.gameStack(roomID, "동탄불주먹", input); // 여기가 컴퓨터의 픽 정보를 넣는 곳이다.
+            } else {
+                log.info("올바른 메시지 형식이 아닙니다");
+            }
         } else {
-            log.info("올바른 메시지 형식이 아닙니다");
+            String[] parts = message.split(":");
+            if (parts.length == 2) {
+                String nickname = parts[0].trim();
+                String picked = parts[1].trim();
+                gameService.gameStack(roomID, nickname, picked);
+            } else {
+                log.info("올바른 메시지 형식이 아닙니다");
+            }
         }
+
+
     }
 
 
@@ -158,51 +199,16 @@ public class GameController {
 
         int errorCnt = 0;
         int roomID = Integer.parseInt(roomId);
+
+        int comCheck = gameService.isComputer(roomID);
         log.info("Count를 시작합니다.");
         String[] parts = nicknameRound.split(":");
         log.info("닉네임 부분:" + parts[0]);
         log.info("몇번째 라운드인가?:" + parts[1]);
-        gameService.messageInsert(roomID, parts[0]);
-        int localCnt = gameService.evenReturn(roomID);
-        boolean gameStart = false;
-        int standard = 0;
-        if (Integer.parseInt(parts[1]) == 1) {
-            // 처음 들어오는 경우
-            log.info("첫 게임인 경우");
+        if (comCheck == 1) {
+            // Computer와 하는 경우
+            log.info("컴퓨터와의 게임 시작! 현재 Count 안");
 
-            if (localCnt % 2 == 0) {
-                log.info("한 방에 두 명이 들어온 경우");
-                // 이 경우에 이제 gameService에서 winData를 초기화 해줘야 한다.
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                gameStart = true;
-            }
-        } else {
-            //이건 이제 처음들어온게 아니라 그 이후에 들어온 경우를 생각
-            log.info("두 번째 이후의 게임인 경우");
-            int cnt = 0;
-            while (cnt < 3 && localCnt % 2 != 0) {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                cnt += 1;
-            }
-            if (localCnt % 2 == 1) {
-                // 2개가 전부 들어온 경우라면 명령을 하나만 보내야 한다.
-                gameStart = true;
-
-            }
-        }
-        //gameService.messageInsert(roomId, nickname);
-
-        if (gameStart) {
-            log.info("gameStart 입장");
-            gameService.cleanList(roomID);
             for (int i = 3; i >= 0; i--) {
                 if (i != 3) {
                     try {
@@ -223,39 +229,31 @@ public class GameController {
                             Thread.currentThread().interrupt();
                         }
                         log.info("현재 문제가 발생하는 곳의 roomId는: " + roomID);
-                        log.info("0초인데 아직 양쪽으로부터 값을 받지 못했습니다");
+                        log.info("0초인데 플레이어가 pingpong 응답이 없습니다.");
                         errorCnt += 1;
 
                         if (errorCnt >= 7) {
-                            //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
-                            //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
-                            //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
                             if (gameService.evenReturn(roomID) == 0) {
-                                // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
                                 log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
-                                return;
-                            } else {
-                                // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
-                                log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
-                                String remainName = gameService.returnName(roomID);
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
-                                gameService.cleanList(roomID); // 값을 정리해준다.
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + "동탄불주먹");
                                 return;
                             }
                         }
                     }
+                    // computer와의 게임!
                     String answer = gameService.gameResult(roomID);
                     // 여기서 만약에 answer의 가장 끝부분이 "안끝남"이 아니라면 gi 정보를 초기화 해주면 되지 않을까?
-
                     // 이제 승 정보를 반환해야지
                     String[] information = answer.split(" ");
                     System.out.println(information[3]); // 이게
                     if (information[3].equals("끝냅니다")) {
                         // 기 정보를 0, 0 으로 수정해줘야 한다.
                         gameService.giReset(roomID);
+                        gameService.cleanStack(roomID);
                     } else if (information[3].equals("계속합니다")) {
                         // 기 정보를 0,0 으로 수정해줘야 한다.
                         gameService.giReset(roomID);
+                        gameService.cleanStack(roomID);
                     }
                     // 이건 이제 0초가 되는 순간을 생각하는건데. => 지금은 그냥 바로 재 경기를 실시하거나, 게임 결과가 나왔다.
                     // 하지만 이 사이에 gif를 추가해줄 계획이다. gif를 보여주는 시간은 일단 3초라고 생각하자.
@@ -283,30 +281,20 @@ public class GameController {
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i));
 
                     while (gameService.evenReturn(roomID) != 2) {
-                        //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
+                        // 값을 보내지 않은 경우
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
-                        log.info("0초가 아닌데 아직 양쪽으로부터 값을 받지 못했습니다");
+                        log.info("컴퓨터와의 대전 도중 아직 플레이어가 값을 입력하지 않았습니다");
                         errorCnt += 1;
 
                         if (errorCnt >= 7) {
-                            //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
-                            //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
-                            //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
                             if (gameService.evenReturn(roomID) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
-
-                                log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
-                                return;
-                            } else {
-                                // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
-                                log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
-                                String remainName = gameService.returnName(roomID);
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
-                                gameService.cleanList(roomID); // 값을 정리해준다.
+                                log.info("현재 연결이 끊긴 상황입니다.");
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + "동탄불주먹");
                                 return;
                             }
                         }
@@ -319,7 +307,171 @@ public class GameController {
             String winInformation = gameService.returnWinData(roomID);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
             messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
+
+
+        } else {
+            // 사람과 하는 경우
+            gameService.messageInsert(roomID, parts[0]);
+            int localCnt = gameService.evenReturn(roomID);
+            boolean gameStart = false;
+            int standard = 0;
+            if (Integer.parseInt(parts[1]) == 1) {
+                // 처음 들어오는 경우
+                log.info("첫 게임인 경우");
+
+                if (localCnt % 2 == 0) {
+                    log.info("한 방에 두 명이 들어온 경우");
+                    // 이 경우에 이제 gameService에서 winData를 초기화 해줘야 한다.
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    gameStart = true;
+                }
+            } else {
+                //이건 이제 처음들어온게 아니라 그 이후에 들어온 경우를 생각
+                log.info("두 번째 이후의 게임인 경우");
+                int cnt = 0;
+                while (cnt < 3 && localCnt % 2 != 0) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    cnt += 1;
+                }
+                if (localCnt % 2 == 1) {
+                    // 2개가 전부 들어온 경우라면 명령을 하나만 보내야 한다.
+                    gameStart = true;
+
+                }
+            }
+            //gameService.messageInsert(roomId, nickname);
+
+            if (gameStart) {
+                log.info("gameStart 입장");
+                gameService.cleanList(roomID);
+                for (int i = 3; i >= 0; i--) {
+                    if (i != 3) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                    if (i == 0) {
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i)); // 0초도 한번 보내준다.
+                        // 보내주는 이유는 한 명이라도 선택을 하지 않았을 경우, 해당 유저의 닉네임을 처리해야하기 때문(이건 선택을 하지 않을 상황이지, 튕긴 상황이 아니다)
+                        errorCnt = 0;
+                        while (gameService.evenReturn(roomID) != 2) {
+                            //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
+                            try {
+                                Thread.sleep(300);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                            log.info("현재 문제가 발생하는 곳의 roomId는: " + roomID);
+                            log.info("0초인데 아직 양쪽으로부터 값을 받지 못했습니다");
+                            errorCnt += 1;
+
+                            if (errorCnt >= 7) {
+                                //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
+                                //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
+                                //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
+                                if (gameService.evenReturn(roomID) == 0) {
+                                    // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
+                                    log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
+                                    return;
+                                } else {
+                                    // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
+                                    log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
+                                    String remainName = gameService.returnName(roomID);
+                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
+                                    gameService.cleanList(roomID); // 값을 정리해준다.
+                                    return;
+                                }
+                            }
+                        }
+                        String answer = gameService.gameResult(roomID);
+                        // 여기서 만약에 answer의 가장 끝부분이 "안끝남"이 아니라면 gi 정보를 초기화 해주면 되지 않을까?
+
+                        // 이제 승 정보를 반환해야지
+                        String[] information = answer.split(" ");
+                        System.out.println(information[3]); // 이게
+                        if (information[3].equals("끝냅니다")) {
+                            // 기 정보를 0, 0 으로 수정해줘야 한다.
+                            gameService.giReset(roomID);
+                        } else if (information[3].equals("계속합니다")) {
+                            // 기 정보를 0,0 으로 수정해줘야 한다.
+                            gameService.giReset(roomID);
+                        }
+                        // 이건 이제 0초가 되는 순간을 생각하는건데. => 지금은 그냥 바로 재 경기를 실시하거나, 게임 결과가 나왔다.
+                        // 하지만 이 사이에 gif를 추가해줄 계획이다. gif를 보여주는 시간은 일단 3초라고 생각하자.
+                        log.info("반환할 결과값은: " + answer);
+                        gameService.cleanList(roomID); // 양쪽에서 값을 전달 받았으니 다시 0으로 정리를 해준다.
+                        for (int j = 3; j >= 0; j--) {
+                            // 이건 뭘 뽑았는지 보여주는 시간이다.
+                            try {
+                                Thread.sleep(700);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                            messagingTemplate.convertAndSend("/sub/" + roomId + "/selected", String.valueOf(j) + " " + answer);
+                        }
+                        // 이게 결과값을 반환하는 것이다. //
+                        if (information[3].equals("나갑니다")) {
+                            messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
+                            return;
+                        } else {
+                            messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
+                        }
+
+                    } else {
+                        errorCnt = 0;
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i));
+
+                        while (gameService.evenReturn(roomID) != 2) {
+                            //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
+                            try {
+                                Thread.sleep(300);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
+                            log.info("0초가 아닌데 아직 양쪽으로부터 값을 받지 못했습니다");
+                            errorCnt += 1;
+
+                            if (errorCnt >= 7) {
+                                //이 말은 결국 연결이 끊긴 상황이란 말이니까. 양쪽에 에러 메세지를 보내야한다.
+                                //원래는 3이었는데 7으로 바꿈 => 결국 양쪽에서 값을 0.9초 안에 보내지 않으면 한쪽의 연결이 끊겼다고 판단하게 하는거라서 너무 짧다고 판단
+                                //7로 바꿔서 2.1초 동안 연결이 없으면 끊겼다고 판단하는건데, 이걸로도 문제가 발생한다면 숫자를 늘리거나 다른 문제가 있다고 판단
+                                if (gameService.evenReturn(roomID) == 0) {
+                                    // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
+
+                                    log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
+                                    return;
+                                } else {
+                                    // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
+                                    log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
+                                    String remainName = gameService.returnName(roomID);
+                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
+                                    gameService.cleanList(roomID); // 값을 정리해준다.
+                                    return;
+                                }
+                            }
+                        }
+                        gameService.cleanList(roomID); // 양쪽에서 값을 전달 받았으니 다시 0으로 정리를 해준다.
+
+                    }
+                }
+                String giMessage = gameService.giReturn(roomID);
+                String winInformation = gameService.returnWinData(roomID);
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
+            }
         }
+
+
     }
 
     @MessageMapping("/{roomId}/dispose")
@@ -332,36 +484,84 @@ public class GameController {
     @MessageMapping("/{roomId}/timereturn")
     public void gotTime(@DestinationVariable String roomId, String nickname) {
         int roomID = Integer.parseInt(roomId);
-        // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
-        log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
-        gameService.messageInsert(roomID, nickname);
+        int comCheck = gameService.isComputer(roomID);
+        System.out.println("timereturn 입장");
+        if (comCheck == 1) {
+            System.out.println("컴퓨터 대전 timereturn 입장");
+            // 컴퓨터와의 대전인 경우
+            // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
+            log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
+            gameService.messageInsert(roomID, nickname);
+            gameService.messageInsert(roomID, "동탄불주먹");
+        } else {
+            // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
+            log.info("현재 카운트 다운 정보를 받아오고 있습니다.+ " + nickname);
+            gameService.messageInsert(roomID, nickname);
+        }
+
     }
 
     @MessageMapping("/{roomId}/updateRecord")
     public void updateRecord(@DestinationVariable String roomId, String winner) {
         // 이제 결과를 받아올건데
         int roomID = Integer.parseInt(roomId);
-        gameService.messageInsert(roomID, winner);
-
-        if (gameService.evenReturn(roomID) % 2 == 1) {
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
+            //컴퓨터랑 하는 경우
+            log.info("게임이 끝났습니다 어떻게 하실래연?");
             String result = gameService.winnerAndLoserToken(roomID, winner);
             String[] parts = result.split(":");
+            System.out.println("승자는" + winner);
             log.info(parts[1]); // 이게 승자의 accessToken
             log.info(parts[0]); // 이게 패자의 accessToken
-            resultUpdateService.updateWinner(parts[0]);
-            resultUpdateService.updateLoser(parts[1]);
-            log.info("DB에 승자와 패자 정보를 갱신합니다");
-            String info = "";
-            info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getLoserInfo(parts[0]);
-            log.info("최종 결과를 도출합니다" + info);
+            String uuidString = "5dd9ba46-2588-489e-8cfc-a32f59942868";
+            UUID uuid = UUID.fromString(uuidString);
+            if (parts[1].equals("computerToken")) {
+                //승자가 컴퓨터인 경우
+                resultUpdateService.updateWinComputer(uuid);
+                resultUpdateService.updateLoser(parts[0]);
+                String info = "";
+                info += resultUpdateService.getComWinnerInfo(uuid) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+                log.info("최종 결과를 도출합니다" + info);
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+            } else {
+                // 승자가 사용자인 경우
+                resultUpdateService.updateWinner(parts[1]);
+                resultUpdateService.updateLoseComputer(uuid);
+                String info = "";
+                info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getComLoserInfo(uuid);
+                log.info("최종 결과를 도출합니다" + info);
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+            }
+
+            log.info("컴퓨터와 게임할 때 점수 업데이트까지 완료");
 
 
-            // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
-            messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
-            gameService.updateLog(roomID, winner);
-            log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
+        } else {
+            // 사람이랑 하는 경우
+            gameService.messageInsert(roomID, winner);
+
+            if (gameService.evenReturn(roomID) % 2 == 1) {
+                String result = gameService.winnerAndLoserToken(roomID, winner);
+                String[] parts = result.split(":");
+                log.info(parts[1]); // 이게 승자의 accessToken
+                log.info(parts[0]); // 이게 패자의 accessToken
+                resultUpdateService.updateWinner(parts[0]);
+                resultUpdateService.updateLoser(parts[1]);
+                log.info("DB에 승자와 패자 정보를 갱신합니다");
+                String info = "";
+                info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+                log.info("최종 결과를 도출합니다" + info);
+
+
+                // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+                gameService.updateLog(roomID, winner);
+                log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
+            }
+            gameService.cleanList(roomID);
         }
-        gameService.cleanList(roomID);
+
     }
 
     @MessageMapping("/{roomId}/alive")
@@ -376,39 +576,51 @@ public class GameController {
     public void showingPan(@DestinationVariable String roomId, String nickname) {
         // 1.5 초를 쉬고 명령을 보내줄 것이다. // 근데 이 명령이 2번 들어올테니 이것도 처리를 해줘야 한다.
         int roomID = Integer.parseInt(roomId);
-        gameService.messageInsert(roomID, nickname);
-        int cnt = gameService.evenReturn(roomID);
-        if (cnt == 1) {
-            // 혼자 명령이 들어왔을 때 => 정상적으로 작동했을 때는 2명이 들어오는 순간 나갈 수 있을 것이다.
-            // 하지만 만약에 게임이 시작한 이후 갑자기 한 명이 나가버린다면 명령을 받지 못하는 경우가 발생한다.
-            int errorCnt=0;
-            while(true){
-                System.out.println("실행중");
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                int temp = gameService.evenReturn(roomID);
-                if(temp==2){
-                    break;
-                }
-                if(errorCnt>=5){
-                    System.out.println("메시지 보냄");
-                    messagingTemplate.convertAndSend("/sub/" + roomId + "/escape", "escape");
-                    break;
-                }
-                errorCnt+=1;
-            }
-        } else if (cnt == 2) {
-            gameService.cleanList(roomID);
+        int comCheck = gameService.isComputer(roomID);
+        if (comCheck == 1) {
+            // 컴퓨터와의 대전이다!
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
             messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
+        } else {
+            // 사람끼리의 대전이다
+            gameService.messageInsert(roomID, nickname);
+            int cnt = gameService.evenReturn(roomID);
+            if (cnt == 1) {
+                // 혼자 명령이 들어왔을 때 => 정상적으로 작동했을 때는 2명이 들어오는 순간 나갈 수 있을 것이다.
+                // 하지만 만약에 게임이 시작한 이후 갑자기 한 명이 나가버린다면 명령을 받지 못하는 경우가 발생한다.
+                int errorCnt = 0;
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    int temp = gameService.evenReturn(roomID);
+                    if (temp == 2) {
+                        break;
+                    }
+                    if (errorCnt >= 5) {
+                        System.out.println("메시지 보냄");
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/escape", "escape");
+                        break;
+                    }
+                    errorCnt += 1;
+                }
+            } else if (cnt == 2) {
+                gameService.cleanList(roomID);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
+            }
         }
+
 
     }
 }

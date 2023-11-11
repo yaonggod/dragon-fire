@@ -32,7 +32,17 @@ public class GameService {
     private final int[] saving = new int[1000000];
     private int total = 0;
     private boolean visited[] = new boolean[2000000]; // 각 사용자가 들어올 떄마다 visited를 true로
+    private boolean isComputerRoom[] = new boolean[1000000]; // 지금 내가 컴퓨터랑 하고 있는지 아닌지를 확인하기 위해서
     private final int[] whoisIn = new int[1000000];
+    private Stack<String> whatPick[] = new Stack[1000000]; // 해당 방에 컴퓨터가 무엇을 pick할 것인지
+    private final String[][] computerPick = {
+            {"파", "기"},
+            {"원기옥", "기", "기", "기"},
+            {"파", "파", "기", "막기", "막기", "기"},
+            {"파", "막기", "기"},
+            {"막기", "원기옥", "기", "막기", "기", "기"},
+            {"파", "막기", "막기", "기"},
+    };
 
     private final ArrayList<WinData> winInfo[] = new ArrayList[100000]; // 각 게임에서 승자 정보를 저장하기 위해서!
 
@@ -49,6 +59,7 @@ public class GameService {
             winInfo[i] = new ArrayList<>();
             logs[i] = new ArrayList<>();
             whoisIn[i] = 1;
+            whatPick[i] = new Stack<>();
         }
     }
 
@@ -271,39 +282,281 @@ public class GameService {
         GameRoomData grd1 = null;
         GameRoomData grd2 = null;
         String winner = null;
-        if (gameRoom[roomId].size() == 2) {
-            //둘다 제대로 정보를 입력한 경우
-            ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
-            gameRoom[roomId].clear();
-            //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
-            //grd2 = gameRoom[Integer.parseInt(roomId)].poll();
-            grd1 = list.get(0);
-            grd2 = list.get(1);
-        } else if (gameRoom[roomId].size() == 1) {
-            ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
-            gameRoom[roomId].clear();
-            //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
-            grd1 = list.get(0);
-            answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[roomId].get(1) + ":" + "미처리" + " " + grd1.getNickname();
-            winner = grd1.getNickname();
-
-            // logs 추가하는 부분
-            String p1 = logs[roomId].get(0).getNickname();
-            String p2 = logs[roomId].get(1).getNickname();
-            if (grd1.getNickname().equals(p1)) {
-                // 이 부분 converter 만들어서 돌리자
-                // 남아있는 사람이랑 p1이 같은 경우
-                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + grd1.getPicked() + ":"));
-                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "노:"));
+        if (isComputerRoom[roomId]) {
+            // 컴퓨터라면?
+            if (gameRoom[roomId].size() == 2) {
+                // 이건 플레이어가 선택을 했다는 말이다.
+                ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
+                gameRoom[roomId].clear();
+                grd1 = list.get(0);
+                grd2 = list.get(1);
             } else {
-                // 남아있는 사람이랑 p2가 같은 경우
-                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + grd1.getPicked() + ":"));
-                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "노:"));
+                // 플레이어가 아무것도 선택하지 않았다는 말이다.
+                // 이건 무조건 컴퓨터가 이겼다고 해야한다.
+                answer += "동탄불주먹" + ":" + "기" + " " + "사용자닉네임" + ":" + "미처리" + " " + "동탄불주먹";
+                winner = "동탄불주먹";
+
+                if (winner != null) {
+                    log.info("플레이어가 선택하지 않았기에 컴퓨터가 승리하였습니다");
+                    if (winInfo[roomId].get(0).getNickname().equals(winner)) {
+                        // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
+                        int win = winInfo[roomId].get(0).getWin();
+                        winInfo[roomId].get(0).setWin(win + 1);
+                        if (win + 1 == 2) {
+                            // 이제 게임이 끝나야 하는 상황이다
+                            answer += " 끝냅니다";
+                        } else {
+                            // 게임이 계속 되어야 하는 상황이다
+                            answer += " 계속합니다";
+                        }
+                    } else {
+                        int win = winInfo[roomId].get(1).getWin();
+                        winInfo[roomId].get(1).setWin(win + 1);
+                        if (win + 1 == 2) {
+                            //이제 게임이 끝나야 하는 상황이다
+                            answer += " 끝냅니다";
+                        } else {
+                            // 게임이 계속 되어야 하는 상황이다
+                            answer += " 계속합니다";
+                        }
+                    }
+                } else {
+                    answer += " 안끝남";
+                }
+                return answer;
             }
 
+            String player1 = grd1.getNickname();
+            String picked1 = grd1.getPicked();
+            String player2 = grd2.getNickname();
+            String picked2 = grd2.getPicked();
+
+
+            answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2 + " ";
+            String nick1 = giDataRoom[roomId].get(0).getNickname();
+            int gi1 = giDataRoom[roomId].get(0).getGi(); // Arraylist안의 첫번째 사람의 기 개수
+            String nick2 = giDataRoom[roomId].get(1).getNickname();// Arraylist안의 두번째 사람의 닉네임
+            int gi2 = giDataRoom[roomId].get(1).getGi();// Arraylist안의 두번째 사람의 기 개수
+
+            if (player1.equals(nick1)) {
+                if (picked1.equals("기")) {
+                    gi1 += 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += player2;
+                        winner = player2;
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+                } else if (picked1.equals("파")) {
+                    gi1 -= 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("막기")) {
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        gi2 -= 3;
+                        // 원기옥
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("순간이동")) {
+                    gi1 -= 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                } else {
+                    gi1 -= 3;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("막기")) {
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        //원기옥
+                        gi2 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                }
+
+            } else {
+                if (picked1.equals("기")) {
+                    gi2 += 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += player2;
+                        winner = player2;
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+                } else if (picked1.equals("파")) {
+                    gi2 -= 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("막기")) {
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("순간이동")) {
+                    gi2 -= 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                } else {
+                    gi2 -= 3;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("막기")) {
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        //원기옥
+                        gi1 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                }
+
+            }
+            // 이제 다시 넣어줘야한다.
+            GiData giData1 = new GiData(nick1, gi1);
+            GiData giData2 = new GiData(nick2, gi2);
+
+            giDataRoom[roomId].set(0, giData1);
+            giDataRoom[roomId].set(1, giData2);
+            // 이제 여기서 winner의 승 1점을 올려야 한다.
 
             if (winner != null) {
-                log.info("승자가 정해졌습니다");
                 if (winInfo[roomId].get(0).getNickname().equals(winner)) {
                     // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
                     int win = winInfo[roomId].get(0).getWin();
@@ -326,313 +579,408 @@ public class GameService {
                         answer += " 계속합니다";
                     }
                 }
-
-                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
-                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
             } else {
                 answer += " 안끝남";
             }
 
             return answer;
 
-        } else if (gameRoom[roomId].size() == 0) {
-            // 둘 다 정보를 입력하지 않은 경우
-            answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다" + " 나갑니다";
+
+        } else {
+            // 사람과 하고 있다면?
+            if (gameRoom[roomId].size() == 2) {
+                //둘다 제대로 정보를 입력한 경우
+                ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
+                gameRoom[roomId].clear();
+                //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
+                //grd2 = gameRoom[Integer.parseInt(roomId)].poll();
+                grd1 = list.get(0);
+                grd2 = list.get(1);
+            } else if (gameRoom[roomId].size() == 1) {
+                ArrayList<GameRoomData> list = new ArrayList<>(gameRoom[roomId]);
+                gameRoom[roomId].clear();
+                //grd1 = gameRoom[Integer.parseInt(roomId)].poll();
+                grd1 = list.get(0);
+                answer += grd1.getNickname() + ":" + grd1.getPicked() + " " + countDownandstartGame[roomId].get(1) + ":" + "미처리" + " " + grd1.getNickname();
+                winner = grd1.getNickname();
+
+                // logs 추가하는 부분
+                String p1 = logs[roomId].get(0).getNickname();
+                String p2 = logs[roomId].get(1).getNickname();
+                if (grd1.getNickname().equals(p1)) {
+                    // 이 부분 converter 만들어서 돌리자
+                    // 남아있는 사람이랑 p1이 같은 경우
+                    logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + grd1.getPicked() + ":"));
+                    logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "노:"));
+                } else {
+                    // 남아있는 사람이랑 p2가 같은 경우
+                    logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + grd1.getPicked() + ":"));
+                    logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "노:"));
+                }
+
+
+                if (winner != null) {
+                    log.info("승자가 정해졌습니다");
+                    if (winInfo[roomId].get(0).getNickname().equals(winner)) {
+                        // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
+                        int win = winInfo[roomId].get(0).getWin();
+                        winInfo[roomId].get(0).setWin(win + 1);
+                        if (win + 1 == 2) {
+                            // 이제 게임이 끝나야 하는 상황이다
+                            answer += " 끝냅니다";
+                        } else {
+                            // 게임이 계속 되어야 하는 상황이다
+                            answer += " 계속합니다";
+                        }
+                    } else {
+                        int win = winInfo[roomId].get(1).getWin();
+                        winInfo[roomId].get(1).setWin(win + 1);
+                        if (win + 1 == 2) {
+                            //이제 게임이 끝나야 하는 상황이다
+                            answer += " 끝냅니다";
+                        } else {
+                            // 게임이 계속 되어야 하는 상황이다
+                            answer += " 계속합니다";
+                        }
+                    }
+
+                    logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
+                    logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
+                } else {
+                    answer += " 안끝남";
+                }
+
+                return answer;
+
+            } else if (gameRoom[roomId].size() == 0) {
+                // 둘 다 정보를 입력하지 않은 경우
+                answer = countDownandstartGame[roomId].get(0) + ":미처리" + " " + countDownandstartGame[roomId].get(1) + ":미처리" + " " + "무효입니다" + " 나갑니다";
+                return answer;
+            }
+            String player1 = grd1.getNickname();
+            String picked1 = grd1.getPicked();
+            String player2 = grd2.getNickname();
+            String picked2 = grd2.getPicked();
+
+            // logs 넣는 부분
+            String p1 = logs[roomId].get(0).getNickname();
+            String p2 = logs[roomId].get(1).getNickname();
+            if (player1.equals(p1)) {
+                // 이 부분 converter 만들어서 돌리자
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked1 + ":"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked2 + ":"));
+            } else {
+                // player1 == p2
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked2 + ":"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked1 + ":"));
+            }
+
+            answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2 + " ";
+            String nick1 = giDataRoom[roomId].get(0).getNickname();
+            int gi1 = giDataRoom[roomId].get(0).getGi(); // Arraylist안의 첫번째 사람의 기 개수
+            String nick2 = giDataRoom[roomId].get(1).getNickname();// Arraylist안의 두번째 사람의 닉네임
+            int gi2 = giDataRoom[roomId].get(1).getGi();// Arraylist안의 두번째 사람의 기 개수
+
+            if (player1.equals(nick1)) {
+                if (picked1.equals("기")) {
+                    gi1 += 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += player2;
+                        winner = player2;
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+                } else if (picked1.equals("파")) {
+                    gi1 -= 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("막기")) {
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        gi2 -= 3;
+                        // 원기옥
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("순간이동")) {
+                    gi1 -= 1;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi2 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                } else {
+                    gi1 -= 3;
+                    if (picked2.equals("기")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi2 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("막기")) {
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("순간이동")) {
+                        gi2 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        //원기옥
+                        gi2 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                }
+
+            } else {
+                if (picked1.equals("기")) {
+                    gi2 += 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += player2;
+                        winner = player2;
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+                } else if (picked1.equals("파")) {
+                    gi2 -= 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("막기")) {
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += player2;
+                        winner = player2;
+                    }
+
+                } else if (picked1.equals("순간이동")) {
+                    gi2 -= 1;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("막기")) {
+
+                        answer += "비겼습니다";
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        // 원기옥
+                        gi1 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                } else {
+                    gi2 -= 3;
+                    if (picked2.equals("기")) {
+                        gi1 += 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("파")) {
+                        gi1 -= 1;
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("막기")) {
+                        answer += player1;
+                        winner = player1;
+                    } else if (picked2.equals("순간이동")) {
+                        gi1 -= 1;
+                        answer += "비겼습니다";
+                    } else {
+                        //원기옥
+                        gi1 -= 3;
+                        answer += "비겼습니다";
+                    }
+
+                }
+
+            }
+            // 이제 다시 넣어줘야한다.
+            GiData giData1 = new GiData(nick1, gi1);
+            GiData giData2 = new GiData(nick2, gi2);
+
+            giDataRoom[roomId].set(0, giData1);
+            giDataRoom[roomId].set(1, giData2);
+            // 이제 여기서 winner의 승 1점을 올려야 한다.
+
+            if (winner != null) {
+                System.out.println("이거실행");
+                if (winInfo[roomId].get(0).getNickname().equals(winner)) {
+                    // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
+                    int win = winInfo[roomId].get(0).getWin();
+                    winInfo[roomId].get(0).setWin(win + 1);
+                    if (win + 1 == 2) {
+                        // 이제 게임이 끝나야 하는 상황이다
+                        answer += " 끝냅니다";
+                    } else {
+                        // 게임이 계속 되어야 하는 상황이다
+                        answer += " 계속합니다";
+                    }
+                } else {
+                    int win = winInfo[roomId].get(1).getWin();
+                    winInfo[roomId].get(1).setWin(win + 1);
+                    if (win + 1 == 2) {
+                        //이제 게임이 끝나야 하는 상황이다
+                        answer += " 끝냅니다";
+                    } else {
+                        // 게임이 계속 되어야 하는 상황이다
+                        answer += " 계속합니다";
+                    }
+                }
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
+
+
+            } else {
+                answer += " 안끝남";
+            }
+
             return answer;
-        }
-        String player1 = grd1.getNickname();
-        String picked1 = grd1.getPicked();
-        String player2 = grd2.getNickname();
-        String picked2 = grd2.getPicked();
-
-        // logs 넣는 부분
-        String p1 = logs[roomId].get(0).getNickname();
-        String p2 = logs[roomId].get(1).getNickname();
-        if (player1.equals(p1)) {
-            // 이 부분 converter 만들어서 돌리자
-            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked1+":"));
-            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked2+":"));
-        } else {
-            // player1 == p2
-            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked2+":"));
-            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked1+":"));
-        }
-
-        answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2 + " ";
-        String nick1 = giDataRoom[roomId].get(0).getNickname();
-        int gi1 = giDataRoom[roomId].get(0).getGi(); // Arraylist안의 첫번째 사람의 기 개수
-        String nick2 = giDataRoom[roomId].get(1).getNickname();// Arraylist안의 두번째 사람의 닉네임
-        int gi2 = giDataRoom[roomId].get(1).getGi();// Arraylist안의 두번째 사람의 기 개수
-
-        if (player1.equals(nick1)) {
-            if (picked1.equals("기")) {
-                gi1 += 1;
-                if (picked2.equals("기")) {
-                    gi2 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi2 -= 1;
-                    answer += player2;
-                    winner = player2;
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi2 -= 3;
-                    answer += player2;
-                    winner = player2;
-                }
-            } else if (picked1.equals("파")) {
-                gi1 -= 1;
-                if (picked2.equals("기")) {
-                    gi2 += 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("파")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi2 -= 3;
-                    answer += player2;
-                    winner = player2;
-                }
-
-            } else if (picked1.equals("막기")) {
-                if (picked2.equals("기")) {
-                    gi2 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    gi2 -= 3;
-                    // 원기옥
-                    answer += player2;
-                    winner = player2;
-                }
-
-            } else if (picked1.equals("순간이동")) {
-                gi1 -= 1;
-                if (picked2.equals("기")) {
-                    gi2 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi2 -= 3;
-                    answer += "비겼습니다";
-                }
-
-            } else {
-                gi1 -= 3;
-                if (picked2.equals("기")) {
-                    gi2 += 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("파")) {
-                    gi2 += 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("막기")) {
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("순간이동")) {
-                    gi2 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    //원기옥
-                    gi2 -= 3;
-                    answer += "비겼습니다";
-                }
-
-            }
-
-        } else {
-            if (picked1.equals("기")) {
-                gi2 += 1;
-                if (picked2.equals("기")) {
-                    gi1 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi1 -= 1;
-                    answer += player2;
-                    winner = player2;
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi1 -= 3;
-                    answer += player2;
-                    winner = player2;
-                }
-            } else if (picked1.equals("파")) {
-                gi2 -= 1;
-                if (picked2.equals("기")) {
-                    gi1 += 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("파")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi1 -= 3;
-                    answer += player2;
-                    winner = player2;
-                }
-
-            } else if (picked1.equals("막기")) {
-                if (picked2.equals("기")) {
-                    gi1 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi1 -= 3;
-                    answer += player2;
-                    winner = player2;
-                }
-
-            } else if (picked1.equals("순간이동")) {
-                gi2 -= 1;
-                if (picked2.equals("기")) {
-                    gi1 += 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("파")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else if (picked2.equals("막기")) {
-
-                    answer += "비겼습니다";
-                } else if (picked2.equals("순간이동")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    // 원기옥
-                    gi1 -= 3;
-                    answer += "비겼습니다";
-                }
-
-            } else {
-                gi2 -= 3;
-                if (picked2.equals("기")) {
-                    gi1 += 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("파")) {
-                    gi1 -= 1;
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("막기")) {
-                    answer += player1;
-                    winner = player1;
-                } else if (picked2.equals("순간이동")) {
-                    gi1 -= 1;
-                    answer += "비겼습니다";
-                } else {
-                    //원기옥
-                    gi1 -= 3;
-                    answer += "비겼습니다";
-                }
-
-            }
 
         }
-        // 이제 다시 넣어줘야한다.
-        GiData giData1 = new GiData(nick1, gi1);
-        GiData giData2 = new GiData(nick2, gi2);
-
-        giDataRoom[roomId].set(0, giData1);
-        giDataRoom[roomId].set(1, giData2);
-        // 이제 여기서 winner의 승 1점을 올려야 한다.
-
-        if (winner != null) {
-            System.out.println("이거실행");
-            if (winInfo[roomId].get(0).getNickname().equals(winner)) {
-                // 만약에 첫번째 인간의 nickname과 승자의 nickname이 같다면?
-                int win = winInfo[roomId].get(0).getWin();
-                winInfo[roomId].get(0).setWin(win + 1);
-                if (win + 1 == 2) {
-                    // 이제 게임이 끝나야 하는 상황이다
-                    answer += " 끝냅니다";
-                } else {
-                    // 게임이 계속 되어야 하는 상황이다
-                    answer += " 계속합니다";
-                }
-            } else {
-                int win = winInfo[roomId].get(1).getWin();
-                winInfo[roomId].get(1).setWin(win + 1);
-                if (win + 1 == 2) {
-                    //이제 게임이 끝나야 하는 상황이다
-                    answer += " 끝냅니다";
-                } else {
-                    // 게임이 계속 되어야 하는 상황이다
-                    answer += " 계속합니다";
-                }
-            }
-            logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
-            logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
-
-
-        } else {
-            answer += " 안끝남";
-        }
-
-        return answer;
 
     }
 
     public Map<String, Object> getUserInfo(int roomId) {
-        TokenData tokenData1 = accessTokenRoom[roomId].poll();
-        TokenData tokenData2 = accessTokenRoom[roomId].poll();
 
-        accessTokenRoom[roomId].add(tokenData1);
-        accessTokenRoom[roomId].add(tokenData2);
+        if (isComputerRoom[roomId]) {
+            // 만약에 컴퓨터라면?
+            TokenData tokenData1 = accessTokenRoom[roomId].poll();
+            TokenData tokenData2 = accessTokenRoom[roomId].poll();
 
-        String access1 = tokenData1.getAccessToken();
-        String nick1 = tokenData1.getNickname();
-        String access2 = tokenData2.getAccessToken();
-        String nick2 = tokenData2.getNickname();
-        // 이게 게임 시작 전에 실행되는거니까 로그를 넣어준다.
-        logs[roomId].add(new LogData(nick1, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
-        logs[roomId].add(new LogData(nick2, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
-        return resultUpdateService.gettingInfo(access1, nick1, access2, nick2);
+            accessTokenRoom[roomId].add(tokenData1);
+            accessTokenRoom[roomId].add(tokenData2);
+            String access1 = tokenData1.getAccessToken();
+            String nick1 = tokenData1.getNickname();
+            String access2 = tokenData2.getAccessToken();
+            String nick2 = tokenData2.getNickname();
+
+            System.out.println(access1);
+            System.out.println(nick1);
+            System.out.println(access2);
+            System.out.println(nick2);
+
+
+            //access1
+            String uuidString = "5dd9ba46-2588-489e-8cfc-a32f59942868";
+            UUID uuid = UUID.fromString(uuidString);
+            return resultUpdateService.getComAndMe(access1, nick1, uuid, nick2);
+
+        } else {
+            // 만약에 사람이라면?
+            TokenData tokenData1 = accessTokenRoom[roomId].poll();
+            TokenData tokenData2 = accessTokenRoom[roomId].poll();
+
+            accessTokenRoom[roomId].add(tokenData1);
+            accessTokenRoom[roomId].add(tokenData2);
+
+            String access1 = tokenData1.getAccessToken();
+            String nick1 = tokenData1.getNickname();
+            String access2 = tokenData2.getAccessToken();
+            String nick2 = tokenData2.getNickname();
+            // 이게 게임 시작 전에 실행되는거니까 로그를 넣어준다.
+            logs[roomId].add(new LogData(nick1, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
+            logs[roomId].add(new LogData(nick2, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
+            return resultUpdateService.gettingInfo(access1, nick1, access2, nick2);
+        }
+
+
     }
 
     public void updateLog(int roomId, String winner) {
@@ -664,10 +1012,10 @@ public class GameService {
             UUID yourUUID = UUID2;
             String myPlay = log1;
             String yourPlay = log2;
-            if(nick1.equals(winner)){
-                isWin=true;
-            }else{
-                isWin= false;
+            if (nick1.equals(winner)) {
+                isWin = true;
+            } else {
+                isWin = false;
             }
             Member meMember = memberRepository.findById(myUUID).orElse(null);
             Member youMember = memberRepository.findById(yourUUID).orElse(null);
@@ -682,15 +1030,15 @@ public class GameService {
             playlog2.setMyPlay(yourPlay);
             playlog2.setOpponentPlay(myPlay);
             playlog2.setPlayResult(!isWin);
-        } else{
+        } else {
             UUID myUUID = UUID1;
             UUID yourUUID = UUID2;
             String myPlay = log2;
             String yourPlay = log1;
-            if(nick1.equals(winner)){
-                isWin=true;
-            }else{
-                isWin=false;
+            if (nick1.equals(winner)) {
+                isWin = true;
+            } else {
+                isWin = false;
             }
             Member meMember = memberRepository.findById(myUUID).orElse(null);
             Member youMember = memberRepository.findById(yourUUID).orElse(null);
@@ -713,4 +1061,41 @@ public class GameService {
         logUpdateRepository.save(playlog2);
     }
 
+    public void computerUpdate(int roomId) {
+        isComputerRoom[roomId] = true;
+    }
+
+    public int isComputer(int roomId) {
+        if (isComputerRoom[roomId]) {
+            // 만약에 컴퓨터와의 대전이 맞다면?
+            return 1;
+        } else {
+            // 사람끼리 하고 있는 대전이라면?
+            return 0;
+        }
+    }
+
+    public void chooseScen(int roomId) {
+        // 시나리오를 선택하는 단계
+        Random random = new Random();
+        int randomIndex = random.nextInt(6);
+        for (String pick : computerPick[randomIndex]) {
+            whatPick[roomId].push(pick);
+        }
+
+    }
+
+    public String getTop(int roomId) {
+        if (whatPick[roomId].size() == 0) {
+            // 아무것도 없다면?
+            chooseScen(roomId);
+            return whatPick[roomId].pop();
+        } else {
+            return whatPick[roomId].pop();
+        }
+    }
+
+    public void cleanStack(int roomId) {
+        whatPick[roomId].clear();
+    }
 }
