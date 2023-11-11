@@ -199,6 +199,12 @@ class _FriendScreenState extends State<FriendScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.red,
+        appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.black),
+        ),
       body: Stack(
         children: [
           Positioned(
@@ -233,29 +239,29 @@ class _FriendScreenState extends State<FriendScreen> {
                                 });
                               },
                               maxLength: 12,
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: 20, color: Colors.white),
                               decoration: const InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 1),
                                 hintText: "닉네임으로 검색하기",
-                                hintStyle: TextStyle(fontSize: 20),
+                                hintStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(255,255,255,0.6)),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 3, color: Colors.black),
+                                      BorderSide(width: 2, color: Colors.red),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 3, color: Colors.black),
+                                      BorderSide(width: 3, color: Colors.amber),
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 3, color: Colors.black),
+                                      BorderSide(width: 1, color: Colors.red),
                                 ),
                               ),
                             ),
@@ -268,6 +274,7 @@ class _FriendScreenState extends State<FriendScreen> {
                             child: Container(
                               padding: EdgeInsets.symmetric(vertical:3),
                               child: const Icon(
+                                color: Colors.white,
                                 Icons.search,
                                 size: 40,
                               ),
@@ -279,10 +286,11 @@ class _FriendScreenState extends State<FriendScreen> {
                         height: 10,
                       ),
                       searched == "FAIL"
-                          ? const Text(
+                          ? const Center(child:Text(
                               "존재하지 않는 유저입니다.",
                               style: TextStyle(color: Colors.red),
                             )
+                      )
                           : Container(),
                       searched == "SUCCESS"
                           ? SearchResultWidget(
