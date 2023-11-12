@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   String buttonsrc2 = 'lib/assets/icons/reportButton.png';
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
+  String buttonsrc5 = 'lib/assets/icons/startButton.png';
 
   bool isButtonDisabled = false;
 
@@ -49,7 +51,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     "lib/assets/icons/tutorial4.png",
     "lib/assets/icons/tutorial5.png",
   ];
-
 
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
@@ -209,7 +210,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const FriendScreen(friendSelected: true,),
+        builder: (context) => const FriendScreen(
+          friendSelected: true,
+        ),
       ),
     );
   }
@@ -247,7 +250,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('공지'),
-            content: Text('업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.'),
+            content: Text(
+                '업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -322,9 +326,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         onWillPop: endApp,
         child: Stack(
           children: [
-            Container(
-              color: Colors.black
-            ),
+            Container(color: Colors.black),
             Positioned(
                 left: 0,
                 right: 0,
@@ -351,46 +353,102 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.55,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    if (!isButtonDisabled) {
-                      _navigateToStartScreen();
-                      setState(() {
-                        isButtonDisabled = true;
-                      });
-                    }
-                  },
-                  onTapDown: (_) {
-                    if (!isButtonDisabled) {
-                      setState(() {
-                        buttonsrc = 'lib/assets/icons/startButton2.png';
-                      });
-                    }
-                  },
-                  onTapUp: (_) {
-                    if (!isButtonDisabled) {
-                      setState(() {
-                        buttonsrc = 'lib/assets/icons/startButton.png';
-                      });
-                    }
-                  },
-                  onTapCancel: () {
-                    if (!isButtonDisabled) {
-                      setState(() {
-                        buttonsrc = 'lib/assets/icons/startButton.png';
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.35,
-                    height: MediaQuery.of(context).size.width * 0.35,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(buttonsrc),
-                        fit: BoxFit.fitWidth,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (!isButtonDisabled) {
+                          _navigateToStartScreen();
+                          setState(() {
+                            isButtonDisabled = true;
+                          });
+                          Timer(Duration(milliseconds: 1500), () {
+                            setState(() {
+                              isButtonDisabled = false;
+                            });
+                          });
+                        }
+                      },
+                      onTapDown: (_) {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc = 'lib/assets/icons/startButton2.png';
+                          });
+                        }
+                      },
+                      onTapUp: (_) {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc = 'lib/assets/icons/startButton.png';
+                          });
+                        }
+                      },
+                      onTapCancel: () {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc = 'lib/assets/icons/startButton.png';
+                          });
+                        }
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        height: MediaQuery.of(context).size.width * 0.35,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    GestureDetector(
+                      onTap: () {
+                        if (!isButtonDisabled) {
+                          _navigateToTowerEnterScreen();
+                          setState(() {
+                            isButtonDisabled = true;
+                          });
+                          Timer(Duration(milliseconds: 1500), () {
+                            setState(() {
+                              isButtonDisabled = false;
+                            });
+                          });
+                        }
+                      },
+                      onTapDown: (_) {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc5 = 'lib/assets/icons/startButton2.png';
+                          });
+                        }
+                      },
+                      onTapUp: (_) {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc5 = 'lib/assets/icons/startButton.png';
+                          });
+                        }
+                      },
+                      onTapCancel: () {
+                        if (!isButtonDisabled) {
+                          setState(() {
+                            buttonsrc5 = 'lib/assets/icons/startButton.png';
+                          });
+                        }
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        height: MediaQuery.of(context).size.width * 0.35,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage(buttonsrc5),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
