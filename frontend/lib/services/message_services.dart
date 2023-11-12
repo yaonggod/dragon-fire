@@ -19,7 +19,16 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
   } else if (message.data["do"] == "friend-accept") {
     notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
+  } else if (message.data["do"] == "friend-fight") {
+    notiBody = "${message.data["nickname"]}님이 친구 대전을 신청했습니다.";
   }
+
+  String payload = message.data["do"];
+  if (message.data["do"] == "friend-fight") {
+    // 뒤에다가 방 번호와 기타 정보도 붙여서 보낸다
+    payload = "${message.data["roomId"]}";
+  }
+
 
   flutterLocalNotificationPlugin.show(
       0,
@@ -28,7 +37,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       const NotificationDetails(
           android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
       ),
-      payload: message.data["do"]
+      payload: payload
   );
 }
 
@@ -65,6 +74,8 @@ void initializeNotification() async {
       // 받은 데이터로 리다이렉트하기
       if (details.payload == "friend-add" || details.payload == "friend-accept") {
         DragonG.navigatorKey.currentState!.pushNamed('/friend');
+      } else {
+        // DragonG.navigatorKey.currentState!.pushNamed('/fight', arguments: details.payload);
       }
     },
 
@@ -80,6 +91,14 @@ void initializeNotification() async {
       notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
     } else if (message.data["do"] == "friend-accept") {
       notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
+    } else if (message.data["do"] == "friend-fight") {
+      notiBody = "${message.data["nickname"]}님이 친구 대전을 신청했습니다. 입장하세요!";
+    }
+
+    String payload = message.data["do"];
+    if (message.data["do"] == "friend-fight") {
+      // 뒤에다가 방 번호와 기타 정보도 붙여서 보낸다
+      payload = "${message.data["roomId"]}";
     }
 
     flutterLocalNotificationPlugin.show(
@@ -89,7 +108,7 @@ void initializeNotification() async {
         const NotificationDetails(
             android: AndroidNotificationDetails("high_importance_channel", "dragon-fire", importance: Importance.max)
         ),
-        payload: message.data["do"]
+        payload: payload
     );
   });
 

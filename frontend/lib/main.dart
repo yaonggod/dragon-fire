@@ -48,7 +48,7 @@ class DragonG extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const AccessScreen(),
-        '/friend': (context) => FriendScreen(friendSelected: false),
+        '/friend': (context) => const FriendScreen(friendSelected: false),
       },
       navigatorKey: navigatorKey,
 
