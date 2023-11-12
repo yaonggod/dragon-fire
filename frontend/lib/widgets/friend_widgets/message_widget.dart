@@ -6,6 +6,7 @@ import 'package:frontend/models/friend_models/message_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/screens/friend_game_screen.dart';
 
 class MessageWidget extends StatefulWidget {
   final MessageModel message;
@@ -97,6 +98,46 @@ class _MessageWidgetState extends State<MessageWidget> {
             color: Colors.red,
             borderRadius: BorderRadius.circular(5)),
         child: const Icon(Icons.check),
+      ),
+    );
+  }
+
+  Widget acceptFriendGameButton() {
+    return GestureDetector(
+      onTap: ()  async {
+        bool result = await acceptFriendGame();
+        if (result) {
+          setState(() {
+            visible = false;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(5)),
+        child: const Icon(Icons.check),
+      ),
+    );
+  }
+
+  Widget rejectFriendGameButton() {
+    return GestureDetector(
+      onTap: () async{
+        bool result = await rejectFriendGame();
+        if(result){
+          setState(() {
+            visible = false;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(5)),
+        child: const Icon(Icons.close_outlined),
       ),
     );
   }
@@ -237,6 +278,58 @@ class _MessageWidgetState extends State<MessageWidget> {
       return true;
     }
     return false;
+  }
+
+  Future<bool> acceptFriendGame() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend-game/accept");
+    String? nickname = await getNickname();
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+    );
+
+    if(response.statusCode == 200){
+      final Map<String, dynamic> data = json.decode(response.body);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FriendGameScreen(
+              roomId: data["roomId"],
+              nickname: nickname!,
+              nowNumber: -1
+          ), // 이건 game.dart에 있다.
+        ),
+      );
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> rejectFriendGame() async {
+    Map<String, String> list = await readToken();
+    Uri uri = Uri.parse("$baseUrl/friend-game/reject");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        },
+        // body: jsonEncode(
+        //     {"roomId": widget.message.roomId}
+        // )
+    );
+    if(response.statusCode == 200) return true;
+    return false;
+
+  }
+
+  Future<String?> getNickname() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nickname');
   }
 
   @override

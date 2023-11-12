@@ -19,6 +19,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
   } else if (message.data["do"] == "friend-accept") {
     notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
+  } else if (message.data["do"] == "friend-fight"){
+    notiBody = "${message.data["nickname"]}님이 친구 대전을 요청을 보냈습니다.";
   }
 
   flutterLocalNotificationPlugin.show(

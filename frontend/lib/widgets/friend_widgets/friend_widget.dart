@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/screens/friend_game_screen.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -84,7 +85,8 @@ class _FriendWidgetState extends State<FriendWidget> {
   Future<bool> friendFight() async {
     Map<String, String> list = await readToken();
     // 친구랑 싸우자!
-    Uri uri = Uri.parse("$baseUrl/friend-game/wait");
+    // Uri uri = Uri.parse("$baseUrl/friend-game/wait");
+    Uri uri = Uri.parse("http://10.0.2.2:8080/api/friend-game/wait");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -98,6 +100,7 @@ class _FriendWidgetState extends State<FriendWidget> {
 
       // 친구랑 싸울 방 번호
       final roomId = jsonMap["roomId"];
+      print('roomId : $roomId');
       // 친구한테 알림보낼 firebase AT
       final firebaseAccessToken = response.headers["firebase"]!.substring(7);
       // 내 닉네임
@@ -117,7 +120,8 @@ class _FriendWidgetState extends State<FriendWidget> {
                   "message": {
                     "data": {
                       "do": "friend-fight",
-                      "nickname": "$myNickname"
+                      "nickname": "$myNickname",
+                      "roomId" : "$roomId",
                     },
                     "token": widget.friend.fcmToken
                   }
@@ -126,6 +130,16 @@ class _FriendWidgetState extends State<FriendWidget> {
         );
         // 알람을 보내고 성공할 경우 친구대전 가넝~
         if (response2.statusCode == 200) {
+          print('성공 했다.');
+          Navigator.push(
+              context,
+            MaterialPageRoute(
+              builder: (context) => FriendGameScreen(
+                  roomId: roomId,
+                  nickname: myNickname!,
+                  nowNumber: -1), // 이건 game.dart에 있다.
+            ),
+          );
           return true;
         }
       }
@@ -198,24 +212,24 @@ class _FriendWidgetState extends State<FriendWidget> {
                     ),
                     GestureDetector(
                       onTap: () {
-
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('알림'),
-                              content: Text('친구 대전은 아직 준비중입니다.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('확인'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        friendFight();
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (BuildContext context) {
+                        //     return AlertDialog(
+                        //       title: Text('알림'),
+                        //       content: Text('친구 대전은 아직 준비중입니다.'),
+                        //       actions: <Widget>[
+                        //         TextButton(
+                        //           onPressed: () {
+                        //             Navigator.of(context).pop();
+                        //           },
+                        //           child: Text('확인'),
+                        //         ),
+                        //       ],
+                        //     );
+                        //   },
+                        // );
 
                       },
                       onTapDown: (_) {
