@@ -56,11 +56,9 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
   String? nickname1;
   int? myWin;
   int? myLose;
-  int? myScore;
   String? nickname2;
   int? contenderWin;
   int? contenderLose;
-  int? contenderScore;
   bool countdownChange = true;
 
   bool isGiPressed = false; // 기
@@ -595,26 +593,20 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
         if (widget.nickname == nickname1) {
           myWin = gameRecord['user1Win'];
           myLose = gameRecord['user1Lose'];
-          myScore = gameRecord['user1Score'];
           contenderWin = gameRecord['user2Win'];
           contenderLose = gameRecord['user2Lose'];
-          contenderScore = gameRecord['user2Score'];
         } else {
           contenderWin = gameRecord['user1Win'];
           contenderLose = gameRecord['user1Lose'];
-          contenderScore = gameRecord['user1Score'];
           myWin = gameRecord['user2Win'];
           myLose = gameRecord['user2Lose'];
-          myScore = gameRecord['user2Score'];
         }
         print(nickname1);
         print(myWin);
         print(myLose);
-        print(myScore);
         print(nickname2);
         print(contenderWin);
         print(contenderLose);
-        print(contenderScore);
       },
     );
 
@@ -867,9 +859,9 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        // url: socketUrl,
         // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -1230,7 +1222,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                             fit: BoxFit.fitHeight,
                                           ),
                                           Text(
-                                            ": $contenderScore",
+                                            ": 이기자",
                                             style: TextStyle(fontSize: 20),
                                           ),
                                         ],
@@ -1307,7 +1299,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                             fit: BoxFit.fitHeight,
                                           ),
                                           Text(
-                                            ": $myScore",
+                                            ": 질 수 없지",
                                             style: TextStyle(fontSize: 20),
                                           ),
                                         ],
