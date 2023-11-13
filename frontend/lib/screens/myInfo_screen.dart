@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/screens/info_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/myInfoUpdate_screen.dart';
@@ -34,8 +37,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
 
+  String? introduction;
   String? nickname;
   String? email;
+  String? accessToken;
+  String? refreshToken;
 
   List<String> assetList = [
     "lib/assets/icons/tutorial0.png",
@@ -57,6 +63,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
     email = await getEmail();
+    introduction = await getIntroduction();
+
+    print(nickname);
+
     print("nickname ${nickname == null}");
     print(nickname);
 
@@ -65,18 +75,50 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       setState(() {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
         _googleLoggedIn = true;
+        accessToken = tokens['Authorization'];
+        refreshToken = tokens['refreshToken'];
       });
     } else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
       setState(() {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
         _naverLoginStatus = true;
+        accessToken = tokens['Authorization'];
+        refreshToken = tokens['refreshToken'];
       });
+    }
+
+    if (introduction == null) {
+      await getMyInfo();
+      introduction = await getIntroduction();
     }
 
     print(_googleLoggedIn);
     print(_naverLoginStatus);
     print(tokens['Authorization']);
     print(tokens['refreshToken']);
+  }
+
+  Future<void> getMyInfo() async {
+    print("getmyinfo");
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/member/info'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+    );
+    if (response.statusCode == 200) {
+      String? nickname =
+          jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+      String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
+      String? introduction =
+          jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
+
+      saveIntroduction(introduction!);
+      print(introduction);
+    }
   }
 
   _logout() async {
@@ -200,6 +242,26 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     return prefs.getString('nickname');
   }
 
+  saveIntroduction(String introduction) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('introduction', introduction);
+  }
+
+  Future<String?> getIntroduction() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('introduction');
+  }
+
+  Future<bool?> getVibrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('vibrate');
+  }
+
+  Future<bool?> getBGM() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('bgm');
+  }
+
   Future<String?> getEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('email');
@@ -300,22 +362,22 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                                     .size
                                                     .width *
                                                 0.22),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Navigator.push(
-                                            //   context,
-                                            //   MaterialPageRoute(builder: (context) => MusicScreen()),
-                                            // );
-                                          },
-                                          child: ListTile(
-                                            title: Text(
-                                              '음악',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                              ),
+                                        ListTile(
+                                          title: Text(
+                                            '미디어',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
                                             ),
                                           ),
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return MediaDialog();
+                                              },
+                                            );
+                                          },
                                         ),
                                         Divider(
                                           color: Colors.white,
@@ -440,6 +502,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
           SafeArea(
             child: Stack(
               children: [
+                // if (nickname != null && email != null) if (nickname == null || email == null)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(40),
@@ -447,20 +510,44 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 4),
+                        if (nickname != null && email != null)
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 45),
+                                nickname != null ? nickname! : "null"),
+                          ),
+                        if(nickname == null || email == null)
+                          Center(
+                            child: CircularProgressIndicator(color: Colors.white),
+                          ),
                         SizedBox(
-                            height: MediaQuery.of(context).size.height / 4),
-                        Center(
-                          child: Text(
-                              style: TextStyle(fontSize: 45),
-                              nickname != null ? nickname! : "null"),
-                        ),
+                              height: MediaQuery.of(context).size.height / 100),
+                        if (nickname != null && email != null)
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 20),
+                                email != null ? email! : "null"),
+                          ),
+                        if(nickname == null || email == null)
+                          Center(
+                            child: Text("",
+                                style: TextStyle(fontSize: 20)),
+                          ),
                         SizedBox(
-                            height: MediaQuery.of(context).size.height / 100),
-                        Center(
-                          child: Text(
-                              style: TextStyle(fontSize: 20),
-                              email != null ? email! : "null"),
-                        ),
+                              height: MediaQuery.of(context).size.height / 100),
+                        if (nickname != null && email != null)
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 20),
+                                introduction != null ? introduction! : ""),
+                          ),
+                        if(nickname == null || email == null)
+                          Center(
+                            child: Text("",
+                                style: TextStyle(fontSize: 20)),
+                          ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height / 10),
                         if (_naverLoginStatus == true ||
@@ -468,7 +555,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                           MaterialButton(
                             color: Colors.red,
                             child: const Text(
-                              '닉네임 변경',
+                              '내 정보 수정',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
@@ -482,7 +569,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                              print('닉네임변경 버튼 클릭.');
                             },
                           ),
                         MaterialButton(
@@ -536,6 +622,201 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MediaDialog extends StatefulWidget {
+  @override
+  _MediaDialogState createState() => _MediaDialogState();
+}
+
+class _MediaDialogState extends State<MediaDialog> {
+  bool _bgmSwitchValue = true;
+  bool _vibrateSwitchValue = true;
+  bool _hapticSwitchValue = true;
+
+  Future<bool?> getVibrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('vibrate');
+  }
+
+  Future<bool?> getHaptic() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('haptic');
+  }
+
+  Future<bool?> getBGM() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('bgm');
+  }
+
+  init() async {
+    await Timer(Duration(milliseconds: 500), () {});
+    _bgmSwitchValue = await getBGM() ?? true;
+    _vibrateSwitchValue = await getVibrate() ?? true;
+    _hapticSwitchValue = await getHaptic() ?? true;
+    setState(() {}); // 추가된 부분
+  }
+
+  @override
+  void initState() {
+    init();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(10),
+      backgroundColor: const Color.fromRGBO(0, 50, 90, 0.8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width * 1.5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      child: Center(
+                        child: Text(
+                          "환경설정",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 40,
+                          ),
+                        ),
+                      ),
+                      left: 0,
+                      height: MediaQuery.of(context).size.width * 0.2,
+                      right: 0,
+                    ),
+                    Positioned(
+                      child: Divider(
+                        color: Colors.white,
+                        thickness: 2,
+                      ),
+                      left: 0,
+                      top: MediaQuery.of(context).size.width * 0.2,
+                      right: 0,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.22),
+                          ListTile(
+                            title: Text(
+                              'BGM',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _bgmSwitchValue,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _bgmSwitchValue = value;
+                                });
+                                if(_bgmSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setBool('bgm', value);
+
+                                if (!value) {
+                                  AudioManager.pause();
+                                } else {
+                                  AudioManager.resume();
+                                }
+
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white,
+                            thickness: 2,
+                          ),
+                          ListTile(
+                            title: Text(
+                              '진동',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _vibrateSwitchValue,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _vibrateSwitchValue = value;
+                                });
+                                if(_vibrateSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setBool('vibrate', value);
+
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white,
+                            thickness: 2,
+                          ),
+                          ListTile(
+                            title: Text(
+                              '햅틱',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _hapticSwitchValue,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _hapticSwitchValue = value;
+                                });
+                                if(_hapticSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                                await prefs.setBool('haptic', value);
+
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

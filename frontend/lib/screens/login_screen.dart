@@ -131,6 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
       String? nickname =
           jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
       String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
+      String? introduction = jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
       if (accessToken1 != null &&
           refreshToken1 != null &&
           nickname != null &&
@@ -139,6 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
             accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
         saveNickname(nickname);
         saveEmail(email);
+        saveIntroduction(introduction!);
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -255,6 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
         String? nickname =
             jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
         String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
+        String? introduction = jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
 
         if (accessToken1 != null &&
             refreshToken1 != null &&
@@ -264,6 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
               accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
           saveNickname(nickname);
           saveEmail(email);
+          saveIntroduction(introduction!);
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -372,6 +376,11 @@ class _LoginScreenState extends State<LoginScreen> {
   saveNickname(String nickname) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('nickname', nickname);
+  }
+
+  saveIntroduction(String introduction) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('introduction', introduction);
   }
 
   saveEmail(String email) async {

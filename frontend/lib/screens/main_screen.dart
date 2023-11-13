@@ -43,6 +43,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   bool _isFirstAccess = true; // 첫 접속 여부
 
+  bool _isHaptic = true;
+
   List<String> assetList = [
     "lib/assets/icons/tutorial0.png",
     "lib/assets/icons/tutorial1.png",
@@ -69,9 +71,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     return prefs.getString('nickname');
   }
 
+  Future<bool?> getHaptic() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('haptic');
+  }
+
   Future<void> _checkLoginStatus() async {
     await checkFirstAccess();
     nickname = await getNickname();
+    _isHaptic = await getHaptic() ?? true;
     Map<String, String> tokens = await readToken();
     accessToken = tokens['Authorization'];
     refreshToken = tokens['refreshToken'];
@@ -227,8 +235,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
   }
 
+  saveVibrate(bool vibrate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('vibrate', vibrate);
+  }
+
+  saveBGM(bool bgm) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bgm', bgm);
+  }
+
   Future<void> checkFirstAccess() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('vibrate') == null || prefs.getBool('bgm') == null){
+      prefs.setBool('vibrate', true);
+      prefs.setBool('bgm', true);
+    }
     _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
     if (_isFirstAccess) {
       await prefs.setBool('isFirstAccess', false);
@@ -396,6 +418,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     GestureDetector(
                       onTap: () {
                         if (!isButtonDisabled) {
+                          if(_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
                           _navigateToStartScreen();
                           setState(() {
                             isButtonDisabled = true;
@@ -412,6 +437,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           setState(() {
                             buttonsrc = 'lib/assets/icons/startButton2.png';
                           });
+                          if(_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
                         }
                       },
                       onTapUp: (_) {
@@ -442,6 +470,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     GestureDetector(
                       onTap: () {
                         if (!isButtonDisabled) {
+                          if(_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
                           _navigateToTowerEnterScreen();
                           setState(() {
                             isButtonDisabled = true;
@@ -458,6 +489,9 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                           setState(() {
                             buttonsrc5 = 'lib/assets/icons/startButton2.png';
                           });
+                          if(_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
                         }
                       },
                       onTapUp: (_) {
@@ -492,12 +526,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                   children: [
                     GestureDetector(
                       onTap: () {
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                         _navigateToRankingScreen();
                       },
                       onTapDown: (_) {
                         setState(() {
                           buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
                         });
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                       },
                       onTapUp: (_) {
                         setState(() {
@@ -520,12 +560,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     ),
                     GestureDetector(
                       onTap: () {
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                         _navigateToReportScreen();
                       },
                       onTapDown: (_) {
                         setState(() {
                           buttonsrc2 = 'lib/assets/icons/reportButton2.png';
                         });
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                       },
                       onTapUp: (_) {
                         setState(() {
@@ -548,12 +594,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     ),
                     GestureDetector(
                       onTap: () {
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                         _navigateToFriendScreen();
                       },
                       onTapDown: (_) {
                         setState(() {
                           buttonsrc3 = 'lib/assets/icons/friendButton2.png';
                         });
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                       },
                       onTapUp: (_) {
                         setState(() {
@@ -576,12 +628,18 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     ),
                     GestureDetector(
                       onTap: () {
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                         _navigateToMyInfoScreen();
                       },
                       onTapDown: (_) {
                         setState(() {
                           buttonsrc4 = 'lib/assets/icons/myButton2.png';
                         });
+                        if(_isHaptic) {
+                          HapticFeedback.lightImpact();
+                        }
                       },
                       onTapUp: (_) {
                         setState(() {
