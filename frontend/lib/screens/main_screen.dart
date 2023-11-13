@@ -141,6 +141,48 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> TowerSelect() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/tower'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"nickname": nickname!}),
+    );
+
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/tower'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
+    //   },
+    //   body: jsonEncode({"nickname": nickname!}),
+    // );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data.containsKey("maxFloor")) {
+        int maxFloor = data["maxFloor"];
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TowerEnterScreen(
+                maxFloor: maxFloor,
+                nickname: nickname!,
+              ),
+            ));
+      } else {
+        print('서버 응답에 roomId가 없음');
+      }
+    } else {
+      print('요청 실패: ${response.statusCode}');
+    }
+  }
+
   void _navigateToMyInfoScreen() {
     Navigator.push(
       context,
@@ -218,12 +260,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   }
 
   void _navigateToTowerEnterScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const TowerEnterScreen(),
-      ),
-    );
+    TowerSelect();
   }
 
   @override
