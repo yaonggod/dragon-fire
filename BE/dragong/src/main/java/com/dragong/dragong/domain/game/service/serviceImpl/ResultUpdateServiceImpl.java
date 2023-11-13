@@ -272,7 +272,6 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         }
 
 
-
         return data;
     }
 
@@ -375,6 +374,26 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
         log.info("점수" + score);
         answer += Integer.toString(win) + ":" + Integer.toString(lose) + ":" + Integer.toString(score);
         return answer;
+    }
+
+    @Override
+    @Transactional
+    public int getMaxFloor(String accessToken) {
+        log.info("impl에서 getMaxFloor 실행");
+        UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
+        MemberInfo memberInfo = memberInfoRepository.findById(myUUID).orElse(null);
+        return memberInfo.getTower();
+    }
+
+    @Override
+    @Transactional
+    public void updateMaxFloor(String accessToken) {
+        log.info("impl에서 updateMaxFloor 실행");
+        log.info(accessToken);
+        UUID myUUID = jwtUtil.extractMemberId(accessToken); // getUUID로 UUID 얻기
+        MemberInfo memberInfo = memberInfoRepository.findById(myUUID).orElse(null);
+
+        memberInfo.updateTower();
     }
 
 

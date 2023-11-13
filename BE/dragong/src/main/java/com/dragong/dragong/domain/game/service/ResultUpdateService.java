@@ -24,4 +24,10 @@ public interface ResultUpdateService {
     String getComWinnerInfo(UUID comUUID);
 
     String getComLoserInfo(UUID comUUID);
+
+    @Transactional
+    int getMaxFloor(String accessToken);
+
+    @Transactional
+    void updateMaxFloor(String accessToken);
 }
