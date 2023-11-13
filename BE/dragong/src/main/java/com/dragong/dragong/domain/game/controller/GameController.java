@@ -133,7 +133,7 @@ public class GameController {
                 }
                 // 여기가 컴퓨터를 넣기 위해서 추가한 코드
                 computerMeet += 1;
-                if (computerMeet >= 15) {
+                if (computerMeet >= 15 && inside != 2) {
                     // 이제 일정 시간 이상 기다렸을 때는 컴퓨터와 만나게 된다.
                     log.info("컴퓨터와 매칭됩니다.");
                     int computerNumber = gameService.enter(); // 컴퓨터도 사람처럼 입장하는데, 몇 번째로 입장한건지 확인한다.
@@ -142,7 +142,7 @@ public class GameController {
                     // 여기서 어떤 컴퓨터를 선택할 것인지를 정해줘야 하겠지?
 
                     gameService.chooseCom(computerRoomId); // 어떤 컴퓨터를 매칭 시킬 것인지 정한다.
-                    Map<String,Object>computerInfo = gameService.getCom(computerRoomId);
+                    Map<String, Object> computerInfo = gameService.getCom(computerRoomId);
 
                     String comName = (String) computerInfo.get("comName");
                     String uuid = (String) computerInfo.get("uuid");
@@ -172,12 +172,13 @@ public class GameController {
         log.info("받아온 값 출력: " + message);
         int roomID = Integer.parseInt(roomId);
         int comCheck = gameService.isComputer(roomID);
-        Map<String,Object>computerInfo = gameService.getCom(roomID);
 
-        String comName = (String) computerInfo.get("comName");
-//        String uuid = (String) computerInfo.get("uuid");
+
         if (comCheck == 1) {
             //컴퓨터와 하는 경우
+            Map<String, Object> computerInfo = gameService.getCom(roomID);
+
+            String comName = (String) computerInfo.get("comName");
             String[] parts = message.split(":");
             if (parts.length == 2) {
                 String nickname = parts[0].trim();
@@ -247,7 +248,7 @@ public class GameController {
                         if (errorCnt >= 7) {
                             if (gameService.evenReturn(roomID) == 0) {
                                 log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
-                                Map<String,Object>computerInfo = gameService.getCom(roomID);
+                                Map<String, Object> computerInfo = gameService.getCom(roomID);
 
                                 String comName = (String) computerInfo.get("comName");
                                 messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + comName);
@@ -308,7 +309,7 @@ public class GameController {
                         if (errorCnt >= 7) {
                             if (gameService.evenReturn(roomID) == 0) {
                                 // 둘 다 들어오지 않은 경우 => 이건 그냥 아무 일도 안 일어난다. 둘다 나갔는데 뭔 일이 일어나냐..
-                                Map<String,Object>computerInfo = gameService.getCom(roomID);
+                                Map<String, Object> computerInfo = gameService.getCom(roomID);
 
                                 String comName = (String) computerInfo.get("comName");
 
@@ -354,7 +355,7 @@ public class GameController {
                 int cnt = 0;
                 while (cnt < 3 && localCnt % 2 != 0) {
                     try {
-                        Thread.sleep(300);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -509,7 +510,7 @@ public class GameController {
             System.out.println("컴퓨터 대전 timereturn 입장");
             // 컴퓨터와의 대전인 경우
             // 이게 뭐냐? 5,4,3,2,1 이런식으로 카운트 다운을 할 때 제대로 시간을 각 클라이언트에서 받아오고 있는지 확인하기 위한 것.
-            Map<String,Object>computerInfo = gameService.getCom(roomID);
+            Map<String, Object> computerInfo = gameService.getCom(roomID);
 
             String comName = (String) computerInfo.get("comName");
 
@@ -538,7 +539,7 @@ public class GameController {
             log.info(parts[1]); // 이게 승자의 accessToken
             log.info(parts[0]); // 이게 패자의 accessToken
 
-            Map<String,Object>computerInfo = gameService.getCom(roomID);
+            Map<String, Object> computerInfo = gameService.getCom(roomID);
 
 //            String comName = (String) computerInfo.get("comName");
             String uuidString = (String) computerInfo.get("uuid");
