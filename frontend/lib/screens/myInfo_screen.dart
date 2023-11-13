@@ -34,8 +34,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   // 네이버 로그인 객체
   NaverLoginResult? _naverLoginResult;
 
+  String? introduction;
   String? nickname;
   String? email;
+  String? accessToken;
+  String? refreshToken;
 
   List<String> assetList = [
     "lib/assets/icons/tutorial0.png",
@@ -57,6 +60,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Future<void> _checkLoginStatus() async {
     nickname = await getNickname();
     email = await getEmail();
+    introduction = await getIntroduction();
+
+    print(nickname);
+
     print("nickname ${nickname == null}");
     print(nickname);
 
@@ -65,18 +72,50 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       setState(() {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
         _googleLoggedIn = true;
+        accessToken = tokens['Authorization'];
+        refreshToken = tokens['refreshToken'];
       });
     } else if (tokens.isNotEmpty && tokens['socialType'] == "NAVER") {
       setState(() {
         // 토큰이 있을 경우에 로그인한 서비스에 따라서 상태 설정하기
         _naverLoginStatus = true;
+        accessToken = tokens['Authorization'];
+        refreshToken = tokens['refreshToken'];
       });
+    }
+
+    if(introduction == null){
+      await getMyInfo();
+      introduction = await getIntroduction();
     }
 
     print(_googleLoggedIn);
     print(_naverLoginStatus);
     print(tokens['Authorization']);
     print(tokens['refreshToken']);
+  }
+
+  Future<void> getMyInfo() async {
+    print("getmyinfo");
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/member/info'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+    );
+    if (response.statusCode == 200) {
+      String? nickname = jsonDecode(
+          utf8.decode(response.bodyBytes))['nickname'];
+      String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
+      String? introduction = jsonDecode(
+          utf8.decode(response.bodyBytes))['introduction'];
+
+      saveIntroduction(introduction!);
+      print(introduction);
+    }
   }
 
   _logout() async {
@@ -198,6 +237,16 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
   Future<String?> getNickname() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('nickname');
+  }
+
+  saveIntroduction(String introduction) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('introduction', introduction);
+  }
+
+  Future<String?> getIntroduction() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('introduction');
   }
 
   Future<String?> getEmail() async {
@@ -462,13 +511,20 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                               email != null ? email! : "null"),
                         ),
                         SizedBox(
+                            height: MediaQuery.of(context).size.height / 100),
+                        Center(
+                          child: Text(
+                              style: TextStyle(fontSize: 20),
+                              introduction != null ? introduction! : "null"),
+                        ),
+                        SizedBox(
                             height: MediaQuery.of(context).size.height / 10),
                         if (_naverLoginStatus == true ||
                             _googleLoggedIn == true)
                           MaterialButton(
                             color: Colors.red,
                             child: const Text(
-                              '닉네임 변경',
+                              '내 정보 수정',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
@@ -477,12 +533,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                 PageRouteBuilder(
                                   pageBuilder:
                                       (context, animation1, animation2) =>
-                                          const MyInfoUpdateScreen(),
+                                           const MyInfoUpdateScreen(),
                                   transitionDuration: Duration.zero,
                                   reverseTransitionDuration: Duration.zero,
                                 ),
                               );
-                              print('닉네임변경 버튼 클릭.');
                             },
                           ),
                         MaterialButton(
