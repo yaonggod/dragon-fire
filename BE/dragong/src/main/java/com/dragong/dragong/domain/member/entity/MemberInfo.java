@@ -33,6 +33,9 @@ public class MemberInfo extends BaseTimeEntity {
     @Column(columnDefinition = "int default 0")
     private int tower;
 
+    @Column
+    private Boolean isConnecting;
+
     @Builder
     public MemberInfo(Member member, String nickname) {
         this.member = member;
@@ -46,5 +49,9 @@ public class MemberInfo extends BaseTimeEntity {
 
     public void updateCoin(int coin) {
         this.coin += coin;
+    }
+
+    public void updateIsConnecting(boolean isConnecting) {
+        this.isConnecting = isConnecting;
     }
 }

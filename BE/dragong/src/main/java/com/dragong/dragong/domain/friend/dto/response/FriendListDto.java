@@ -21,4 +21,6 @@ public class FriendListDto {
     // 나랑 이 사람 간의 전적 - win : 내가 이김, lose : 쟤가 이김
     private int friendWin;
     private int friendLose;
+
+    private Boolean isConnect;
 }
