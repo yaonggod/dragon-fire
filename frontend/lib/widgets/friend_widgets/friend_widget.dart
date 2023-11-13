@@ -131,6 +131,7 @@ class _FriendWidgetState extends State<FriendWidget> {
         // 알람을 보내고 성공할 경우 친구대전 가넝~
         if (response2.statusCode == 200) {
           print('성공 했다.');
+          print(roomId);
           Navigator.push(
               context,
             MaterialPageRoute(

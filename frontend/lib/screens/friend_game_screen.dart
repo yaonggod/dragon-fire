@@ -756,7 +756,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
       },
     );
     stompClient.subscribe(
-      // 누가 이겼는지를 가져오기 위해서
+      // 현재 각자의 기가 몇 개 인지 확인하기 위해서
       destination: '/sub/friend-game/${widget.roomId}/winData',
       callback: (frame) {
         print('현재 받아온 승 정보는 다음과 같습니다: ${frame.body}');
@@ -867,9 +867,9 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        // url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));

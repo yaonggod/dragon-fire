@@ -87,6 +87,7 @@ void initializeNotification() async {
   // 포그라운드에서 firebase message를 듣기
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     String notiBody = "멍멍";
+    print(message.data["do"]);
     if (message.data["do"] == "friend-add") {
       notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
     } else if (message.data["do"] == "friend-accept") {
