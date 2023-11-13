@@ -50,14 +50,21 @@ class RankingScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(
                               left: 15,
+                              right: 15,
                               bottom: 15,
                             ),
-                            child: Text(
-                              userInfo.nickname,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 25,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  userInfo.nickname,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25,
+                                  ),
+                                ),
+                                setMyTierImg(userInfo),
+                              ],
                             ),
                           ),
                           Column(
@@ -208,6 +215,56 @@ class RankingScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget setMyTierImg(MyRankingModel userInfo) {
+    int score = int.parse(userInfo.score);
+    if (score < 1000) {
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Image.asset(
+          'lib/assets/icons/tierBronze.png',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (1000 <= score && score < 1100) {
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Image.asset(
+          'lib/assets/icons/tierSilver.png',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (1100 <= score && score < 1200) {
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Image.asset(
+          'lib/assets/icons/tierGold.png',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (1200 <= score && score < 1300) {
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Image.asset(
+          'lib/assets/icons/tierPlatinum.png',
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: 32,
+        height: 32,
+        child: Image.asset(
+          'lib/assets/icons/tierDiamond.png',
+          fit: BoxFit.cover,
+        ),
+      );
+    }
   }
 
   Widget setTierImg(TotalRankingModel userInfo) {
