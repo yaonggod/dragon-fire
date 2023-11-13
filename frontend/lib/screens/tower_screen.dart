@@ -262,7 +262,7 @@ class TowerScreenState extends State<TowerScreen> {
             isTel = false; // 텔레포트
             isBomb = false; // 원기옥
           });
-          sendResult(winner);
+          sendResult();
         }
       },
     );
@@ -572,7 +572,10 @@ class TowerScreenState extends State<TowerScreen> {
               isBomb = false; // 원기옥
             });
             // dispose();
-            sendResult(winner);
+            if(widget.nickname==winner){
+              sendResult();
+            }
+
           }
         }
       },
@@ -756,7 +759,7 @@ class TowerScreenState extends State<TowerScreen> {
     // 아직 방에 살아있다는 것을 알리기 위해서
     final Map<String, dynamic> messageBody = {
       "nowFloor": widget.nowFloor,
-      "nickname": widget.nickname,
+      "roomNumber": widget.roomNumber,
     };
     final headers = {
       'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
@@ -768,10 +771,10 @@ class TowerScreenState extends State<TowerScreen> {
   }
 
   void sendMessage(String message, String nickname) {
-    // STOMP 프레임을 메시지로 전송
+    // 무엇을 선택했는지 보내는 것
     stompClient.send(
-        destination: '/pub/${widget.nickname}/pickwhat',
-        body: '$nickname:$message',
+        destination: '/pub/${widget.nickname}/chooseWhat',
+        body: '$nickname:$message:${widget.roomNumber}',
         headers: {});
   }
 
@@ -792,16 +795,16 @@ class TowerScreenState extends State<TowerScreen> {
   void sendTime(String time) {
     // 현재의 카운트다운을 보내주는 함수
     stompClient.send(
-        destination: '/pub/${widget.nickname}/timereturn',
-        body: widget.nickname,
+        destination: '/pub/${widget.nickname}/timecheck',
+        body: '${widget.roomNumber}',
         headers: {});
   }
 
-  void sendResult(String message) {
-    // 최종적으로 게임이 끝이 났을 때, 결과를 DB에 저장하기 위해 호출
+  void sendResult() {
+    // 게임이 끝났을 때 내가 보스를 무찔렀다면 나의 최종 층을 업데이트 해줘야 한다.
     stompClient.send(
-        destination: '/pub/${widget.nickname}/updateRecord',
-        body: message,
+        destination: '/pub/${widget.nickname}/updateMaxFloor',
+        body: '${widget.nowFloor}',
         headers: {});
   }
 
@@ -1209,7 +1212,7 @@ class TowerScreenState extends State<TowerScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "$contenderWin승 $contenderLose패",
+                                      "꺄르르르르르르르르르륵",
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
@@ -1286,7 +1289,7 @@ class TowerScreenState extends State<TowerScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "$myWin승 $myLose패",
+                                      "도전자",
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
