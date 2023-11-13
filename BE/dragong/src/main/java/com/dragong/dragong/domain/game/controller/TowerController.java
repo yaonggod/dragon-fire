@@ -229,8 +229,10 @@ public class TowerController {
     public void updateMaxFloor(@RequestBody Map<String, String> requestBody) {
         log.info("승리했으니 최종 층수를 업데이트 해줍니다");
         String accessToken=requestBody.get("Authorization");
+        int nowFloor = Integer.parseInt(requestBody.get("nowFloor"));
         log.info(accessToken);
-        resultUpdateService.updateMaxFloor(accessToken);
+        log.info(requestBody.get("nowFloor"));
+        resultUpdateService.updateMaxFloor(accessToken,nowFloor);
 
     }
 

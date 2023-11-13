@@ -387,13 +387,17 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
     @Override
     @Transactional
-    public void updateMaxFloor(String accessToken) {
+    public void updateMaxFloor(String accessToken, int nowFloor) {
         log.info("impl에서 updateMaxFloor 실행");
         log.info(accessToken);
         UUID myUUID = jwtUtil.extractMemberId(accessToken); // getUUID로 UUID 얻기
         MemberInfo memberInfo = memberInfoRepository.findById(myUUID).orElse(null);
 
-        memberInfo.updateTower();
+        int nowMaxFloor = memberInfo.getTower();
+        if(nowFloor+1>nowMaxFloor){
+            memberInfo.updateTower(nowFloor);
+        }
+
     }
 
 

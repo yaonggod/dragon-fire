@@ -29,5 +29,5 @@ public interface ResultUpdateService {
     int getMaxFloor(String accessToken);
 
     @Transactional
-    void updateMaxFloor(String accessToken);
+    void updateMaxFloor(String accessToken, int nowFloor);
 }

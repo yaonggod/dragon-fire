@@ -53,8 +53,8 @@ public class MemberInfo extends BaseTimeEntity {
     }
 
     @Builder(builderMethodName = "updateTowerBuilder")
-    public void updateTower() {
-        this.tower += 1;
+    public void updateTower(int nowFloor) {
+        this.tower = nowFloor + 1;
     }
 
     public void updateCoin(int coin) {

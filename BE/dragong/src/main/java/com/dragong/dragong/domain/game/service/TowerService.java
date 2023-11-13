@@ -32,12 +32,12 @@ public class TowerService {
     }
 
     private final String[][] bossPick = {
-            {"기", "기", "기", "기"},
-            {"기", "기", "기", "기"},
-            {"기", "기", "기", "기", "기", "기"},
-            {"기", "기", "기"},
-            {"기", "기", "기", "기", "기", "기"},
-            {"기", "기", "기", "기"},
+            {"원기옥", "기", "기", "기"},
+            {"파", "기", "파", "기"},
+            {"파", "기", "파", "파", "기", "기"},
+            {"막기", "파", "기"},
+            {"막기", "파", "파", "기", "막기", "기"},
+            {"파", "파", "기", "기"},
     };
 
     @PostConstruct
@@ -264,7 +264,7 @@ public class TowerService {
                     if (!miss) {
                         answer += player1;
                         winner = player1;
-                        damage+=5;
+                        damage+=1;
                     } else {
                         answer += "비겼습니다";
                     }
@@ -365,6 +365,7 @@ public class TowerService {
                     if (!miss) {
                         answer += player2;
                         winner = player2;
+                        damage+=1;
                     } else {
                         answer += "비겼습니다";
 
