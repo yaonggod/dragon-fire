@@ -380,12 +380,14 @@ public class FriendServiceImpl implements FriendService {
                 lose = playResult.get().getLose();
             }
 
+            MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(toMember).orElseThrow(() -> new NullPointerException());
 
             FriendListDto friendListDto = FriendListDto.builder()
                     .toMember(toMember)
-                    .toNickname(memberInfoRepository.findMemberInfoByMemberId(toMember).get().getNickname())
+                    .toNickname(memberInfo.getNickname())
                     .score(score).win(win).lose(lose)
                     .friendWin(f.getWin()).friendLose(f.getLose())
+                    .isConnect(memberInfo.getIsConnecting())
                     .build();
 
             if (to.get().getFcmToken() != null) {
