@@ -84,7 +84,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       });
     }
 
-    if(introduction == null){
+    if (introduction == null) {
       await getMyInfo();
       introduction = await getIntroduction();
     }
@@ -107,11 +107,11 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       },
     );
     if (response.statusCode == 200) {
-      String? nickname = jsonDecode(
-          utf8.decode(response.bodyBytes))['nickname'];
+      String? nickname =
+          jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
       String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
-      String? introduction = jsonDecode(
-          utf8.decode(response.bodyBytes))['introduction'];
+      String? introduction =
+          jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
 
       saveIntroduction(introduction!);
       print(introduction);
@@ -489,104 +489,112 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
           SafeArea(
             child: Stack(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height / 4),
-                        Center(
-                          child: Text(
-                              style: TextStyle(fontSize: 45),
-                              nickname != null ? nickname! : "null"),
-                        ),
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height / 100),
-                        Center(
-                          child: Text(
-                              style: TextStyle(fontSize: 20),
-                              email != null ? email! : "null"),
-                        ),
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height / 100),
-                        Center(
-                          child: Text(
-                              style: TextStyle(fontSize: 20),
-                              introduction != null ? introduction! : "null"),
-                        ),
-                        SizedBox(
-                            height: MediaQuery.of(context).size.height / 10),
-                        if (_naverLoginStatus == true ||
-                            _googleLoggedIn == true)
+                if (nickname == null || email == null)
+                  Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
+                if (nickname != null && email != null)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 4),
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 45),
+                                nickname != null ? nickname! : "null"),
+                          ),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 100),
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 20),
+                                email != null ? email! : "null"),
+                          ),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 100),
+                          Center(
+                            child: Text(
+                                style: TextStyle(fontSize: 20),
+                                introduction != null ? introduction! : "null"),
+                          ),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 10),
+                          if (_naverLoginStatus == true ||
+                              _googleLoggedIn == true)
+                            MaterialButton(
+                              color: Colors.red,
+                              child: const Text(
+                                '내 정보 수정',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder:
+                                        (context, animation1, animation2) =>
+                                            const MyInfoUpdateScreen(),
+                                    transitionDuration: Duration.zero,
+                                    reverseTransitionDuration: Duration.zero,
+                                  ),
+                                );
+                              },
+                            ),
                           MaterialButton(
                             color: Colors.red,
                             child: const Text(
-                              '내 정보 수정',
+                              '로그아웃',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                PageRouteBuilder(
-                                  pageBuilder:
-                                      (context, animation1, animation2) =>
-                                           const MyInfoUpdateScreen(),
-                                  transitionDuration: Duration.zero,
-                                  reverseTransitionDuration: Duration.zero,
-                                ),
-                              );
+                              _logout();
+                              print('Logout button pressed.');
                             },
                           ),
-                        MaterialButton(
-                          color: Colors.red,
-                          child: const Text(
-                            '로그아웃',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            _logout();
-                            print('Logout button pressed.');
-                          },
-                        ),
-                        MaterialButton(
-                          color: Colors.red,
-                          child: const Text(
-                            '회원탈퇴',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('알림'),
-                                  content: Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text('취소'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        _out();
-                                      },
-                                      child: Text('확인'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        )
-                      ],
+                          MaterialButton(
+                            color: Colors.red,
+                            child: const Text(
+                              '회원탈퇴',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('알림'),
+                                    content:
+                                        Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: const Text('취소'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          _out();
+                                        },
+                                        child: Text('확인'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
