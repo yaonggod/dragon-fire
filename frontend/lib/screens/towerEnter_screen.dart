@@ -1,11 +1,21 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/tower_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+
 class TowerEnterScreen extends StatefulWidget {
+  final int maxFloor;
+  final String nickname;
+
   const TowerEnterScreen({
     super.key,
+    required this.maxFloor,
+    required this.nickname,
+
   });
 
   @override
@@ -13,7 +23,7 @@ class TowerEnterScreen extends StatefulWidget {
 }
 
 class _TowerScreenEnterState extends State<TowerEnterScreen>
-  with TickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -26,6 +36,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
   String? nickname;
   String? accessToken;
   String? refreshToken;
+
   @override
   Future<void> _checkLoginStatus() async {
     Map<String, String> tokens = await readToken();
@@ -51,13 +62,53 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
   }
 
   void _navigateToTowerScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TowerScreen(),
-      ),
-    );
+    print("이거 누름");
+    print(widget.nickname);
+    climbTower();
   }
+
+  Future<void> climbTower() async {
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/towerEnter'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken',
+        'refreshToken': 'Bearer $refreshToken'
+      },
+      body: jsonEncode({"nickname": nickname!}),
+    );
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/towerEnter'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
+    //   },
+    //   body: jsonEncode({"nickname": widget.nickname!}),
+    // );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      int nowFloor = data["nowFloor"];
+      int roomNumber = data["roomNumber"];
+      print("내가 받아온 층은");
+      print(nowFloor);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TowerScreen(
+              nowFloor: nowFloor,
+              nickname: widget.nickname!,
+              roomNumber: roomNumber,
+          ),
+        ),
+      );
+    } else {
+      print('요청 실패: ${response.statusCode}');
+    }
+  }
+
   @override
   void initState() {
     _controller = AnimationController(
@@ -72,11 +123,9 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
       ),
     );
 
-    _controller.forward().whenComplete(() {
-    });
+    _controller.forward().whenComplete(() {});
     init();
     super.initState();
-
   }
 
   Future<void> init() async {
@@ -90,12 +139,12 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
   }
 
   Widget slidingWidget(
-      BuildContext context,
-      Animation<double> animation,
-      Widget child, {
-        Offset begin = Offset.zero,
-        Offset end = Offset.zero,
-      }) {
+    BuildContext context,
+    Animation<double> animation,
+    Widget child, {
+    Offset begin = Offset.zero,
+    Offset end = Offset.zero,
+  }) {
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {
@@ -112,6 +161,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
       child: child,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,34 +183,34 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.55,
               ),
-              GestureDetector(
-                onTap: () {
-                  _navigateToTowerScreen();
-                },
-                onTapDown: (_) {
-                  setState(() {
-                    buttonsrc = 'lib/assets/icons/startButton2.png';
-                  });
-                },
-                onTapUp: (_) {
-                  setState(() {
-                    buttonsrc = 'lib/assets/icons/startButton.png';
-                  });
-                },
-                onTapCancel: () => setState(() {
-                  buttonsrc = 'lib/assets/icons/startButton.png';
-                }),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *0.35,
-                  height:  MediaQuery.of(context).size.width *0.35,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(buttonsrc),
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     _navigateToTowerScreen();
+              //   },
+              //   onTapDown: (_) {
+              //     setState(() {
+              //       buttonsrc = 'lib/assets/icons/startButton2.png';
+              //     });
+              //   },
+              //   onTapUp: (_) {
+              //     setState(() {
+              //       buttonsrc = 'lib/assets/icons/startButton.png';
+              //     });
+              //   },
+              //   onTapCancel: () => setState(() {
+              //     buttonsrc = 'lib/assets/icons/startButton.png';
+              //   }),
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width *0.35,
+              //     height:  MediaQuery.of(context).size.width *0.35,
+              //     decoration: BoxDecoration(
+              //       image: DecorationImage(
+              //         image: AssetImage(buttonsrc),
+              //         fit: BoxFit.fitWidth,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -182,8 +232,8 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
                       buttonsrc1 = 'lib/assets/icons/rankingButton.png';
                     }),
                     child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: MediaQuery.of(context).size.width * 0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc1),
@@ -210,8 +260,8 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
                       buttonsrc2 = 'lib/assets/icons/reportButton.png';
                     }),
                     child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: MediaQuery.of(context).size.width * 0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc2),
@@ -238,65 +288,8 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
                       buttonsrc3 = 'lib/assets/icons/friendButton.png';
                     }),
                     child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc3),
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _navigateToTowerScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc4 = 'lib/assets/icons/myButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
-                        buttonsrc4 = 'lib/assets/icons/myButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc4 = 'lib/assets/icons/myButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(buttonsrc4),
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    // tower를 위해서 추가한 부분
-                    onTap: () {
-                      _navigateToTowerScreen();
-                    },
-                    onTapDown: (_) {
-                      setState(() {
-                        buttonsrc3 = 'lib/assets/icons/friendButton2.png';
-                      });
-                    },
-                    onTapUp: (_) {
-                      setState(() {
-                        buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                      });
-                    },
-                    onTapCancel: () => setState(() {
-                      buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                    }),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width *0.25,
-                      height:  MediaQuery.of(context).size.width *0.25,
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      height: MediaQuery.of(context).size.width * 0.25,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage(buttonsrc3),
@@ -313,5 +306,4 @@ class _TowerScreenEnterState extends State<TowerEnterScreen>
       ),
     );
   }
-
 }
