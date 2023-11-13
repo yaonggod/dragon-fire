@@ -1,11 +1,12 @@
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/screens/access_screen2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccessScreen extends StatefulWidget {
   const AccessScreen({super.key});
@@ -21,9 +22,9 @@ class _AccessScreenState extends State<AccessScreen>
   String? accessToken;
   String? refreshToken;
   String? socialType;
-  final player = AudioPlayer();
   DateTime? backPressed;
   bool _isLoggedIn = false;
+  bool _isHaptic = true;
 
   Future<void> tokenCheck() async {
     Map<String, String> tokens = await readToken();
@@ -61,6 +62,12 @@ class _AccessScreenState extends State<AccessScreen>
       storage.delete(key: 'refreshToken');
     }
   }
+
+  saveHaptic(bool haptic) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('haptic', haptic);
+  }
+
   Future<void> _checkLoginStatus() async {
     // await tokenCheck();
     Map<String, String> tokens = await readToken();
@@ -84,6 +91,14 @@ class _AccessScreenState extends State<AccessScreen>
   }
 
   Future<Map<String, String>> readToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if(prefs.getBool('haptic') == null){
+      prefs.setBool('haptic', true);
+    }
+
+    _isHaptic = prefs.getBool('haptic') ?? true;
+
     const storage = FlutterSecureStorage();
     Map<String, String> list = {};
     String? accessToken = await storage.read(key: 'accessToken');
@@ -103,8 +118,6 @@ class _AccessScreenState extends State<AccessScreen>
 
   @override
   void initState() {
-    player.setReleaseMode(ReleaseMode.loop);
-    player.play(AssetSource('dragonSong.wav'), mode: PlayerMode.lowLatency);
     _checkLoginStatus();
     _controller = AnimationController(
       vsync: this,
@@ -133,7 +146,6 @@ class _AccessScreenState extends State<AccessScreen>
   void dispose() {
     _controller.dispose();
     _controller2.dispose();
-    player.dispose();
 
     super.dispose();
   }
@@ -150,6 +162,9 @@ class _AccessScreenState extends State<AccessScreen>
             ),
             GestureDetector(
               onTap: () {
+                if(_isHaptic){
+                  HapticFeedback.lightImpact();
+                }
                 Navigator.pushAndRemoveUntil(
                   context,
                   PageRouteBuilder(
@@ -178,7 +193,9 @@ class _AccessScreenState extends State<AccessScreen>
                 builder: (context, child) {
                   return GestureDetector(
                     onTap: () {
-                      print(1);
+                      if(_isHaptic){
+                        HapticFeedback.lightImpact();
+                      }
                       Navigator.pushAndRemoveUntil(
                         context,
                         PageRouteBuilder(
