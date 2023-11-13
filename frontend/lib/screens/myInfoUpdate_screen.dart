@@ -369,7 +369,12 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                         color: Colors.grey,
                       ),
                     )),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '중복체크',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     if (nicknameController.text.isEmpty) {
                       // 경고 메시지 표시 로직
@@ -384,9 +389,13 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                       nicknameCheck();
                     }
                   },
-                  child: const Text('중복체크'),
                 ),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     if (nicknameChecked == false) {
                       showDialog(
@@ -416,7 +425,6 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                       }
                     }
                   },
-                  child: const Text('등록'),
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 5.0),
@@ -458,11 +466,15 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                         color: Colors.grey,
                       ),
                     )),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     sendIntroDataToServer();
                   },
-                  child: const Text('등록'),
                 ),
               ],
             ),

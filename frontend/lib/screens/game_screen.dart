@@ -1135,7 +1135,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1175,7 +1175,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1219,7 +1219,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1682,6 +1682,16 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isTelPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO( 255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonTele),
                                         fit: BoxFit.fitWidth,
@@ -1747,6 +1757,16 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isBombPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO( 255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonOne),
                                         fit: BoxFit.fitWidth,
@@ -1799,6 +1819,16 @@ class _GameScreenState extends State<GameScreen> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      if(isGiPressed)
+                                        BoxShadow(
+                                          color: Color.fromRGBO( 255, 29, 17,
+                                              0.5),
+                                          offset: Offset(0, -10),
+                                          blurRadius: 20,
+                                          spreadRadius: -20,
+                                        ),
+                                    ],
                                     image: DecorationImage(
                                       image: AssetImage(buttonGi),
                                       fit: BoxFit.fitWidth,
@@ -1861,6 +1891,16 @@ class _GameScreenState extends State<GameScreen> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      if(isBlockPressed)
+                                        BoxShadow(
+                                          color: Color.fromRGBO( 255, 29, 17,
+                                              0.5),
+                                          offset: Offset(0, -10),
+                                          blurRadius: 20,
+                                          spreadRadius: -20,
+                                        ),
+                                    ],
                                     image: DecorationImage(
                                       image: AssetImage(buttonShield),
                                       fit: BoxFit.fitWidth,
@@ -1911,6 +1951,17 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isPaPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO(
+                                                255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonPa),
                                         fit: BoxFit.fitWidth,
