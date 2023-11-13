@@ -71,7 +71,7 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/introduction-modify")
+    @PutMapping("/introduction-modify")
     public ResponseEntity<?> updateIntroduction(@RequestHeader("Authorization") String accessToken,
             @RequestHeader("refreshToken") String refreshToken, @RequestBody
     IntroductionUpdateRequestDto introductionUpdateRequestDto) {
