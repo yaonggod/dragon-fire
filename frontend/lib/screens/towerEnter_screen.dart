@@ -75,7 +75,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
         'Authorization': 'Bearer $accessToken',
         'refreshToken': 'Bearer $refreshToken'
       },
-      body: jsonEncode({"nickname": nickname!}),
+      body: jsonEncode({"nickname": widget.nickname!}),
     );
     // final response = await http.post(
     //   Uri.parse('http://10.0.2.2:8080/towerEnter'),
