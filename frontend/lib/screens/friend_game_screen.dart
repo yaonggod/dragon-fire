@@ -5,12 +5,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/screens/gameResult_screen.dart';
+import 'package:frontend/screens/friendGameResult_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
-import 'package:lottie/lottie.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vibration/vibration.dart';
 
@@ -644,24 +643,20 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
         String part2 = parts[1];
         String part3 = parts[2];
         String part4 = parts[3];
-        String part5 = parts[4];
-        String part6 = parts[5];
         if (frame.body != null) {
           if (winner == widget.nickname) {
             // 내가 승자인 경우
-            print("승자의 승: $part4");
-            print("승자의 패: $part5");
-            print("승자의 점수: $part6");
+            print("승자의 승: $part3");
+            print("승자의 패: $part4");
             Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation1, animation2) =>
-                    GameResultScreen(
+                    FriendGameResultScreen(
                         roomId: widget.roomId,
                         nickname: winner,
-                        win: part4,
-                        lose: part5,
-                        point: int.parse(part6)),
+                        win: part3,
+                        lose: part4,),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -671,17 +666,15 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
             // 내가 패자인 경우
             print("패자의 승: $part1");
             print("패자의 패: $part2");
-            print("패자의 점수: $part3");
             Navigator.pushAndRemoveUntil(
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation1, animation2) =>
-                    GameResultScreen(
+                    FriendGameResultScreen(
                         roomId: widget.roomId,
                         nickname: winner,
                         win: part1,
-                        lose: part2,
-                        point: int.parse(part3)),
+                        lose: part2,),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -858,9 +851,9 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        // url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
