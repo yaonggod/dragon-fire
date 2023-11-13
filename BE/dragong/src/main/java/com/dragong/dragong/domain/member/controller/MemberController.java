@@ -2,7 +2,10 @@ package com.dragong.dragong.domain.member.controller;
 
 
 import com.dragong.dragong.domain.member.dto.request.FcmTokenRequestDto;
+import com.dragong.dragong.domain.member.dto.request.IntroductionUpdateRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.dto.response.GetMyInfoResponseDto;
+import com.dragong.dragong.domain.member.dto.response.IntroductionUpdateResponseDto;
 import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
 import com.dragong.dragong.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -67,4 +70,31 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/introduction-modify")
+    public ResponseEntity<?> updateIntroduction(@RequestHeader("Authorization") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken, @RequestBody
+    IntroductionUpdateRequestDto introductionUpdateRequestDto) {
+        try {
+            IntroductionUpdateResponseDto introductionUpdateResponseDto = memberService.updateIntroduction(
+                    accessToken, refreshToken, introductionUpdateRequestDto);
+            return new ResponseEntity<>(introductionUpdateResponseDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> getMemberInfo(@RequestHeader("Authorization") String accessToken,
+            @RequestHeader("refreshToken") String refreshToken,
+            HttpServletResponse httpServletResponse) {
+        try {
+            GetMyInfoResponseDto getMyInfoResponseDto = memberService.getMyInfo(accessToken,
+                    refreshToken, httpServletResponse);
+            return new ResponseEntity<>(getMyInfoResponseDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
