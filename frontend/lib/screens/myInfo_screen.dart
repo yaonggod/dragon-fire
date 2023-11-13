@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -249,6 +250,16 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     return prefs.getString('introduction');
   }
 
+  Future<bool?> getVibrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('vibrate');
+  }
+
+  Future<bool?> getBGM() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('bgm');
+  }
+
   Future<String?> getEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('email');
@@ -349,22 +360,22 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                                     .size
                                                     .width *
                                                 0.22),
-                                        GestureDetector(
-                                          onTap: () {
-                                            // Navigator.push(
-                                            //   context,
-                                            //   MaterialPageRoute(builder: (context) => MusicScreen()),
-                                            // );
-                                          },
-                                          child: ListTile(
+                                        ListTile(
                                             title: Text(
-                                              '음악',
+                                              '미디어',
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
                                               ),
                                             ),
-                                          ),
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return MediaDialog();
+                                                },
+                                              );
+                                            },
                                         ),
                                         Divider(
                                           color: Colors.white,
@@ -599,6 +610,155 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MediaDialog extends StatefulWidget {
+  @override
+  _MediaDialogState createState() => _MediaDialogState();
+}
+
+class _MediaDialogState extends State<MediaDialog> {
+  bool? _bgmSwitchValue;
+  bool? _vibrateSwitchValue;
+
+  void saveSettingsAndClose() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bgm', _bgmSwitchValue!);
+    prefs.setBool('vibrate', _vibrateSwitchValue!);
+    Navigator.pop(context); // 다이얼로그 닫기
+  }
+
+  Future<bool?> getVibrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('vibrate');
+  }
+
+  Future<bool?> getBGM() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('bgm');
+  }
+  init() async{
+    await Timer(Duration(milliseconds: 500),(){
+    });
+    _bgmSwitchValue = await getBGM();
+    _vibrateSwitchValue = await getVibrate();
+    setState(() {}); // 추가된 부분
+  }
+  @override
+  void initState() {
+    init();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(10),
+      backgroundColor: const Color.fromRGBO(0, 50, 90, 0.8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width * 1.5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      child: Center(
+                        child: Text(
+                          "환경설정",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 40,
+                          ),
+                        ),
+                      ),
+                      left: 0,
+                      height: MediaQuery.of(context).size.width * 0.2,
+                      right: 0,
+                    ),
+                    Positioned(
+                      child: Divider(
+                        color: Colors.white,
+                        thickness: 2,
+                      ),
+                      left: 0,
+                      top: MediaQuery.of(context).size.width * 0.2,
+                      right: 0,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 20,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.22),
+                          ListTile(
+                            title: Text(
+                              'BGM',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _bgmSwitchValue!,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _bgmSwitchValue = value;
+                                });
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.setBool('bgm', value);
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white,
+                            thickness: 2,
+                          ),
+                          ListTile(
+                            title: Text(
+                              '진동',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _vibrateSwitchValue!,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _vibrateSwitchValue = value;
+                                });
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                await prefs.setBool('vibrate', value);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
