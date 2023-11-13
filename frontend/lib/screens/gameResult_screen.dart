@@ -116,7 +116,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                         child: Center(
                           child: Dialog(
                             insetPadding: const EdgeInsets.all(10),
-                            backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                            backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),

@@ -303,7 +303,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                 builder: (context) {
                   return Dialog(
                     insetPadding: const EdgeInsets.all(10),
-                    backgroundColor: const Color.fromRGBO(0, 50, 90, 0.8),
+                    backgroundColor: const Color.fromRGBO(3, 8, 61, 0.85),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -364,7 +364,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                                 0.22),
                                         ListTile(
                                           title: Text(
-                                            '미디어',
+                                            '소리 및 진동',
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 20,
@@ -670,7 +670,7 @@ class _MediaDialogState extends State<MediaDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       insetPadding: const EdgeInsets.all(10),
-      backgroundColor: const Color.fromRGBO(0, 50, 90, 0.8),
+      backgroundColor: const Color.fromRGBO(3, 8, 61, 0.95),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -689,7 +689,7 @@ class _MediaDialogState extends State<MediaDialog> {
                     Positioned(
                       child: Center(
                         child: Text(
-                          "환경설정",
+                          "소리 및 진동",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 40,

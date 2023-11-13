@@ -210,7 +210,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       builder: (context) {
         return Dialog(
           insetPadding: const EdgeInsets.all(10),
-          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+          backgroundColor: const Color.fromRGBO(3, 8, 61, 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -247,7 +247,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   Future<void> checkFirstAccess() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getBool('vibrate') == null || prefs.getBool('bgm') == null){
+    if (prefs.getBool('vibrate') == null || prefs.getBool('bgm') == null) {
       prefs.setBool('vibrate', true);
       prefs.setBool('bgm', true);
     }
@@ -407,262 +407,265 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               begin: Offset(0, MediaQuery.of(context).size.height * 5 / 7),
               end: const Offset(0, 0),
             ),
-            Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.55,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (!isButtonDisabled) {
-                          if(_isHaptic) {
-                            HapticFeedback.lightImpact();
-                          }
-                          _navigateToStartScreen();
-                          setState(() {
-                            isButtonDisabled = true;
-                          });
-                          Timer(Duration(milliseconds: 1500), () {
+            Positioned(
+              bottom: 0,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (!isButtonDisabled) {
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                            _navigateToStartScreen();
                             setState(() {
-                              isButtonDisabled = false;
+                              isButtonDisabled = true;
                             });
-                          });
-                        }
-                      },
-                      onTapDown: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton2.png';
-                          });
-                          if(_isHaptic) {
-                            HapticFeedback.lightImpact();
+                            Timer(Duration(milliseconds: 1500), () {
+                              setState(() {
+                                isButtonDisabled = false;
+                              });
+                            });
                           }
-                        }
-                      },
-                      onTapUp: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      onTapCancel: () {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        height: MediaQuery.of(context).size.width * 0.35,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc),
-                            fit: BoxFit.fitWidth,
+                        },
+                        onTapDown: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton2.png';
+                            });
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                          }
+                        },
+                        onTapUp: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        onTapCancel: () {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: MediaQuery.of(context).size.width * 0.35,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (!isButtonDisabled) {
-                          if(_isHaptic) {
-                            HapticFeedback.lightImpact();
-                          }
-                          _navigateToTowerEnterScreen();
-                          setState(() {
-                            isButtonDisabled = true;
-                          });
-                          Timer(Duration(milliseconds: 1500), () {
+                      GestureDetector(
+                        onTap: () {
+                          if (!isButtonDisabled) {
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                            _navigateToTowerEnterScreen();
                             setState(() {
-                              isButtonDisabled = false;
+                              isButtonDisabled = true;
                             });
-                          });
-                        }
-                      },
-                      onTapDown: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton2.png';
-                          });
-                          if(_isHaptic) {
-                            HapticFeedback.lightImpact();
+                            Timer(Duration(milliseconds: 1500), () {
+                              setState(() {
+                                isButtonDisabled = false;
+                              });
+                            });
                           }
-                        }
-                      },
-                      onTapUp: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      onTapCancel: () {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        height: MediaQuery.of(context).size.width * 0.35,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc5),
-                            fit: BoxFit.fitWidth,
+                        },
+                        onTapDown: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton2.png';
+                            });
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                          }
+                        },
+                        onTapUp: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        onTapCancel: () {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: MediaQuery.of(context).size.width * 0.35,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc5),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                        _navigateToRankingScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
-                        });
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToRankingScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc1 = 'lib/assets/icons/rankingButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc1),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc1),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                        _navigateToReportScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton2.png';
-                        });
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc2),
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                        _navigateToFriendScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc3 = 'lib/assets/icons/friendButton2.png';
-                        });
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     if (_isHaptic) {
+                      //       HapticFeedback.lightImpact();
+                      //     }
+                      //     _navigateToReportScreen();
+                      //   },
+                      //   onTapDown: (_) {
+                      //     setState(() {
+                      //       buttonsrc2 = 'lib/assets/icons/reportButton2.png';
+                      //     });
+                      //     if (_isHaptic) {
+                      //       HapticFeedback.lightImpact();
+                      //     }
+                      //   },
+                      //   onTapUp: (_) {
+                      //     setState(() {
+                      //       buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                      //     });
+                      //   },
+                      //   onTapCancel: () => setState(() {
+                      //     buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                      //   }),
+                      //   child: Container(
+                      //     width: MediaQuery.of(context).size.width * 0.25,
+                      //     height: MediaQuery.of(context).size.width * 0.25,
+                      //     decoration: BoxDecoration(
+                      //       image: DecorationImage(
+                      //         image: AssetImage(buttonsrc2),
+                      //         fit: BoxFit.fitWidth,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToFriendScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc3 = 'lib/assets/icons/friendButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc3 = 'lib/assets/icons/friendButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc3),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc3),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                        _navigateToMyInfoScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc4 = 'lib/assets/icons/myButton2.png';
-                        });
-                        if(_isHaptic) {
-                          HapticFeedback.lightImpact();
-                        }
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToMyInfoScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc4 = 'lib/assets/icons/myButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc4 = 'lib/assets/icons/myButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc4 = 'lib/assets/icons/myButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc4 = 'lib/assets/icons/myButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc4),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc4),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
