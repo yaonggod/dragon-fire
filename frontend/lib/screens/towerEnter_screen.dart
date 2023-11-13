@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class TowerEnterScreen extends StatefulWidget {
-  final int maxFloor;
+  final int maxFloor; // 내가 갈 수 있는 maxFloor를 의미한다.
   final String nickname;
 
   const TowerEnterScreen({
@@ -60,32 +60,32 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
     return list;
   }
 
-  void _navigateToTowerScreen() {
+  void _navigateToTowerScreen(int floor) {
     print("이거 누름");
     print(widget.nickname);
-    climbTower();
+    climbTower(floor);
   }
 
-  Future<void> climbTower() async {
+  Future<void> climbTower(int floor) async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    // final response = await http.post(
-    //   Uri.parse('$baseUrl/api/towerEnter'),
-    //   headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     'Authorization': 'Bearer $accessToken',
-    //     'refreshToken': 'Bearer $refreshToken'
-    //   },
-    //   body: jsonEncode({"nickname": nickname!}),
-    // );
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/towerEnter'),
+      Uri.parse('$baseUrl/api/towerEnter'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accessToken',
         'refreshToken': 'Bearer $refreshToken'
       },
-      body: jsonEncode({"nickname": widget.nickname!}),
+      body: jsonEncode({"nickname": nickname!}),
     );
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/towerEnter'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
+    //   },
+    //   body: jsonEncode({"nickname": widget.nickname!}),
+    // );
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 
@@ -99,7 +99,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => TowerScreen(
-            nowFloor: nowFloor,
+            nowFloor: floor,
             nickname: widget.nickname!,
             roomNumber: roomNumber,
           ),
@@ -326,6 +326,47 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                                     fontSize: 20),
                               ),
                               onTap: () {
+                                if((100-index) >=4) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('알림'),
+                                        content: Text('오픈 예정입니다'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('확인'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }else{
+                                  if(100-index>widget.maxFloor) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('알림'),
+                                          content: Text('전 단계를 클리어해주세요'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text('확인'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }else{
+                                    _navigateToTowerScreen(100-index);
+                                  }
+                                }
                                 //여기에 다음 페이지로 이동하는 거 하면 됨
                                 //100-index 가 층 수임
                               },

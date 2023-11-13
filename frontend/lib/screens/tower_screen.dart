@@ -17,6 +17,7 @@ class TowerScreen extends StatefulWidget {
   final int nowFloor;
   final String nickname;
   final int roomNumber;
+
   const TowerScreen({
     super.key,
     required this.nowFloor,
@@ -37,13 +38,13 @@ class TowerScreenState extends State<TowerScreen> {
   String youPick = '';
   String mePick = '';
   String myHp = '2';
-  String youHp = '2';
+  String youHp = '5';
   bool isWaiting = false; // 대기 화면 보여주기
   bool isConnected = false;
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
-  String? contender="동탄불주먹";
+  String? contender = "동탄불주먹";
   bool isGi = false; // 기
   bool isPa = false; // 파
   bool isBlock = false; // 막기
@@ -68,7 +69,7 @@ class TowerScreenState extends State<TowerScreen> {
 
   bool showResult = false; // 결과 페이지 창
   bool showTemp = false;
-
+  bool isMiss = false;
   bool isTie = false; // 무효를 표현하기 위한 창
   String solo = 'true';
 
@@ -124,7 +125,7 @@ class TowerScreenState extends State<TowerScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
-              (route) => false,
+          (route) => false,
         );
         return true;
       }
@@ -195,7 +196,7 @@ class TowerScreenState extends State<TowerScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MainScreen()),
-                            (route) => false,
+                        (route) => false,
                       );
                     },
                     child: Text('확인'),
@@ -248,22 +249,29 @@ class TowerScreenState extends State<TowerScreen> {
       destination: '/sub/${widget.nickname}/error',
       callback: (frame) {
         // 원하는 작업 수행
-        if (frame.body == '승자는 ${widget.nickname}') {
-          // 3,2,1 을 받을 때
-          winner = widget.nickname;
-          setState(() {
-            showTemp = false;
-            isGameStart = false;
-            showResult = true;
-            isPan = false;
-            isGi = false; // 기
-            isPa = false; // 파
-            isBlock = false; // 막기
-            isTel = false; // 텔레포트
-            isBomb = false; // 원기옥
-          });
-          sendResult();
-        }
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('알림'),
+              content: Text('아무것도 선택하지 않았습니다'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainScreen()),
+                      (route) => false,
+                    );
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
       },
     );
     // 무엇을 선택했는지 보여주는 창
@@ -513,6 +521,14 @@ class TowerScreenState extends State<TowerScreen> {
         List<String> parts = frameBody.split(' ');
         String comparing = parts[3];
         String shouldContinue = parts[4];
+        String missCheck = parts[5];
+        print(missCheck);
+        // 이게 명중인지 여부를 보여주는 것
+        if (missCheck == '명중!') {
+          isMiss = false;
+        } else {
+          isMiss = true;
+        }
         print("제일 중요한 부분을 출력합니다.");
         print(shouldContinue); // 이게 게임을 끝낼지 여부를 선택하는 것이다.
         List<String> section1 = parts[1].split(':');
@@ -533,7 +549,7 @@ class TowerScreenState extends State<TowerScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: Text('알림'),
-                content: Text('둘 다 선택을 안함'),
+                content: Text('패배!!!!'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -541,7 +557,7 @@ class TowerScreenState extends State<TowerScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MainScreen()),
-                            (route) => false,
+                        (route) => false,
                       );
                     },
                     child: Text('확인'),
@@ -572,10 +588,57 @@ class TowerScreenState extends State<TowerScreen> {
               isBomb = false; // 원기옥
             });
             // dispose();
-            if(widget.nickname==winner){
+            if (widget.nickname == winner) {
+              print("내가 승자입니다");
               sendResult();
-            }
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('알림'),
+                    content: Text('승리하였습니다. 다음 단계에 도전 가능!'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainScreen()),
+                                (route) => false,
+                          );
+                        },
+                        child: Text('메인으로 돌아가기'),
+                      ),
+                    ],
+                  );
+                },
+              );
 
+
+            } else {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('알림'),
+                    content: Text('패배하였습니다'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainScreen()),
+                            (route) => false,
+                          );
+                        },
+                        child: Text('메인으로 돌아가기'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
           }
         }
       },
@@ -671,7 +734,7 @@ class TowerScreenState extends State<TowerScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           } else {
             // 내가 패자인 경우
@@ -691,7 +754,7 @@ class TowerScreenState extends State<TowerScreen> {
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
-                  (Route<dynamic> route) => false,
+              (Route<dynamic> route) => false,
             );
           }
           print(frame.body);
@@ -740,7 +803,7 @@ class TowerScreenState extends State<TowerScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const MainScreen()),
-                            (route) => false,
+                        (route) => false,
                       );
                     },
                     child: Text('확인'),
@@ -752,6 +815,47 @@ class TowerScreenState extends State<TowerScreen> {
         }
       },
     );
+
+    stompClient.subscribe(
+      // 현재 각자의 기가 몇 개 인지 확인하기 위해서
+      destination: '/sub/${widget.nickname}/HpInfo',
+      callback: (frame) {
+        print('현재 받아온 승 정보는 다음과 같습니다: ${frame.body}');
+        String frameBody = ' ${frame.body}';
+        List<String> parts = frameBody.split(' ');
+
+        String part1 = parts[1];
+        print(part1);
+        String part2 = parts[2];
+        print(part2);
+        List<String> info1 = part1.split(':');
+        List<String> info2 = part2.split(':');
+
+        String nick1 = info1[0];
+        String hp1 = info1[1];
+        String nick2 = info2[0];
+        String hp2 = info2[1];
+        print(nick1);
+        print(hp1);
+        print(nick2);
+        print(hp2);
+
+        if (widget.nickname == nick1) {
+          // nick1이 나일 때
+          int hpOfMe = int.parse(hp1) - 1;
+          int hpOfYou = int.parse(hp2);
+          myHp = hpOfMe.toString();
+          youHp = hpOfYou.toString();
+        } else {
+          //nick2가 나일 때
+          int hpOfMe = int.parse(hp2) - 1;
+          int hpOfYou = int.parse(hp1);
+          myHp = hpOfMe.toString();
+          youHp = hpOfYou.toString();
+        }
+      },
+    );
+
     firstMessage(); // 처음 들어오자마자 메시지를 보낸다.
   }
 
@@ -802,11 +906,21 @@ class TowerScreenState extends State<TowerScreen> {
 
   void sendResult() {
     // 게임이 끝났을 때 내가 보스를 무찔렀다면 나의 최종 층을 업데이트 해줘야 한다.
+    print(accessToken);
+    final Map<String, dynamic> messageBody = {
+      "Authorization": '$accessToken',
+
+    };
+    final headers = {
+      'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
+
+    };
     stompClient.send(
         destination: '/pub/${widget.nickname}/updateMaxFloor',
-        body: '${widget.nowFloor}',
-        headers: {});
+        body: jsonEncode(messageBody),
+        headers: headers);
   }
+
 
   void startGame() {
     setState(() {
@@ -831,8 +945,7 @@ class TowerScreenState extends State<TowerScreen> {
     stompClient.send(
         destination: '/pub/${widget.nickname}/whatPan',
         body: '${widget.roomNumber}',
-        headers: {}
-    );
+        headers: {});
   }
 
   @override
@@ -842,9 +955,9 @@ class TowerScreenState extends State<TowerScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        //url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -859,8 +972,8 @@ class TowerScreenState extends State<TowerScreen> {
 
   @override
   void dispose() {
-    stompClient.send(
-        destination: '/pub/$nickname/dispose', body: '', headers: {});
+    stompClient
+        .send(destination: '/pub/$nickname/dispose', body: '', headers: {});
     stompClient.deactivate();
     super.dispose();
   }
@@ -891,21 +1004,21 @@ class TowerScreenState extends State<TowerScreen> {
 
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        left: 0,
-                        right: 0,
-                        height: MediaQuery.of(context).size.height * 0.67,
-                        child: Container(
-                          child: Image.asset(
-                            'lib/assets/icons/background.png',
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ))
+                            left: 0,
+                            right: 0,
+                            height: MediaQuery.of(context).size.height * 0.67,
+                            child: Container(
+                              child: Image.asset(
+                                'lib/assets/icons/background.png',
+                                fit: BoxFit.fitHeight,
+                              ),
+                            ))
                         .animate()
                         .fade()
                         .scaleXY(
-                        curve: Curves.linear,
-                        duration: Duration(milliseconds: 800),
-                        begin: 1.5),
+                            curve: Curves.linear,
+                            duration: Duration(milliseconds: 800),
+                            begin: 1.5),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
                         top: MediaQuery.of(context).size.height * 0.67,
@@ -917,15 +1030,16 @@ class TowerScreenState extends State<TowerScreen> {
                         )),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        top: MediaQuery.of(context).size.height * 0.67 - MediaQuery.of(context).size.width * 0.1,
+                        top: MediaQuery.of(context).size.height * 0.67 -
+                            MediaQuery.of(context).size.width * 0.1,
                         left: 0,
                         height: MediaQuery.of(context).size.height * 0.12,
                         width: MediaQuery.of(context).size.width * 0.67,
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.black,
-                              borderRadius: BorderRadius.only(topRight: Radius.circular(15))
-                          ),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15))),
                         )),
                   if (showTemp)
                     Positioned(
@@ -960,15 +1074,15 @@ class TowerScreenState extends State<TowerScreen> {
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        top:0,
+                        top: 0,
                         right: 0,
                         height: MediaQuery.of(context).size.width * 0.12,
                         width: MediaQuery.of(context).size.width * 0.68,
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.black,
-                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
-                          ),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(15))),
                         )),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
@@ -979,8 +1093,8 @@ class TowerScreenState extends State<TowerScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.black,
-                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
-                          ),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(15))),
                         )),
                   if (showTemp)
                     Positioned(
@@ -1085,18 +1199,6 @@ class TowerScreenState extends State<TowerScreen> {
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 35),
                                     ),
-                                  if (pan == 2)
-                                    const Text(
-                                      '2nd Round!!',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 35),
-                                    ),
-                                  if (pan == 3)
-                                    const Text(
-                                      '3rd Round!!',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 35),
-                                    ),
                                 ],
                               ),
                             ),
@@ -1137,11 +1239,11 @@ class TowerScreenState extends State<TowerScreen> {
                                   )
                                       .animate()
                                       .scaleXY(
-                                      begin: 10, curve: Curves.bounceInOut)
+                                          begin: 10, curve: Curves.bounceInOut)
                                       .shake(
-                                      delay:
-                                      const Duration(milliseconds: 500),
-                                      curve: Curves.bounceInOut),
+                                          delay:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.bounceInOut),
                                 ],
                               ),
                             ),
@@ -1195,7 +1297,7 @@ class TowerScreenState extends State<TowerScreen> {
                                           0.55,
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         //
                                         // crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -1205,7 +1307,7 @@ class TowerScreenState extends State<TowerScreen> {
                                             fit: BoxFit.fitHeight,
                                           ),
                                           Text(
-                                            ": $contenderScore",
+                                            "이것도 너프해보시지",
                                             style: TextStyle(fontSize: 20),
                                           ),
                                         ],
@@ -1272,7 +1374,7 @@ class TowerScreenState extends State<TowerScreen> {
                                           0.55,
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         //
                                         // crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -1282,7 +1384,7 @@ class TowerScreenState extends State<TowerScreen> {
                                             fit: BoxFit.fitHeight,
                                           ),
                                           Text(
-                                            ": $myScore",
+                                            "혼돈 파괴!!!",
                                             style: TextStyle(fontSize: 20),
                                           ),
                                         ],
@@ -1310,32 +1412,32 @@ class TowerScreenState extends State<TowerScreen> {
                       right: 0,
                       child: Center(
                         child: Container(
-                            child: const Text("VS",
-                                style: TextStyle(fontSize: 60)))
+                                child: const Text("VS",
+                                    style: TextStyle(fontSize: 60)))
                             .animate()
                             .show(delay: const Duration(milliseconds: 1100))
                             .scaleXY(
-                            delay: const Duration(milliseconds: 1150),
-                            duration: const Duration(milliseconds: 400),
-                            begin: 10,
-                            curve: Curves.bounceInOut)
+                                delay: const Duration(milliseconds: 1150),
+                                duration: const Duration(milliseconds: 400),
+                                begin: 10,
+                                curve: Curves.bounceInOut)
                             .shake(
-                            delay: const Duration(milliseconds: 1550),
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.bounceInOut)
+                                delay: const Duration(milliseconds: 1550),
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.bounceInOut)
                             .tint(
-                          color: Colors.amber,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
+                              color: Colors.amber,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
                             .tint(
-                          color: Colors.blue,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
+                              color: Colors.blue,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
                             .tint(
-                            color: Colors.black,
-                            delay: const Duration(milliseconds: 500)),
+                                color: Colors.black,
+                                delay: const Duration(milliseconds: 500)),
                       ),
                     ),
                   // Column(
@@ -1357,36 +1459,36 @@ class TowerScreenState extends State<TowerScreen> {
                         right: 0,
                         child: Center(
                             child: Text(
-                              '$countdown',
-                              style: const TextStyle(
-                                  fontSize: 65,
-                                  height: 0.8,
-                                  fontWeight: FontWeight.bold),
-                            )
+                          '$countdown',
+                          style: const TextStyle(
+                              fontSize: 65,
+                              height: 0.8,
+                              fontWeight: FontWeight.bold),
+                        )
                                 .animate(target: countdown == '3' ? 1 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '2' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '1' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '0' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut))),
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut))),
 
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
@@ -1445,7 +1547,8 @@ class TowerScreenState extends State<TowerScreen> {
                           Container(
                             child: Center(
                               child: Text(giCnt.toString(),
-                                  style: const TextStyle(fontSize: 28, color: Colors.white)),
+                                  style: const TextStyle(
+                                      fontSize: 28, color: Colors.white)),
                             ),
                           ),
                         ],
@@ -1457,8 +1560,10 @@ class TowerScreenState extends State<TowerScreen> {
                       right: 10,
                       child: Center(
                         child: Text(contender!,
-                            style: const TextStyle( color: Colors.white,
-                                fontSize: 20, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center),
                       ),
                     ),
@@ -1469,8 +1574,10 @@ class TowerScreenState extends State<TowerScreen> {
                       left: 10,
                       child: Center(
                         child: Text(widget.nickname,
-                            style: const TextStyle(color:Colors.white,
-                                fontSize: 18, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center),
                       ),
                     ),
@@ -1484,7 +1591,7 @@ class TowerScreenState extends State<TowerScreen> {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image:
-                            AssetImage('lib/assets/icons/hp$youHp-1.png'),
+                                AssetImage('lib/assets/icons/hp$youHp-5.png'),
                             fit: BoxFit.fitWidth,
                           ),
                         ),
@@ -1520,9 +1627,9 @@ class TowerScreenState extends State<TowerScreen> {
                               if (giCnt < 1)
                                 Container(
                                   width:
-                                  MediaQuery.of(context).size.width * 0.33,
+                                      MediaQuery.of(context).size.width * 0.33,
                                   height:
-                                  MediaQuery.of(context).size.width * 0.25,
+                                      MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       opacity: 0.5,
@@ -1550,18 +1657,18 @@ class TowerScreenState extends State<TowerScreen> {
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonTele =
-                                      'lib/assets/icons/buttonTele2.png';
+                                          'lib/assets/icons/buttonTele2.png';
                                     });
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonTele =
-                                      'lib/assets/icons/buttonTele.png';
+                                          'lib/assets/icons/buttonTele.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
                                     buttonTele =
-                                    'lib/assets/icons/buttonTele.png';
+                                        'lib/assets/icons/buttonTele.png';
                                   }),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width *
@@ -1579,9 +1686,9 @@ class TowerScreenState extends State<TowerScreen> {
                               if (giCnt < 3)
                                 Container(
                                   width:
-                                  MediaQuery.of(context).size.width * 0.33,
+                                      MediaQuery.of(context).size.width * 0.33,
                                   height:
-                                  MediaQuery.of(context).size.width * 0.25,
+                                      MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       opacity: 0.5,
@@ -1609,18 +1716,18 @@ class TowerScreenState extends State<TowerScreen> {
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonOne =
-                                      'lib/assets/icons/buttonOne2.png';
+                                          'lib/assets/icons/buttonOne2.png';
                                     });
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonOne =
-                                      'lib/assets/icons/buttonOne.png';
+                                          'lib/assets/icons/buttonOne.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
                                     buttonOne =
-                                    'lib/assets/icons/buttonOne.png';
+                                        'lib/assets/icons/buttonOne.png';
                                   }),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width *
@@ -1670,9 +1777,9 @@ class TowerScreenState extends State<TowerScreen> {
                                 }),
                                 child: Container(
                                   width:
-                                  MediaQuery.of(context).size.width * 0.33,
+                                      MediaQuery.of(context).size.width * 0.33,
                                   height:
-                                  MediaQuery.of(context).size.width * 0.25,
+                                      MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(buttonGi),
@@ -1711,24 +1818,24 @@ class TowerScreenState extends State<TowerScreen> {
                                 onTapDown: (_) {
                                   setState(() {
                                     buttonShield =
-                                    'lib/assets/icons/buttonShield2.png';
+                                        'lib/assets/icons/buttonShield2.png';
                                   });
                                 },
                                 onTapUp: (_) {
                                   setState(() {
                                     buttonShield =
-                                    'lib/assets/icons/buttonShield.png';
+                                        'lib/assets/icons/buttonShield.png';
                                   });
                                 },
                                 onTapCancel: () => setState(() {
                                   buttonShield =
-                                  'lib/assets/icons/buttonShield.png';
+                                      'lib/assets/icons/buttonShield.png';
                                 }),
                                 child: Container(
                                   width:
-                                  MediaQuery.of(context).size.width * 0.33,
+                                      MediaQuery.of(context).size.width * 0.33,
                                   height:
-                                  MediaQuery.of(context).size.width * 0.25,
+                                      MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(buttonShield),
@@ -1756,13 +1863,13 @@ class TowerScreenState extends State<TowerScreen> {
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonPa =
-                                      'lib/assets/icons/buttonPa2.png';
+                                          'lib/assets/icons/buttonPa2.png';
                                     });
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonPa =
-                                      'lib/assets/icons/buttonPa.png';
+                                          'lib/assets/icons/buttonPa.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
@@ -1784,9 +1891,9 @@ class TowerScreenState extends State<TowerScreen> {
                               if (giCnt < 1)
                                 Container(
                                   width:
-                                  MediaQuery.of(context).size.width * 0.33,
+                                      MediaQuery.of(context).size.width * 0.33,
                                   height:
-                                  MediaQuery.of(context).size.width * 0.25,
+                                      MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       opacity: 0.5,
