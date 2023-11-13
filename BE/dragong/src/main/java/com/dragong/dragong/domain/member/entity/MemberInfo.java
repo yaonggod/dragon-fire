@@ -7,7 +7,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+
 import java.util.UUID;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +32,7 @@ public class MemberInfo extends BaseTimeEntity {
     @Column(columnDefinition = "int default 0")
     private int coin;
 
-    @Column(columnDefinition = "int default 0")
+    @Column(columnDefinition = "int default 1")
     private int tower;
 
     @Column
@@ -48,6 +50,11 @@ public class MemberInfo extends BaseTimeEntity {
     @Builder(builderMethodName = "updateNicknameBuilder")
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    @Builder(builderMethodName = "updateTowerBuilder")
+    public void updateTower(int nowFloor) {
+        this.tower = nowFloor + 1;
     }
 
     public void updateCoin(int coin) {

@@ -436,7 +436,7 @@ public class GameService {
                         answer += player1;
                         winner = player1;
                     } else if (picked2.equals("파")) {
-                        gi2 += 1;
+                        gi2 -= 1;
                         answer += player1;
                         winner = player1;
                     } else if (picked2.equals("막기")) {
@@ -1086,15 +1086,7 @@ public class GameService {
         }
     }
 
-    public void chooseScen(int roomId) {
-        // 시나리오를 선택하는 단계
-        Random random = new Random();
-        int randomIndex = random.nextInt(6);
-        for (String pick : computerPick[randomIndex]) {
-            whatPick[roomId].push(pick);
-        }
 
-    }
 
     public void chooseCom(int roomId) {
         Random random = new Random();
@@ -1103,6 +1095,16 @@ public class GameService {
         String comUUID = comUser[randomIndex][1];
 
         ComInfo[roomId] = new ComData(comName, comUUID);
+    }
+
+    public void chooseScen(int roomId) {
+        // 시나리오를 선택하는 단계
+        Random random = new Random();
+        int randomIndex = random.nextInt(6);
+        for (String pick : computerPick[randomIndex]) {
+            whatPick[roomId].push(pick);
+        }
+
     }
 
     public Map<String, Object> getCom(int roomId) {
