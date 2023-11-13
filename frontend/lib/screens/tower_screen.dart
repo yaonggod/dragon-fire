@@ -909,6 +909,7 @@ class TowerScreenState extends State<TowerScreen> {
     print(accessToken);
     final Map<String, dynamic> messageBody = {
       "Authorization": '$accessToken',
+      "nowFloor":widget.nowFloor,
 
     };
     final headers = {
