@@ -1,9 +1,12 @@
 package com.dragong.dragong.domain.member.service;
 
 import com.dragong.dragong.domain.member.dto.request.FcmTokenRequestDto;
+import com.dragong.dragong.domain.member.dto.request.IntroductionUpdateRequestDto;
 import com.dragong.dragong.domain.member.dto.request.LoginRequestDto;
 import com.dragong.dragong.domain.member.dto.request.RegistRequestDto;
 import com.dragong.dragong.domain.member.dto.request.UpdateRequestDto;
+import com.dragong.dragong.domain.member.dto.response.GetMyInfoResponseDto;
+import com.dragong.dragong.domain.member.dto.response.IntroductionUpdateResponseDto;
 import com.dragong.dragong.domain.member.dto.response.LoginResponseDto;
 import com.dragong.dragong.domain.member.dto.response.NicknameUpdateResponseDto;
 import com.dragong.dragong.domain.member.entity.FcmToken;
@@ -218,6 +221,35 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public GetMyInfoResponseDto getMyInfo(String accessToken, String refreshToken,
+            HttpServletResponse httpServletResponse) {
+
+        MemberInfo memberInfo = getMyMemberInfo(accessToken, refreshToken, httpServletResponse);
+        Member member = memberInfo.getMember();
+        String email;
+
+        switch (member.getSocialType()) {
+//            case APPLE:
+//
+            case GOOGLE:
+                email = member.getGoogleAuth().getEmail();
+                break;
+            case NAVER:
+                email = member.getNaverAuth().getEmail();
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+        GetMyInfoResponseDto getMyInfoResponseDto = GetMyInfoResponseDto.builder()
+                .nickname(memberInfo.getNickname())
+                .email(email)
+                .introduction(memberInfo.getIntroduction())
+                .build();
+
+        return getMyInfoResponseDto;
+    }
+
+    @Override
     public MemberInfo getMyMemberInfo(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
 
@@ -264,6 +296,29 @@ public class MemberServiceImpl implements MemberService {
             fcmToken.updateFcmToken(fcmTokenRequestDto.getFcmToken());
             fcmTokenRepository.save(fcmToken);
         }
+    }
+
+    @Override
+    @Transactional
+    public IntroductionUpdateResponseDto updateIntroduction(String accessToken, String refreshToken,
+            IntroductionUpdateRequestDto introductionUpdateRequestDto) {
+
+        UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
+
+        MemberInfo memberInfo = memberInfoRepository.findMemberInfoByMemberId(memberId)
+                .orElseThrow(() -> new NoSuchElementException());
+
+        memberInfo.updateIntroduction(introductionUpdateRequestDto.getIntroduction());
+
+        log.info("자기소개 수정 완료");
+        log.info("  UUID: " + memberId);
+        log.info("  자기소개: " + introductionUpdateRequestDto.getIntroduction());
+
+        IntroductionUpdateResponseDto introductionUpdateResponseDto = IntroductionUpdateResponseDto.builder()
+                .introduction(introductionUpdateRequestDto.getIntroduction())
+                .build();
+
+        return introductionUpdateResponseDto;
     }
 
     @Transactional
@@ -315,9 +370,12 @@ public class MemberServiceImpl implements MemberService {
         httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
         httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+        MemberInfo memberInfo = member.getMemberInfo();
+
         LoginResponseDto response = LoginResponseDto.builder()
-                .nickname(member.getMemberInfo().getNickname())
+                .nickname(memberInfo.getNickname())
                 .email(email)
+                .introduction(memberInfo.getIntroduction())
                 .build();
 
         log.info("Google 로그인 성공: " + email);
@@ -348,7 +406,6 @@ public class MemberServiceImpl implements MemberService {
                 member.getRole());
         String refreshToken = jwtUtil.generateRefreshToken();
 
-
         // 회원 정보로 과거 리프레시 토큰 내역 가져오기
         RefreshToken refreshTokenEntity = member.getRefreshToken();
 
@@ -374,9 +431,12 @@ public class MemberServiceImpl implements MemberService {
         httpServletResponse.setHeader("Authorization", "Bearer " + accessToken);
         httpServletResponse.setHeader("refreshToken", "Bearer " + refreshToken);
 
+        MemberInfo memberInfo = member.getMemberInfo();
+
         LoginResponseDto response = LoginResponseDto.builder()
-                .nickname(member.getMemberInfo().getNickname())
+                .nickname(memberInfo.getNickname())
                 .email(email)
+                .introduction(memberInfo.getIntroduction())
                 .build();
 
         log.info("Naver 로그인 성공: " + email);
