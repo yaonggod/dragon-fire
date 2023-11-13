@@ -1,7 +1,15 @@
 
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/screens/friend_game_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 @pragma('vm:entry-point')
 void backgroundHandler(NotificationResponse details) {
@@ -20,7 +28,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   } else if (message.data["do"] == "friend-accept") {
     notiBody = "${message.data["nickname"]}님이 친구 요청을 수락했습니다.";
   } else if (message.data["do"] == "friend-fight") {
-    notiBody = "${message.data["nickname"]}님이 친구 대전을 신청했습니다.";
+    notiBody = "${message.data["nickname"]}님이 친구 대전을 신청했습니다. 입장하세요!";
   }
 
   String payload = message.data["do"];
@@ -75,7 +83,42 @@ void initializeNotification() async {
       if (details.payload == "friend-add" || details.payload == "friend-accept") {
         DragonG.navigatorKey.currentState!.pushNamed('/friend');
       } else {
-        // DragonG.navigatorKey.currentState!.pushNamed('/fight', arguments: details.payload);
+        print("roomId ${details.payload}");
+        String? nickname;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        nickname = prefs.getString('nickname');
+
+        const storage = FlutterSecureStorage();
+        String? accessToken = await storage.read(key: 'accessToken');
+        String? refreshToken = await storage.read(key: 'refreshToken');
+
+        if (nickname != null && accessToken != null && refreshToken != null) {
+
+          final response = await http.post(Uri.parse("http://10.0.2.2:8080/api/friend-game/accept"),
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $accessToken',
+                'refreshToken': 'Bearer $refreshToken'
+              },
+              body: jsonEncode({"roomId": int.parse(details.payload!)}),
+          );
+          if (response.statusCode == 200) {
+              DragonG.navigatorKey.currentState!.push(
+                MaterialPageRoute(
+                  builder: (context) => FriendGameScreen(roomId: int.parse(details.payload!), nickname: nickname!, nowNumber: -1),
+                ),
+              );
+          }
+
+        } else {
+          DragonG.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ),
+          );
+        }
+
+
       }
     },
 
