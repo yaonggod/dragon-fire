@@ -227,11 +227,24 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
   }
 
+  saveVibrate(bool vibrate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('vibrate', vibrate);
+  }
+
+  saveBGM(bool bgm) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bgm', bgm);
+  }
+
   Future<void> checkFirstAccess() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('vibrate') == null || prefs.getBool('bgm') == null){
+      prefs.setBool('vibrate', true);
+      prefs.setBool('bgm', true);
+    }
     _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
     if (_isFirstAccess) {
-      await prefs.setBool('isFirstAccess', false);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const TutorialScreen()),
