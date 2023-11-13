@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/screens/info_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/myInfoUpdate_screen.dart';
@@ -361,21 +363,21 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                                     .width *
                                                 0.22),
                                         ListTile(
-                                            title: Text(
-                                              '미디어',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                              ),
+                                          title: Text(
+                                            '미디어',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
                                             ),
-                                            onTap: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return MediaDialog();
-                                                },
-                                              );
-                                            },
+                                          ),
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return MediaDialog();
+                                              },
+                                            );
+                                          },
                                         ),
                                         Divider(
                                           color: Colors.white,
@@ -500,112 +502,122 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
           SafeArea(
             child: Stack(
               children: [
-                if (nickname == null || email == null)
-                  Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
-                if (nickname != null && email != null)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                // if (nickname != null && email != null) if (nickname == null || email == null)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
                           SizedBox(
                               height: MediaQuery.of(context).size.height / 4),
+                        if (nickname != null && email != null)
                           Center(
                             child: Text(
                                 style: TextStyle(fontSize: 45),
                                 nickname != null ? nickname! : "null"),
                           ),
-                          SizedBox(
+                        if(nickname == null || email == null)
+                          Center(
+                            child: CircularProgressIndicator(color: Colors.white),
+                          ),
+                        SizedBox(
                               height: MediaQuery.of(context).size.height / 100),
+                        if (nickname != null && email != null)
                           Center(
                             child: Text(
                                 style: TextStyle(fontSize: 20),
                                 email != null ? email! : "null"),
                           ),
-                          SizedBox(
+                        if(nickname == null || email == null)
+                          Center(
+                            child: Text("",
+                                style: TextStyle(fontSize: 20)),
+                          ),
+                        SizedBox(
                               height: MediaQuery.of(context).size.height / 100),
+                        if (nickname != null && email != null)
                           Center(
                             child: Text(
                                 style: TextStyle(fontSize: 20),
-                                introduction != null ? introduction! : "null"),
+                                introduction != null ? introduction! : ""),
                           ),
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 10),
-                          if (_naverLoginStatus == true ||
-                              _googleLoggedIn == true)
-                            MaterialButton(
-                              color: Colors.red,
-                              child: const Text(
-                                '내 정보 수정',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation1, animation2) =>
-                                            const MyInfoUpdateScreen(),
-                                    transitionDuration: Duration.zero,
-                                    reverseTransitionDuration: Duration.zero,
-                                  ),
-                                );
-                              },
-                            ),
+                        if(nickname == null || email == null)
+                          Center(
+                            child: Text("",
+                                style: TextStyle(fontSize: 20)),
+                          ),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height / 10),
+                        if (_naverLoginStatus == true ||
+                            _googleLoggedIn == true)
                           MaterialButton(
                             color: Colors.red,
                             child: const Text(
-                              '로그아웃',
+                              '내 정보 수정',
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
-                              _logout();
-                              print('Logout button pressed.');
-                            },
-                          ),
-                          MaterialButton(
-                            color: Colors.red,
-                            child: const Text(
-                              '회원탈퇴',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('알림'),
-                                    content:
-                                        Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop(false);
-                                        },
-                                        child: const Text('취소'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          _out();
-                                        },
-                                        child: Text('확인'),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          const MyInfoUpdateScreen(),
+                                  transitionDuration: Duration.zero,
+                                  reverseTransitionDuration: Duration.zero,
+                                ),
                               );
                             },
-                          )
-                        ],
-                      ),
+                          ),
+                        MaterialButton(
+                          color: Colors.red,
+                          child: const Text(
+                            '로그아웃',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            _logout();
+                            print('Logout button pressed.');
+                          },
+                        ),
+                        MaterialButton(
+                          color: Colors.red,
+                          child: const Text(
+                            '회원탈퇴',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('알림'),
+                                  content: Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(false);
+                                      },
+                                      child: const Text('취소'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _out();
+                                      },
+                                      child: Text('확인'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        )
+                      ],
                     ),
                   ),
+                ),
               ],
             ),
           ),
@@ -621,37 +633,39 @@ class MediaDialog extends StatefulWidget {
 }
 
 class _MediaDialogState extends State<MediaDialog> {
-  bool? _bgmSwitchValue;
-  bool? _vibrateSwitchValue;
-
-  void saveSettingsAndClose() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool('bgm', _bgmSwitchValue!);
-    prefs.setBool('vibrate', _vibrateSwitchValue!);
-    Navigator.pop(context); // 다이얼로그 닫기
-  }
+  bool _bgmSwitchValue = true;
+  bool _vibrateSwitchValue = true;
+  bool _hapticSwitchValue = true;
 
   Future<bool?> getVibrate() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('vibrate');
   }
 
+  Future<bool?> getHaptic() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('haptic');
+  }
+
   Future<bool?> getBGM() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('bgm');
   }
-  init() async{
-    await Timer(Duration(milliseconds: 500),(){
-    });
-    _bgmSwitchValue = await getBGM();
-    _vibrateSwitchValue = await getVibrate();
+
+  init() async {
+    await Timer(Duration(milliseconds: 500), () {});
+    _bgmSwitchValue = await getBGM() ?? true;
+    _vibrateSwitchValue = await getVibrate() ?? true;
+    _hapticSwitchValue = await getHaptic() ?? true;
     setState(() {}); // 추가된 부분
   }
+
   @override
   void initState() {
     init();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -717,13 +731,24 @@ class _MediaDialogState extends State<MediaDialog> {
                               ),
                             ),
                             trailing: Switch(
-                              value: _bgmSwitchValue!,
+                              value: _bgmSwitchValue,
                               onChanged: (value) async {
                                 setState(() {
                                   _bgmSwitchValue = value;
                                 });
-                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                if(_bgmSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
                                 await prefs.setBool('bgm', value);
+
+                                if (!value) {
+                                  AudioManager.pause();
+                                } else {
+                                  AudioManager.resume();
+                                }
+
                               },
                             ),
                           ),
@@ -740,13 +765,46 @@ class _MediaDialogState extends State<MediaDialog> {
                               ),
                             ),
                             trailing: Switch(
-                              value: _vibrateSwitchValue!,
+                              value: _vibrateSwitchValue,
                               onChanged: (value) async {
                                 setState(() {
                                   _vibrateSwitchValue = value;
                                 });
-                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                if(_vibrateSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
                                 await prefs.setBool('vibrate', value);
+
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white,
+                            thickness: 2,
+                          ),
+                          ListTile(
+                            title: Text(
+                              '햅틱',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                              ),
+                            ),
+                            trailing: Switch(
+                              value: _hapticSwitchValue,
+                              onChanged: (value) async {
+                                setState(() {
+                                  _hapticSwitchValue = value;
+                                });
+                                if(_hapticSwitchValue){
+                                  HapticFeedback.lightImpact();
+                                }
+                                SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                                await prefs.setBool('haptic', value);
+
                               },
                             ),
                           ),
