@@ -245,6 +245,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     }
     _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
     if (_isFirstAccess) {
+      await prefs.setBool('isFirstAccess', false);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const TutorialScreen()),
