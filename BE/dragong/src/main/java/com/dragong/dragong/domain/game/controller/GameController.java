@@ -19,6 +19,7 @@ import java.util.UUID;
 @RestController
 @Slf4j
 public class GameController {
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
@@ -27,7 +28,9 @@ public class GameController {
     private ResultUpdateService resultUpdateService;
 
     @PostMapping("/wait")
-    public ResponseEntity<Map<String, Integer>> assignRoom(@RequestHeader("Authorization") String accessToken, @RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<Map<String, Integer>> assignRoom(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody Map<String, String> requestBody) {
         String nickname = requestBody.get("nickname");
         log.info("받아온 nickname : " + nickname);
         log.info("받아온 accessToken : " + accessToken);
@@ -66,7 +69,8 @@ public class GameController {
             String giMessage = gameService.giReturn(roomID);
             Map<String, Object> userInfo = gameService.getUserInfo(roomID);
             messagingTemplate.convertAndSend("/sub/" + roomId + "/gameRecord", userInfo);
-            messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi",
+                    String.valueOf(giMessage));
         } else {
             // 이걸로 1~2초마다 front로 신호를 주고 만약에 신호에 대한 반응이 오지 않으면 비정상적으로 방을 나갔다라고 판단하자
             // 해당 roomId는 가지고 있으니까
@@ -156,7 +160,8 @@ public class GameController {
                     String giMessage = gameService.giReturn(roomID);
                     Map<String, Object> userInfo = gameService.getUserInfo(roomID);
                     messagingTemplate.convertAndSend("/sub/" + roomId + "/gameRecord", userInfo);
-                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi",
+                            String.valueOf(giMessage));
 
                     return String.valueOf("0");
                 }
@@ -172,7 +177,6 @@ public class GameController {
         log.info("받아온 값 출력: " + message);
         int roomID = Integer.parseInt(roomId);
         int comCheck = gameService.isComputer(roomID);
-
 
         if (comCheck == 1) {
             //컴퓨터와 하는 경우
@@ -231,7 +235,8 @@ public class GameController {
                     }
                 }
                 if (i == 0) {
-                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i)); // 0초도 한번 보내준다.
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown",
+                            String.valueOf(i)); // 0초도 한번 보내준다.
                     // 보내주는 이유는 한 명이라도 선택을 하지 않았을 경우, 해당 유저의 닉네임을 처리해야하기 때문(이건 선택을 하지 않을 상황이지, 튕긴 상황이 아니다)
                     errorCnt = 0;
                     while (gameService.evenReturn(roomID) != 2) {
@@ -251,7 +256,8 @@ public class GameController {
                                 Map<String, Object> computerInfo = gameService.getCom(roomID);
 
                                 String comName = (String) computerInfo.get("comName");
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + comName);
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                        "승자는" + " " + comName);
                                 return;
                             }
                         }
@@ -282,7 +288,8 @@ public class GameController {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
-                        messagingTemplate.convertAndSend("/sub/" + roomId + "/selected", String.valueOf(j) + " " + answer);
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/selected",
+                                String.valueOf(j) + " " + answer);
                     }
                     // 이게 결과값을 반환하는 것이다. //
                     if (information[3].equals("나갑니다")) {
@@ -294,7 +301,8 @@ public class GameController {
 
                 } else {
                     errorCnt = 0;
-                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i));
+                    messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown",
+                            String.valueOf(i));
 
                     while (gameService.evenReturn(roomID) != 2) {
                         // 값을 보내지 않은 경우
@@ -314,7 +322,8 @@ public class GameController {
                                 String comName = (String) computerInfo.get("comName");
 
                                 log.info("현재 연결이 끊긴 상황입니다.");
-                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + comName);
+                                messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                        "승자는" + " " + comName);
                                 return;
                             }
                         }
@@ -325,8 +334,10 @@ public class GameController {
             }
             String giMessage = gameService.giReturn(roomID);
             String winInformation = gameService.returnWinData(roomID);
-            messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
-            messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi",
+                    String.valueOf(giMessage));
+            messagingTemplate.convertAndSend("/sub/" + roomId + "/winData",
+                    String.valueOf(winInformation));
 
 
         } else {
@@ -381,7 +392,8 @@ public class GameController {
                         }
                     }
                     if (i == 0) {
-                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i)); // 0초도 한번 보내준다.
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown",
+                                String.valueOf(i)); // 0초도 한번 보내준다.
                         // 보내주는 이유는 한 명이라도 선택을 하지 않았을 경우, 해당 유저의 닉네임을 처리해야하기 때문(이건 선택을 하지 않을 상황이지, 튕긴 상황이 아니다)
                         errorCnt = 0;
                         while (gameService.evenReturn(roomID) != 2) {
@@ -407,7 +419,8 @@ public class GameController {
                                     // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
                                     log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
                                     String remainName = gameService.returnName(roomID);
-                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
+                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                            "승자는" + " " + remainName);
                                     gameService.cleanList(roomID); // 값을 정리해준다.
                                     return;
                                 }
@@ -437,7 +450,8 @@ public class GameController {
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
-                            messagingTemplate.convertAndSend("/sub/" + roomId + "/selected", String.valueOf(j) + " " + answer);
+                            messagingTemplate.convertAndSend("/sub/" + roomId + "/selected",
+                                    String.valueOf(j) + " " + answer);
                         }
                         // 이게 결과값을 반환하는 것이다. //
                         if (information[3].equals("나갑니다")) {
@@ -449,7 +463,8 @@ public class GameController {
 
                     } else {
                         errorCnt = 0;
-                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown", String.valueOf(i));
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/countdown",
+                                String.valueOf(i));
 
                         while (gameService.evenReturn(roomID) != 2) {
                             //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
@@ -474,7 +489,8 @@ public class GameController {
                                     // 한 명만 들어온 경우 => 남아 있는 한 명이 승리했다고 메시지를 보내줘야겠지?
                                     log.info("현재 연결이 끊긴 상황이고, 한쪽만 연결이 끊긴 상황입니다.");
                                     String remainName = gameService.returnName(roomID);
-                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error", "승자는" + " " + remainName);
+                                    messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                            "승자는" + " " + remainName);
                                     gameService.cleanList(roomID); // 값을 정리해준다.
                                     return;
                                 }
@@ -486,8 +502,10 @@ public class GameController {
                 }
                 String giMessage = gameService.giReturn(roomID);
                 String winInformation = gameService.returnWinData(roomID);
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi", String.valueOf(giMessage));
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/winData", String.valueOf(winInformation));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/countGi",
+                        String.valueOf(giMessage));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/winData",
+                        String.valueOf(winInformation));
             }
         }
 
@@ -536,30 +554,34 @@ public class GameController {
             String result = gameService.winnerAndLoserToken(roomID, winner);
             String[] parts = result.split(":");
             System.out.println("승자는" + winner);
-            log.info(parts[1]); // 이게 승자의 accessToken
-            log.info(parts[0]); // 이게 패자의 accessToken
+//            log.info(parts[0]); // 이게 승자의 accessToken
+//            log.info(parts[1]); // 이게 패자의 accessToken
 
             Map<String, Object> computerInfo = gameService.getCom(roomID);
 
 //            String comName = (String) computerInfo.get("comName");
             String uuidString = (String) computerInfo.get("uuid");
             UUID uuid = UUID.fromString(uuidString);
-            if (parts[1].equals("computerToken")) {
+            if (parts[0].equals("computerToken")) {
                 //승자가 컴퓨터인 경우
                 resultUpdateService.updateWinComputer(uuid);
-                resultUpdateService.updateLoser(parts[0]);
+                resultUpdateService.updateLoser(parts[1]);
                 String info = "";
-                info += resultUpdateService.getComWinnerInfo(uuid) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+                info += resultUpdateService.getLoserInfo(parts[1]) + ":"
+                        + resultUpdateService.getComWinnerInfo(uuid);
                 log.info("최종 결과를 도출합니다" + info);
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
+                        String.valueOf(info));
             } else {
                 // 승자가 사용자인 경우
-                resultUpdateService.updateWinner(parts[1]);
+                resultUpdateService.updateWinner(parts[0]);
                 resultUpdateService.updateLoseComputer(uuid);
                 String info = "";
-                info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getComLoserInfo(uuid);
+                info += resultUpdateService.getComLoserInfo(uuid) + ":"
+                        + resultUpdateService.getWinnerInfo(parts[0]);
                 log.info("최종 결과를 도출합니다" + info);
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
+                        String.valueOf(info));
             }
 
             log.info("컴퓨터와 게임할 때 점수 업데이트까지 완료");
@@ -572,18 +594,19 @@ public class GameController {
             if (gameService.evenReturn(roomID) % 2 == 1) {
                 String result = gameService.winnerAndLoserToken(roomID, winner);
                 String[] parts = result.split(":");
-                log.info(parts[1]); // 이게 승자의 accessToken
-                log.info(parts[0]); // 이게 패자의 accessToken
+//                log.info(parts[0]); // 이게 승자의 accessToken
+//                log.info(parts[1]); // 이게 패자의 accessToken
                 resultUpdateService.updateWinner(parts[0]);
                 resultUpdateService.updateLoser(parts[1]);
                 log.info("DB에 승자와 패자 정보를 갱신합니다");
                 String info = "";
-                info += resultUpdateService.getWinnerInfo(parts[1]) + ":" + resultUpdateService.getLoserInfo(parts[0]);
+                info += resultUpdateService.getLoserInfo(parts[1]) + ":"
+                        + resultUpdateService.getWinnerInfo(parts[0]);
                 log.info("최종 결과를 도출합니다" + info);
 
-
                 // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
-                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo", String.valueOf(info));
+                messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
+                        String.valueOf(info));
                 gameService.updateLog(roomID, winner);
                 log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
             }
@@ -593,7 +616,8 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/alive")
-    public void checkConnection(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
+    public void checkConnection(@DestinationVariable String roomId,
+            @RequestBody Map<String, Object> messageBody) {
         int roomID = Integer.parseInt(roomId);
         int nowNumber = (int) messageBody.get("nowNumber");
         gameService.whoIn(roomID, nowNumber);
