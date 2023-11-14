@@ -116,8 +116,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       String? introduction =
           jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
 
-      saveIntroduction(introduction!);
-      print(introduction);
+      if (introduction != null) {
+        saveIntroduction(introduction!);
+        print(introduction);
+      }
     }
   }
 
@@ -201,21 +203,57 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('알림'),
-              content: Text('회원탈퇴 되었습니다.'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: Colors.grey,
+              titlePadding: const EdgeInsets.only(right: 5),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: const Text(
+                    "드래곤 불",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              contentPadding: const EdgeInsets.only(right: 5),
+              content: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  '회원탈퇴 되었습니다.',
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+
+              actionsPadding: const EdgeInsets.only(bottom: 15),
               actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  },
-                  child: Text('확인'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      padding: const EdgeInsets.all(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginScreen()),
+                                (route) => false,
+                          );
+                        },
+                        child: const Text('확인', style: TextStyle(color: Colors.white),),
+                      ),
+                    )
+                  ],
                 ),
               ],
+
             );
           },
         );
@@ -593,22 +631,62 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text('알림'),
-                                  content: Text('회원탈퇴하시겠습니까?\n(재가입은 불가능합니다.)'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text('취소'),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  backgroundColor: Colors.grey,
+                                  titlePadding: const EdgeInsets.only(right: 5),
+                                  title: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                      padding: const EdgeInsets.all(7),
+                                      child: const Text(
+                                        "드래곤 불",
+                                        style: TextStyle(fontSize: 20, color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        _out();
-                                      },
-                                      child: Text('확인'),
+                                  ),
+
+                                  contentPadding: const EdgeInsets.only(right: 5),
+                                  content: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                    child: Text(
+                                      '탈퇴하시겠습니까?\n(재가입은 불가능합니다.)',
+                                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                                    ),
+                                  ),
+
+                                  actionsPadding: const EdgeInsets.only(bottom: 15),
+                                  actions: <Widget>[
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                          padding: const EdgeInsets.all(7),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).pop(false);
+                                            },
+                                            child: const Text('취소', style: TextStyle(color: Colors.white),),
+                                          ),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                          padding: const EdgeInsets.all(7),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _out();
+                                            },
+                                            child: const Text('탈퇴하기', style: TextStyle(color: Colors.white),),
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   ],
+
                                 );
                               },
                             );

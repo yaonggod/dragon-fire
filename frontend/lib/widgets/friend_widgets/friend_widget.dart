@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/screens/friend_game_screen.dart';
+import 'package:frontend/utils/set_tier_img.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -224,10 +225,28 @@ class _FriendWidgetState extends State<FriendWidget> {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
-                          backgroundImage:
-                              AssetImage("lib/assets/icons/appIcon.png"),
-                          radius: 30,
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: setTierImg(score: widget.friend.score),
+                              ),
+                              Positioned(
+                                bottom: -10,
+                                right: 0,
+                                child: widget.friend.isConnect ? Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage("lib/assets/icons/on.png"),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ) : Container(),
+                              )
+                            ]
                         ),
                         SizedBox(
                             width: MediaQuery.of(context).size.width * 0.03),
