@@ -111,15 +111,13 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     );
     if (response.statusCode == 200) {
       String? nickname =
-          jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
+      jsonDecode(utf8.decode(response.bodyBytes))['nickname'];
       String? email = jsonDecode(utf8.decode(response.bodyBytes))['email'];
       String? introduction =
-          jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
+      jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
 
-      if (introduction != null) {
-        saveIntroduction(introduction!);
-        print(introduction);
-      }
+      saveIntroduction(introduction!);
+      print(introduction);
     }
   }
 
