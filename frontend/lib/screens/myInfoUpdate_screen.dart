@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -260,28 +259,37 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             body: jsonEncode({'introduction': introduction}));
 
     if (response.statusCode == 200) {
-      print("Successfully sent data to server");
       saveIntroduction(
           jsonDecode(utf8.decode(response.bodyBytes))['introduction']);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('알림'),
-            content: const Text('자기소개 변경 성공'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('확인'),
-              ),
-            ],
+      Future.microtask(
+        () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('알림'),
+                content: const Text('자기소개 변경 성공'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainScreen(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: const Text('확인'),
+                  ),
+                ],
+              );
+            },
           );
         },
       );
     } else {
-      print("Failed to send data to server");
       showDialog(
         context: context,
         builder: (BuildContext context) {
