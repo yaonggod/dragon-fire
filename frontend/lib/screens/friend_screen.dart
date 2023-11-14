@@ -241,7 +241,7 @@ class _FriendScreenState extends State<FriendScreen> {
                                   searchNickname = value;
                                 });
                               },
-                              maxLength: 12,
+                              maxLength: 20,
                               style: TextStyle(fontSize: 20, color: Colors.white),
                               decoration: const InputDecoration(
                                 fillColor: Colors.white24,
@@ -295,6 +295,7 @@ class _FriendScreenState extends State<FriendScreen> {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: AssetImage(buttonSrc),
+                                  fit: BoxFit.fitWidth,
                                 ),
                               ),
                             ),
