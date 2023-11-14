@@ -181,14 +181,21 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         saveNickname(nickname!);
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text('알림'),
               content: const Text('닉네임 변경 성공'),
-              actions: <Widget>[
+              actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MainScreen(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
                   },
                   child: const Text('확인'),
                 ),
@@ -196,11 +203,11 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             );
           },
         );
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-          (Route<dynamic> route) => false,
-        );
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const MainScreen()),
+        //   (Route<dynamic> route) => false,
+        // );
       } else {
         print("Failed to send data to server");
         showDialog(
