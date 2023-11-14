@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/ranking_models/my_ranking_model.dart';
 import 'package:frontend/models/ranking_models/total_ranking_model.dart';
 import 'package:frontend/services/ranking_api_services.dart';
+import 'package:frontend/utils/set_tier_img.dart';
 
 class RankingScreen extends StatelessWidget {
   RankingScreen({super.key});
@@ -56,7 +57,9 @@ class RankingScreen extends StatelessWidget {
                             child: Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                setMyTierImg(userInfo),
+                                setTierImg(
+                                  score: int.parse(userInfo.score),
+                                ),
                                 const SizedBox(
                                   width: 15,
                                 ),
@@ -166,7 +169,9 @@ class RankingScreen extends StatelessWidget {
                                   fontSize: 20,
                                 ),
                               ),
-                              trailing: setTierImg(userInfo),
+                              trailing: setTierImg(
+                                score: int.parse(userInfo.score),
+                              ),
                             ),
                           );
                         },
@@ -218,106 +223,6 @@ class RankingScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget setMyTierImg(MyRankingModel userInfo) {
-    int score = int.parse(userInfo.score);
-    if (score < 1000) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierBronze.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1000 <= score && score < 1100) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierSilver.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1100 <= score && score < 1200) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierGold.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1200 <= score && score < 1300) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierPlatinum.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierDiamond.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
-
-  Widget setTierImg(TotalRankingModel userInfo) {
-    int score = int.parse(userInfo.score);
-    if (score < 1000) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierBronze.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1000 <= score && score < 1100) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierSilver.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1100 <= score && score < 1200) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierGold.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1200 <= score && score < 1300) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierPlatinum.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierDiamond.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    }
   }
 
   Widget topRanking(TotalRankingModel userInfo) {
