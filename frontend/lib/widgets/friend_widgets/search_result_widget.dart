@@ -63,8 +63,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
           buttonSrc = 'lib/assets/icons/addFriend.png';
         }),
           child: Container(
-        width: 60,
-        height: 60,
+        width: 80,
+        height: 80,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(buttonSrc),
@@ -84,18 +84,49 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-            result
-                ? '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다.'
-                : "친구 요청에 실패했습니다.",
-            style: const TextStyle(fontSize: 18),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
           ),
+          backgroundColor: Colors.grey,
+          titlePadding: const EdgeInsets.only(right: 5),
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+              padding: const EdgeInsets.all(7),
+              child: const Text(
+                "친구 신청",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          contentPadding: const EdgeInsets.only(right: 5),
+          content: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Text(
+              result
+                  ? '${widget.searchResult.toNickname}님께 친구 신청을 보냈습니다.'
+                  : "친구 요청에 실패했습니다.",
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+          actionsPadding: const EdgeInsets.only(bottom: 15),
           actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('확인'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: const Text('확인', style: TextStyle(color: Colors.white),),
+                  ),
+                )
+              ],
             ),
           ],
         );
