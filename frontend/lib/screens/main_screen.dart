@@ -18,6 +18,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../services/connecting_service.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -25,7 +27,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _controller;
   late Animation<double> _animation;
   DateTime? backPressed;
@@ -63,6 +65,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       Fluttertoast.showToast(msg: "'뒤로'버튼 한번 더 누르시면 종료됩니다.");
       return false;
     }
+    ConnectingService.connect(false);
     return true;
   }
 
@@ -287,6 +290,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+
+    ConnectingService.connect(true);
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -350,6 +358,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
@@ -396,6 +405,72 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                     fit: BoxFit.fitHeight,
                   ),
                 )).animate().fade(),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.25,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Center(
+                child:
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Image.asset(
+                    'lib/assets/icons/contender.gif',
+                    fit: BoxFit.fitHeight,
+                    width: MediaQuery.of(context).size.width,
+                  ).animate().fade(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: Image.asset(
+                      'lib/assets/skills/newFireBallRival.gif',
+                      fit: BoxFit.fitHeight,
+                      width: MediaQuery.of(context).size.width,
+                    ).animate().fade(),
+                  ),
+                ],
+              ),
+            ),
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: Image.asset(
+                        'lib/assets/skills/newFireBallPlayer.gif',
+                        fit: BoxFit.fitHeight,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Center(
+                child:
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Image.asset(
+                    'lib/assets/icons/myCharacter.gif',
+                    fit: BoxFit.fitHeight,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                ),
+              ),
+            ),
             slidingWidget(
               context,
               _animation,
@@ -671,5 +746,28 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 다시 활성화될 때의 동작
+      print("main 앱이 다시 활성화될 때의 동작");
+      ConnectingService.connect(true);
+    } else if (state == AppLifecycleState.inactive) {
+      // 앱이 동작 안할 때
+      print("main 앱이 동작 안할 때");
+      ConnectingService.connect(false);
+    } else if (state == AppLifecycleState.paused) {
+      // 앱이 일시 중지될 때의 동작
+      print("main 앱이 일시 중지될 때의 동작");
+      ConnectingService.connect(false);
+    } else if (state == AppLifecycleState.detached) {
+      // 앱이 종료될 때의 동작
+      // update
+      print("main 앱이 종료될 때의 동작");
+      ConnectingService.connect(false);
+    }
   }
 }

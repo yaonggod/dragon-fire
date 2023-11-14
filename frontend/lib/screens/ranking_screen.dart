@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/ranking_models/my_ranking_model.dart';
 import 'package:frontend/models/ranking_models/total_ranking_model.dart';
 import 'package:frontend/services/ranking_api_services.dart';
+import 'package:frontend/utils/set_tier_img.dart';
 
 class RankingScreen extends StatelessWidget {
   RankingScreen({super.key});
@@ -50,12 +51,18 @@ class RankingScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(
                               left: 15,
-                              right: 15,
+                              right: 30,
                               bottom: 15,
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                setTierImg(
+                                  score: int.parse(userInfo.score),
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
                                 Text(
                                   userInfo.nickname,
                                   style: const TextStyle(
@@ -63,7 +70,6 @@ class RankingScreen extends StatelessWidget {
                                     fontSize: 25,
                                   ),
                                 ),
-                                setMyTierImg(userInfo),
                               ],
                             ),
                           ),
@@ -163,7 +169,9 @@ class RankingScreen extends StatelessWidget {
                                   fontSize: 20,
                                 ),
                               ),
-                              trailing: setTierImg(userInfo),
+                              trailing: setTierImg(
+                                score: int.parse(userInfo.score),
+                              ),
                             ),
                           );
                         },
@@ -217,124 +225,24 @@ class RankingScreen extends StatelessWidget {
     );
   }
 
-  Widget setMyTierImg(MyRankingModel userInfo) {
-    int score = int.parse(userInfo.score);
-    if (score < 1000) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierBronze.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1000 <= score && score < 1100) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierSilver.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1100 <= score && score < 1200) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierGold.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1200 <= score && score < 1300) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierPlatinum.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierDiamond.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
-
-  Widget setTierImg(TotalRankingModel userInfo) {
-    int score = int.parse(userInfo.score);
-    if (score < 1000) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierBronze.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1000 <= score && score < 1100) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierSilver.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1100 <= score && score < 1200) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierGold.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else if (1200 <= score && score < 1300) {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierPlatinum.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: 32,
-        height: 32,
-        child: Image.asset(
-          'lib/assets/icons/tierDiamond.png',
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-  }
-
   Widget topRanking(TotalRankingModel userInfo) {
     if (userInfo.rank == '1') {
       return Image.asset(
         'lib/assets/icons/rankFirst.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     } else if (userInfo.rank == '2') {
       return Image.asset(
         'lib/assets/icons/rankSecond.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     } else if (userInfo.rank == '3') {
       return Image.asset(
         'lib/assets/icons/rankThird.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     }
     return Text(
