@@ -127,14 +127,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('알림'),
-            content: Text('이미 사용중인 닉네임입니다'),
+            title: const Text('알림'),
+            content: const Text('이미 사용중인 닉네임입니다'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('확인'),
+                child: const Text('확인'),
               ),
             ],
           );
@@ -181,14 +181,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('알림'),
-              content: Text('닉네임 변경 성공'),
+              title: const Text('알림'),
+              content: const Text('닉네임 변경 성공'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('확인'),
+                  child: const Text('확인'),
                 ),
               ],
             );
@@ -205,14 +205,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('알림'),
-              content: Text('다시 시도해주세요'),
+              title: const Text('알림'),
+              content: const Text('다시 시도해주세요'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('확인'),
+                  child: const Text('확인'),
                 ),
               ],
             );
@@ -227,14 +227,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('알림'),
-            content: Text('닉네임 중복체크를 해주세요.'),
+            title: const Text('알림'),
+            content: const Text('닉네임 중복체크를 해주세요.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('확인'),
+                child: const Text('확인'),
               ),
             ],
           );
@@ -246,24 +246,23 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        backgroundColor: Colors.red,
-        appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.red,
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.black),
-        ),
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
       body: Stack(
         children: [
           Positioned(
-              left: 0,
-              right: 0,
-              height: MediaQuery.of(context).size.height,
-              child: Container(
-                child: Image.asset(
-                  'lib/assets/icons/background.png',
-                  fit: BoxFit.fitHeight,
-                ),
-              )),
+            left: 0,
+            right: 0,
+            height: MediaQuery.of(context).size.height,
+            child: Image.asset(
+              'lib/assets/icons/background.png',
+              fit: BoxFit.fitHeight,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(25.0),
             child: Column(
@@ -332,14 +331,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text('알림'),
-                            content: Text('닉네임 중복체크를 해주세요.'),
+                            title: const Text('알림'),
+                            content: const Text('닉네임 중복체크를 해주세요.'),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('확인'),
+                                child: const Text('확인'),
                               ),
                             ],
                           );
@@ -361,10 +360,10 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             ),
           ),
           Positioned(
-            top:0,
-            height: MediaQuery.of(context).size.height*0.1,
+            top: 0,
+            height: MediaQuery.of(context).size.height * 0.1,
             child: AppBar(
-              toolbarHeight: MediaQuery.of(context).size.height*0.1,
+              toolbarHeight: MediaQuery.of(context).size.height * 0.1,
               backgroundColor: Colors.black,
               foregroundColor: Colors.black,
               iconTheme: const IconThemeData(

@@ -50,12 +50,16 @@ class RankingScreen extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(
                               left: 15,
-                              right: 15,
+                              right: 30,
                               bottom: 15,
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                setMyTierImg(userInfo),
+                                const SizedBox(
+                                  width: 15,
+                                ),
                                 Text(
                                   userInfo.nickname,
                                   style: const TextStyle(
@@ -63,7 +67,6 @@ class RankingScreen extends StatelessWidget {
                                     fontSize: 25,
                                   ),
                                 ),
-                                setMyTierImg(userInfo),
                               ],
                             ),
                           ),
@@ -321,20 +324,20 @@ class RankingScreen extends StatelessWidget {
     if (userInfo.rank == '1') {
       return Image.asset(
         'lib/assets/icons/rankFirst.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     } else if (userInfo.rank == '2') {
       return Image.asset(
         'lib/assets/icons/rankSecond.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     } else if (userInfo.rank == '3') {
       return Image.asset(
         'lib/assets/icons/rankThird.png',
-        width: 40,
-        height: 40,
+        width: 27,
+        height: 27,
       );
     }
     return Text(
