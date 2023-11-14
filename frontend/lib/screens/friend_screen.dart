@@ -25,6 +25,8 @@ class _FriendScreenState extends State<FriendScreen> {
   // String baseUrl = "http://10.0.2.2:8080";
   String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
+  String buttonSrc = 'lib/assets/icons/search.png';
+
   // 검색할 닉네임
   String searchNickname = "";
 
@@ -274,12 +276,26 @@ class _FriendScreenState extends State<FriendScreen> {
                           ),
                           GestureDetector(
                             onTap: search,
+                            onTapUp: (details) {
+                              setState(() {
+                                buttonSrc = 'lib/assets/icons/search.png';
+                              });
+                            },
+                            onTapDown: (details) {
+                              setState(() {
+                                buttonSrc = 'lib/assets/icons/searchPressed.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonSrc = 'lib/assets/icons/search.png';
+                            }),
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical:3),
-                              child: const Icon(
-                                color: Colors.white,
-                                Icons.search,
-                                size: 40,
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonSrc),
+                                ),
                               ),
                             ),
                           )
