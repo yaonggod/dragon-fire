@@ -214,7 +214,12 @@ class _RegistScreenState extends State<RegistScreen> {
                         color: Colors.grey,
                       ),
                     )),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '중복체크',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     if (nicknameController.text.isEmpty) {
                       // 경고 메시지 표시 로직
@@ -229,11 +234,14 @@ class _RegistScreenState extends State<RegistScreen> {
                       nicknameCheck();
                     }
                   },
-                  child: const Text('중복체크'),
                 ),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
-                    // print(widget.code);
                     if (nicknameChecked == false) {
                       showDialog(
                         context: context,
@@ -262,7 +270,6 @@ class _RegistScreenState extends State<RegistScreen> {
                       }
                     }
                   },
-                  child: const Text('등록'),
                 ),
               ],
             ),

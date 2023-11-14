@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/screens/gameResult_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
@@ -46,7 +49,7 @@ class _GameScreenState extends State<GameScreen> {
   bool isGameStart = false;
   bool isResult = false; // 순간 순간의 결과창을 보여주는 페이지
   bool isGameOver = false; // 게임이 끝났는지를 확인하는 변수
-  String? contender;
+  String? contender="동탄불주먹";
   bool isGi = false; // 기
   bool isPa = false; // 파
   bool isBlock = false; // 막기
@@ -88,6 +91,19 @@ class _GameScreenState extends State<GameScreen> {
   String buttonShield = "lib/assets/icons/buttonShield.png";
   String buttonTele = "lib/assets/icons/buttonTele.png";
   String giIcon = "lib/assets/icons/giStatus.png";
+
+  bool? _isVibrate;
+  bool _isHaptic = true;
+
+  Future<bool?> getVibrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('vibrate');
+  }
+
+  Future<bool?> getHaptic() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('haptic');
+  }
 
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
@@ -138,6 +154,8 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Future<void> _checkLoginStatus() async {
     Map<String, String> tokens = await readToken();
+    _isVibrate = await getVibrate();
+    _isHaptic = await getHaptic() ?? true;
     accessToken = tokens['Authorization'];
     refreshToken = tokens['refreshToken'];
     print(refreshToken);
@@ -300,13 +318,18 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'charging';
             } else if (picked2 == '파') {
               youPick = 'fireballRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked2 == '막기') {
               youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else {
               youPick = '미처리';
             }
@@ -314,6 +337,9 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'fireballPlayer';
             if (picked2 == '기') {
               youPick = 'charging';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked2 == '파') {
               youPick = 'fireballRival';
             } else if (picked2 == '막기') {
@@ -322,9 +348,14 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else {
               youPick = '미처리';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             }
           } else if (picked1 == '막기') {
             mePick = 'fireShield';
@@ -338,7 +369,9 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else {
               youPick = '미처리';
             }
@@ -361,20 +394,31 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'meteorPlayer';
             if (picked2 == '기') {
               youPick = 'charging';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked2 == '파') {
               youPick = 'fireballRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked2 == '막기') {
               youPick = 'fireShield';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked2 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 200);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             } else {
               youPick = '미처리';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             }
           } else {
             mePick = '미처리';
@@ -382,12 +426,18 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'charging';
             } else if (picked2 == '파') {
               youPick = 'fireballRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked2 == '막기') {
               youPick = 'fireShield';
             } else if (picked2 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             } else {
               youPick = '미처리';
             }
@@ -399,13 +449,18 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'charging';
             } else if (picked1 == '파') {
               youPick = 'fireballRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked1 == '막기') {
               youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else {
               youPick = '미처리';
             }
@@ -413,6 +468,9 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'fireballPlayer';
             if (picked1 == '기') {
               youPick = 'charging';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked1 == '파') {
               youPick = 'fireballRival';
             } else if (picked1 == '막기') {
@@ -420,10 +478,15 @@ class _GameScreenState extends State<GameScreen> {
             } else if (picked1 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
               youPick = 'meteorRival';
             } else {
               youPick = '미처리';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             }
           } else if (picked2 == '막기') {
             mePick = 'fireShield';
@@ -437,7 +500,9 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else {
               youPick = '미처리';
             }
@@ -460,20 +525,31 @@ class _GameScreenState extends State<GameScreen> {
             mePick = 'meteorPlayer';
             if (picked1 == '기') {
               youPick = 'charging';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked1 == '파') {
               youPick = 'fireballRival';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked1 == '막기') {
               youPick = 'fireShield';
-              Vibration.vibrate(amplitude: 128);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 128);
+              }
             } else if (picked1 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
               youPick = 'meteorRival';
-              Vibration.vibrate(amplitude: 200);
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             } else {
               youPick = '미처리';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             }
           } else {
             mePick = '미처리';
@@ -481,12 +557,18 @@ class _GameScreenState extends State<GameScreen> {
               youPick = 'charging';
             } else if (picked1 == '파') {
               youPick = 'fireballRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 50);
+              }
             } else if (picked1 == '막기') {
               youPick = 'fireShield';
             } else if (picked1 == '순간이동') {
               youPick = 'teleportation';
             } else if (picked1 == '원기옥') {
               youPick = 'meteorRival';
+              if(_isVibrate != null && _isVibrate!){
+                Vibration.vibrate(amplitude: 200);
+              }
             } else {
               youPick = '미처리';
             }
@@ -560,7 +642,6 @@ class _GameScreenState extends State<GameScreen> {
           if (shouldContinue == '계속합니다') {
             // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
             // 그럼 이때는 처음부터 게임을 시작해야 한다.
-            round = 0;
             showPan();
             // 새로운 게임을 시작하는데 가장 중요한 요소가 뭘까? 일단 기 정보를 초기화 해줘야 한다.
           } else if (shouldContinue == '끝냅니다') {
@@ -869,7 +950,7 @@ class _GameScreenState extends State<GameScreen> {
       config: StompConfig(
         url: socketUrl,
         // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -892,6 +973,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AudioManager.pause();
     return Scaffold(
       body: WillPopScope(
         onWillPop: endApp,
@@ -1053,7 +1135,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1093,7 +1175,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1137,7 +1219,7 @@ class _GameScreenState extends State<GameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1571,12 +1653,18 @@ class _GameScreenState extends State<GameScreen> {
                                         isTelPressed = true;
                                       });
                                     }
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonTele =
                                           'lib/assets/icons/buttonTele2.png';
                                     });
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
@@ -1594,6 +1682,16 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isTelPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO( 255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonTele),
                                         fit: BoxFit.fitWidth,
@@ -1630,12 +1728,18 @@ class _GameScreenState extends State<GameScreen> {
                                         isBombPressed = true;
                                       });
                                     }
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonOne =
                                           'lib/assets/icons/buttonOne2.png';
                                     });
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
@@ -1653,6 +1757,16 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isBombPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO( 255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonOne),
                                         fit: BoxFit.fitWidth,
@@ -1679,11 +1793,17 @@ class _GameScreenState extends State<GameScreen> {
                                       isGiPressed = true;
                                     });
                                   }
+                                  if(_isHaptic) {
+                                    HapticFeedback.lightImpact();
+                                  }
                                 },
                                 onTapDown: (_) {
                                   setState(() {
                                     buttonGi = 'lib/assets/icons/buttonGi2.png';
                                   });
+                                  if(_isHaptic) {
+                                    HapticFeedback.lightImpact();
+                                  }
                                 },
                                 onTapUp: (_) {
                                   setState(() {
@@ -1699,6 +1819,16 @@ class _GameScreenState extends State<GameScreen> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      if(isGiPressed)
+                                        BoxShadow(
+                                          color: Color.fromRGBO( 255, 29, 17,
+                                              0.5),
+                                          offset: Offset(0, -10),
+                                          blurRadius: 20,
+                                          spreadRadius: -20,
+                                        ),
+                                    ],
                                     image: DecorationImage(
                                       image: AssetImage(buttonGi),
                                       fit: BoxFit.fitWidth,
@@ -1732,12 +1862,18 @@ class _GameScreenState extends State<GameScreen> {
                                       isBlockPressed = true;
                                     });
                                   }
+                                  if(_isHaptic) {
+                                    HapticFeedback.lightImpact();
+                                  }
                                 },
                                 onTapDown: (_) {
                                   setState(() {
                                     buttonShield =
                                         'lib/assets/icons/buttonShield2.png';
                                   });
+                                  if(_isHaptic) {
+                                    HapticFeedback.lightImpact();
+                                  }
                                 },
                                 onTapUp: (_) {
                                   setState(() {
@@ -1755,6 +1891,16 @@ class _GameScreenState extends State<GameScreen> {
                                   height:
                                       MediaQuery.of(context).size.width * 0.25,
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      if(isBlockPressed)
+                                        BoxShadow(
+                                          color: Color.fromRGBO( 255, 29, 17,
+                                              0.5),
+                                          offset: Offset(0, -10),
+                                          blurRadius: 20,
+                                          spreadRadius: -20,
+                                        ),
+                                    ],
                                     image: DecorationImage(
                                       image: AssetImage(buttonShield),
                                       fit: BoxFit.fitWidth,
@@ -1777,12 +1923,18 @@ class _GameScreenState extends State<GameScreen> {
                                         isPaPressed = true;
                                       });
                                     }
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonPa =
                                           'lib/assets/icons/buttonPa2.png';
                                     });
+                                    if(_isHaptic) {
+                                      HapticFeedback.lightImpact();
+                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
@@ -1799,6 +1951,17 @@ class _GameScreenState extends State<GameScreen> {
                                     height: MediaQuery.of(context).size.width *
                                         0.25,
                                     decoration: BoxDecoration(
+                                      boxShadow: [
+                                        if(isPaPressed)
+                                          BoxShadow(
+                                            color: Color.fromRGBO(
+                                                255, 29, 17,
+                                                0.5),
+                                            offset: Offset(0, -10),
+                                            blurRadius: 20,
+                                            spreadRadius: -20,
+                                          ),
+                                      ],
                                       image: DecorationImage(
                                         image: AssetImage(buttonPa),
                                         fit: BoxFit.fitWidth,
