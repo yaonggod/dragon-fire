@@ -34,4 +34,10 @@ public class PlayResult extends BaseTimeEntity {
 
     @Column(name = "season_max_score")
     private int seasonMaxScore;
+
+    @Column(name = "winning_streak")
+    private int winningStreak;
+
+    @Column(name = "season_max_winning_streak")
+    private int seasonMaxWinningStreak;
 }
