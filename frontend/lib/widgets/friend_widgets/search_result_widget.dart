@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/utils/set_tier_img.dart';
 
 class SearchResultWidget extends StatefulWidget {
   final SearchResultModel searchResult;
@@ -63,8 +64,8 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
           buttonSrc = 'lib/assets/icons/addFriend.png';
         }),
           child: Container(
-        width: 80,
-        height: 80,
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(buttonSrc),
@@ -201,9 +202,9 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
           children: [
             Row(
               children: [
-                const CircleAvatar(
-                  backgroundImage: AssetImage("lib/assets/icons/appIcon.png"),
-                  radius: 30,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: setTierImg(score: widget.searchResult.score),
                 ),
                 SizedBox(width: MediaQuery.of(context).size.width * 0.03),
                 Column(

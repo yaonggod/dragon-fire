@@ -112,24 +112,61 @@ class TowerScreenState extends State<TowerScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('알림'),
-            content: Text(
-              isWaiting
-                  ? '게임 대기열에서 나가시겠습니까?'
-                  : '게임에서 나가시겠습니까?\n(※ 퇴장시 패배 처리됩니다)',
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
             ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: const Text('취소'),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "드래곤 불",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('확인'),
+            ),
+
+            contentPadding: const EdgeInsets.only(right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                isWaiting
+                    ? '게임 대기열에서 나가시겠습니까?'
+                    : '게임에서 나가시겠습니까?\n(※ 퇴장시 패배 처리됩니다)',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: const Text('취소', style: TextStyle(color: Colors.white),),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
           );
@@ -203,21 +240,57 @@ class TowerScreenState extends State<TowerScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('알림'),
-                content: Text('상대가 떠났습니다'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Colors.grey,
+                titlePadding: const EdgeInsets.only(right: 5),
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: const Text(
+                      "드래곤 불",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                contentPadding: const EdgeInsets.only(right: 5),
+                content: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    "상대가 떠났습니다.",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+
+                actionsPadding: const EdgeInsets.only(bottom: 15),
                 actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainScreen()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text('확인'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainScreen()),
+                                  (route) => false,
+                            );
+                          },
+                          child: const Text('확인', style: TextStyle(color: Colors.white),),
+                        ),
+                      )
+                    ],
                   ),
                 ],
+
               );
             },
           );
@@ -270,21 +343,57 @@ class TowerScreenState extends State<TowerScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('알림'),
-              content: Text('아무것도 선택하지 않았습니다'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: Colors.grey,
+              titlePadding: const EdgeInsets.only(right: 5),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: const Text(
+                    "드래곤 불",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              contentPadding: const EdgeInsets.only(right: 5),
+              content: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  "아무것도 선택하지 않았습니다.",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+
+              actionsPadding: const EdgeInsets.only(bottom: 15),
               actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainScreen()),
-                      (route) => false,
-                    );
-                  },
-                  child: Text('확인'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      padding: const EdgeInsets.all(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainScreen()),
+                                (route) => false,
+                          );
+                        },
+                        child: const Text('확인', style: TextStyle(color: Colors.white),),
+                      ),
+                    )
+                  ],
                 ),
               ],
+
             );
           },
         );
@@ -628,21 +737,57 @@ class TowerScreenState extends State<TowerScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('알림'),
-                content: Text('패배!!!!'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Colors.grey,
+                titlePadding: const EdgeInsets.only(right: 5),
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: const Text(
+                      "드래곤 불",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                contentPadding: const EdgeInsets.only(right: 5),
+                content: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    "패배!!!",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+
+                actionsPadding: const EdgeInsets.only(bottom: 15),
                 actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainScreen()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text('확인'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainScreen()),
+                                  (route) => false,
+                            );
+                          },
+                          child: const Text('확인', style: TextStyle(color: Colors.white),),
+                        ),
+                      )
+                    ],
                   ),
                 ],
+
               );
             },
           );
@@ -675,21 +820,57 @@ class TowerScreenState extends State<TowerScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('알림'),
-                    content: Text('승리하였습니다. 다음 단계에 도전 가능!'),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    backgroundColor: Colors.grey,
+                    titlePadding: const EdgeInsets.only(right: 5),
+                    title: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: const Text(
+                          "드래곤 불",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                    contentPadding: const EdgeInsets.only(right: 5),
+                    content: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: Text(
+                        '승리하였습니다. 다음 단계에 도전 가능!',
+                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+
+                    actionsPadding: const EdgeInsets.only(bottom: 15),
                     actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainScreen()),
-                                (route) => false,
-                          );
-                        },
-                        child: Text('메인으로 돌아가기'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                            padding: const EdgeInsets.all(7),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainScreen()),
+                                      (route) => false,
+                                );
+                              },
+                              child: const Text('메인으로 돌아가기', style: TextStyle(color: Colors.white),),
+                            ),
+                          )
+                        ],
                       ),
                     ],
+
                   );
                 },
               );
@@ -700,21 +881,57 @@ class TowerScreenState extends State<TowerScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('알림'),
-                    content: Text('패배하였습니다'),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    backgroundColor: Colors.grey,
+                    titlePadding: const EdgeInsets.only(right: 5),
+                    title: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: const Text(
+                          "드래곤 불",
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                    contentPadding: const EdgeInsets.only(right: 5),
+                    content: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: Text(
+                        '패배하였습니다.',
+                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+
+                    actionsPadding: const EdgeInsets.only(bottom: 15),
                     actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainScreen()),
-                            (route) => false,
-                          );
-                        },
-                        child: Text('메인으로 돌아가기'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                            padding: const EdgeInsets.all(7),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainScreen()),
+                                      (route) => false,
+                                );
+                              },
+                              child: const Text('메인으로 돌아가기', style: TextStyle(color: Colors.white),),
+                            ),
+                          )
+                        ],
                       ),
                     ],
+
                   );
                 },
               );
@@ -874,21 +1091,57 @@ class TowerScreenState extends State<TowerScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('알림'),
-                content: Text('상대가 떠났습니다'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Colors.grey,
+                titlePadding: const EdgeInsets.only(right: 5),
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: const Text(
+                      "드래곤 불",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                contentPadding: const EdgeInsets.only(right: 5),
+                content: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    "상대가 떠났습니다.",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+
+                actionsPadding: const EdgeInsets.only(bottom: 15),
                 actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainScreen()),
-                        (route) => false,
-                      );
-                    },
-                    child: Text('확인'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainScreen()),
+                                  (route) => false,
+                            );
+                          },
+                          child: const Text('확인', style: TextStyle(color: Colors.white),),
+                        ),
+                      )
+                    ],
                   ),
                 ],
+
               );
             },
           );
