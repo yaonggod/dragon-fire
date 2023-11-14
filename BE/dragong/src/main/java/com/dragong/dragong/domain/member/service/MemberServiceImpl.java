@@ -192,7 +192,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void logout(String accessToken, String refreshToken,
             HttpServletResponse httpServletResponse) {
-        System.out.println("여기 옴?");
 
         UUID memberId = jwtUtil.extractMemberId(accessToken.substring(7));
 
