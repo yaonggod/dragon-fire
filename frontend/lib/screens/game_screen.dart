@@ -417,7 +417,7 @@ class _GameScreenState extends State<GameScreen> {
             } else {
               youPick = '미처리';
               if(_isVibrate != null && _isVibrate!){
-                Vibration.vibrate(amplitude: 200);
+                Vibration.vibrate(amplitude: 128);
               }
             }
           } else {
@@ -436,7 +436,7 @@ class _GameScreenState extends State<GameScreen> {
             } else if (picked2 == '원기옥') {
               youPick = 'meteorRival';
               if(_isVibrate != null && _isVibrate!){
-                Vibration.vibrate(amplitude: 200);
+                Vibration.vibrate(amplitude: 128);
               }
             } else {
               youPick = '미처리';
@@ -548,7 +548,7 @@ class _GameScreenState extends State<GameScreen> {
             } else {
               youPick = '미처리';
               if(_isVibrate != null && _isVibrate!){
-                Vibration.vibrate(amplitude: 200);
+                Vibration.vibrate(amplitude: 128);
               }
             }
           } else {
@@ -567,7 +567,7 @@ class _GameScreenState extends State<GameScreen> {
             } else if (picked1 == '원기옥') {
               youPick = 'meteorRival';
               if(_isVibrate != null && _isVibrate!){
-                Vibration.vibrate(amplitude: 200);
+                Vibration.vibrate(amplitude: 128);
               }
             } else {
               youPick = '미처리';

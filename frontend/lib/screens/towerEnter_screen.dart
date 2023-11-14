@@ -388,6 +388,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                     image: DecorationImage(
                         image: AssetImage('lib/assets/icons/ground.png'),
                         repeat: ImageRepeat.repeat,
+                        alignment: Alignment.topCenter,
                         fit: BoxFit.fitWidth),
                   ),
                 )
