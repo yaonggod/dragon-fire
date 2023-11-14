@@ -169,6 +169,40 @@ void initializeNotification() async {
     // 받은 데이터로 리다이렉트하기
     if (route == "friend-add" || route == "friend-accept")  {
       DragonG.navigatorKey.currentState!.pushNamed('/friend');
+    } else if (route == "friend-fight") {
+      String? nickname;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      nickname = prefs.getString('nickname');
+
+      const storage = FlutterSecureStorage();
+      String? accessToken = await storage.read(key: 'accessToken');
+      String? refreshToken = await storage.read(key: 'refreshToken');
+
+      if (nickname != null && accessToken != null && refreshToken != null) {
+        String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
+        final response = await http.post(Uri.parse("$baseUrl/friend-game/accept"),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+            'refreshToken': 'Bearer $refreshToken'
+          },
+          body: jsonEncode({"roomId": int.parse(message.data["roomId"]!)}),
+        );
+        if (response.statusCode == 200) {
+          DragonG.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => FriendGameScreen(roomId: int.parse(message.data["roomId"]!), nickname: nickname!, nowNumber: -1),
+            ),
+          );
+        }
+
+      } else {
+        DragonG.navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
+          ),
+        );
+      }
     }
   });
 
