@@ -7,32 +7,32 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class GameResultScreen extends StatefulWidget {
+class FriendGameResultScreen extends StatefulWidget {
   final int roomId;
   final String nickname;
   final String win;
   final String lose;
-  final int point;
 
-  const GameResultScreen({
+  const FriendGameResultScreen({
     super.key,
     required this.roomId,
     required this.nickname,
     required this.win,
     required this.lose,
-    required this.point,
   });
 
   @override
-  State<GameResultScreen> createState() => _GameResultScreenState();
+  State<FriendGameResultScreen> createState() => _FriendGameResultScreenState();
 }
 
-class _GameResultScreenState extends State<GameResultScreen>
+class _FriendGameResultScreenState extends State<FriendGameResultScreen>
     with SingleTickerProviderStateMixin {
   // late AnimationController _controller;
   int? point;
-  AnimatedDigitController? _controller2;
-  int _currentValue = 0;
+  int? win;
+  int? lose;
+  AnimatedDigitController? _controllerWin;
+  AnimatedDigitController? _controllerLose;
 
   DateTime? currentBackPressTime;
   Future<String?>? nicknameFuture;
@@ -45,10 +45,27 @@ class _GameResultScreenState extends State<GameResultScreen>
   @override
   void initState() {
     nicknameFuture = getNickname();
-    point = widget.point;
+    win = int.parse(widget.win);
+    lose = int.parse(widget.lose);
+
+    print("나는 $win승 $lose패가 되었다!!!");
     super.initState();
 
-    _controller2 = AnimatedDigitController(point!);
+    // 내가 이겼다
+    if (nicknameFuture == widget.nickname) {
+      _controllerWin = AnimatedDigitController(win! - 1);
+      _controllerLose = AnimatedDigitController(lose!);
+      _controllerWin!.addValue(1);
+    // 내가 졌다
+    } else {
+      _controllerLose = AnimatedDigitController(lose! - 1);
+      _controllerWin = AnimatedDigitController(win!);
+      _controllerLose!.addValue(1);
+    }
+
+    // + 1 효과
+
+
 
     // _controller = AnimationController(
     //   vsync: this,
@@ -73,8 +90,8 @@ class _GameResultScreenState extends State<GameResultScreen>
 
   @override
   void dispose() {
-    // _controller.dispose();
-    _controller2!.dispose();
+    _controllerWin!.dispose();
+    _controllerLose!.dispose();
     super.dispose();
   }
 
@@ -86,7 +103,7 @@ class _GameResultScreenState extends State<GameResultScreen>
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => MainScreen()),
-            (route) => false,
+                (route) => false,
           );
           return true;
         },
@@ -116,7 +133,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                         child: Center(
                           child: Dialog(
                             insetPadding: const EdgeInsets.all(10),
-                            backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
+                            backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -135,8 +152,8 @@ class _GameResultScreenState extends State<GameResultScreen>
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    const MainScreen()),
-                                            (Route<dynamic> route) => false,
+                                                const MainScreen()),
+                                                (Route<dynamic> route) => false,
                                           );
                                         },
                                         child: Image.asset(
@@ -150,7 +167,7 @@ class _GameResultScreenState extends State<GameResultScreen>
                                   Center(
                                     child: Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           widget.nickname == nickname
@@ -162,48 +179,51 @@ class _GameResultScreenState extends State<GameResultScreen>
                                         ),
                                         SizedBox(
                                           height: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.15,
+                                              .size
+                                              .width *
+                                              0.10,
                                         ),
-                                        Text(
-                                          widget.nickname == nickname
-                                              ? '+20'
-                                              : '-20',
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              color: Colors.white),
+                                        Text("상대 전적", style: TextStyle(
+                                            fontSize: 22,
+                                            color: Colors.white)),
+                                        SizedBox(
+                                          height: MediaQuery.of(context)
+                                              .size
+                                              .width *
+                                              0.05,
                                         ),
-                                        // Text(
-                                        //   '랭킹 점수: $_currentValue',
-                                        //   style: TextStyle(
-                                        //       fontSize: 25, color: Colors.white),
-                                        // ),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                           children: [
                                             Image.asset(
                                               'lib/assets/icons/trophyIcon.PNG',
                                               height: 30,
                                               fit: BoxFit.fitHeight,
                                             ),
-                                            Text(
-                                              " : ",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 25),
-                                            ),
-                                            AnimatedDigitWidget(
+                                            const SizedBox(width: 5,),
+                                            widget.nickname == nickname ? AnimatedDigitWidget(
                                               autoSize: true,
-                                              controller: _controller2,
+                                              controller: _controllerWin,
                                               duration:
-                                                  Duration(milliseconds: 1000),
+                                              Duration(milliseconds: 1000),
                                               textStyle: TextStyle(
                                                   color: Colors.white,
-                                                  fontSize: 35),
+                                                  fontSize: 25),
                                               enableSeparator: true,
-                                            ),
+                                            ) : Text("$win", style: TextStyle(color: Colors.white, fontSize: 25)),
+                                            Text(" 승 ", style: TextStyle(color: Colors.white, fontSize: 25)),
+                                            widget.nickname != nickname ? AnimatedDigitWidget(
+                                              autoSize: true,
+                                              controller: _controllerLose,
+                                              duration:
+                                              Duration(milliseconds: 1000),
+                                              textStyle: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 25),
+                                              enableSeparator: true,
+                                            ) : Text("$lose", style: TextStyle(color: Colors.white, fontSize: 25)),
+                                            Text(" 패", style: TextStyle(color: Colors.white, fontSize: 25)),
                                           ],
                                         ),
                                       ],

@@ -50,10 +50,13 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   @override
   void dispose() {
     nicknameController.dispose();
+    introductionController.dispose();
     super.dispose();
   }
 
   TextEditingController nicknameController = TextEditingController();
+  TextEditingController introductionController = TextEditingController();
+
   bool nicknameChecked = false;
 
   Future<void> _checkLoginStatus() async {
@@ -108,14 +111,14 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('알림'),
-            content: Text('사용 가능'),
+            title: const Text('알림'),
+            content: const Text('사용 가능'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('확인'),
+                child: const Text('확인'),
               ),
             ],
           );
@@ -243,11 +246,71 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
     }
   }
 
+  void sendIntroDataToServer() async {
+    Map<String, String> list = await readToken();
+    String baseUrl = dotenv.env['BASE_URL']!;
+    final String introduction = introductionController.text;
+    final response =
+        await http.put(Uri.parse('$baseUrl/api/member/introduction-modify'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${list["Authorization"]!}',
+              'refreshToken': 'Bearer ${list['refreshToken']!}'
+            },
+            body: jsonEncode({'introduction': introduction}));
+
+    if (response.statusCode == 200) {
+      print("Successfully sent data to server");
+      saveIntroduction(
+          jsonDecode(utf8.decode(response.bodyBytes))['introduction']);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('자기소개 변경 성공'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print("Failed to send data to server");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('다시 시도해주세요'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  saveIntroduction(String introduction) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('introduction', introduction);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.red,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -268,8 +331,6 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height / 15),
-                SizedBox(height: MediaQuery.of(context).size.height / 20),
                 const Padding(
                   padding: EdgeInsets.only(left: 5.0),
                   child: Align(
@@ -307,7 +368,12 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                         color: Colors.grey,
                       ),
                     )),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '중복체크',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     if (nicknameController.text.isEmpty) {
                       // 경고 메시지 표시 로직
@@ -322,9 +388,13 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                       nicknameCheck();
                     }
                   },
-                  child: const Text('중복체크'),
                 ),
-                ElevatedButton(
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onPressed: () {
                     if (nicknameChecked == false) {
                       showDialog(
@@ -354,21 +424,58 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                       }
                     }
                   },
-                  child: const Text('등록'),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '자기소개',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 100),
+                TextField(
+                    controller: introductionController,
+                    maxLength: 20,
+                    minLines: 2,
+                    maxLines: 2,
+                    decoration: InputDecoration(
+                      alignLabelWithHint: true,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFF6766E),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                        borderSide: BorderSide(
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                      ),
+                      isDense: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      contentPadding: const EdgeInsets.all(12),
+                      labelText: '닉네임을 입력해주세요',
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    )),
+                MaterialButton(
+                  color: Colors.red,
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    sendIntroDataToServer();
+                  },
                 ),
               ],
-            ),
-          ),
-          Positioned(
-            top: 0,
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: AppBar(
-              toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.black,
-              iconTheme: const IconThemeData(
-                color: Colors.black,
-              ),
             ),
           ),
         ],

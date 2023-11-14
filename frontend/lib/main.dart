@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/access_screen.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:frontend/screens/friend_screen.dart';
 import 'package:frontend/services/message_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +37,7 @@ class DragonG extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    _initBGM();
     return MaterialApp(
       title: '드래곤 불',
       theme: ThemeData(
@@ -48,10 +51,49 @@ class DragonG extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const AccessScreen(),
-        '/friend': (context) => FriendScreen(friendSelected: false),
+        '/friend': (context) => const FriendScreen(friendSelected: false),
       },
       navigatorKey: navigatorKey,
 
     );
+  }
+
+  void _initBGM() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? isBGM = prefs.getBool('bgm');
+
+    //첫 접속시
+    if(isBGM == null){
+      AudioManager.init();
+
+    //첫 접속이 아닌 경우
+    } else if (isBGM != null && !isBGM) {
+      await AudioManager.initAndPause();
+    } else {
+      AudioManager.init();
+    }
+  }
+}
+
+class AudioManager {
+  static AudioPlayer audioPlayer = AudioPlayer();
+
+  static Future<void> initAndPause() async {
+    audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await audioPlayer.play(AssetSource('Showdown_full.wav'), mode: PlayerMode.mediaPlayer);
+    pause();
+  }
+
+  static void init() async {
+    audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await audioPlayer.play(AssetSource('Showdown_full.wav'), mode: PlayerMode.mediaPlayer);
+  }
+
+  static void pause() {
+    audioPlayer.pause();
+  }
+
+  static void resume() {
+    audioPlayer.resume();
   }
 }

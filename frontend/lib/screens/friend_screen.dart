@@ -25,6 +25,8 @@ class _FriendScreenState extends State<FriendScreen> {
   // String baseUrl = "http://10.0.2.2:8080";
   String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
 
+  String buttonSrc = 'lib/assets/icons/search.png';
+
   // 검색할 닉네임
   String searchNickname = "";
 
@@ -200,10 +202,11 @@ class _FriendScreenState extends State<FriendScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         extendBodyBehindAppBar: true,
-        backgroundColor: Colors.red,
         appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: Colors.black),
+          title: Text("호 적 수", style: TextStyle(fontWeight: FontWeight.w900),),
+          centerTitle: true,
         ),
       body: Stack(
         children: [
@@ -225,7 +228,7 @@ class _FriendScreenState extends State<FriendScreen> {
                   child: Column(
                     children: [
                       const SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -241,6 +244,8 @@ class _FriendScreenState extends State<FriendScreen> {
                               maxLength: 12,
                               style: TextStyle(fontSize: 20, color: Colors.white),
                               decoration: const InputDecoration(
+                                fillColor: Colors.white24,
+                                filled: true,
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 1),
                                 hintText: "닉네임으로 검색하기",
@@ -271,24 +276,37 @@ class _FriendScreenState extends State<FriendScreen> {
                           ),
                           GestureDetector(
                             onTap: search,
+                            onTapUp: (details) {
+                              setState(() {
+                                buttonSrc = 'lib/assets/icons/search.png';
+                              });
+                            },
+                            onTapDown: (details) {
+                              setState(() {
+                                buttonSrc = 'lib/assets/icons/searchPressed.png';
+                              });
+                            },
+                            onTapCancel: () => setState(() {
+                              buttonSrc = 'lib/assets/icons/search.png';
+                            }),
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical:3),
-                              child: const Icon(
-                                color: Colors.white,
-                                Icons.search,
-                                size: 40,
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(buttonSrc),
+                                ),
                               ),
                             ),
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
                       searched == "FAIL"
-                          ? const Center(child:Text(
+                          ? const Padding(
+                        padding: EdgeInsets.only(top: 5, bottom: 20),
+                          child: Text(
                               "존재하지 않는 유저입니다.",
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 18),
                             )
                       )
                           : Container(),
@@ -296,9 +314,7 @@ class _FriendScreenState extends State<FriendScreen> {
                           ? SearchResultWidget(
                               searchResult: searchResult!, onEvent: showSearch)
                           : Container(),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10,),
                       Row(
                         children: [
                           Expanded(
@@ -358,7 +374,7 @@ class _FriendScreenState extends State<FriendScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.red)),
+                              border: Border.all(color: Colors.red, width: 2)),
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           child: ListView.builder(
                               shrinkWrap: true,

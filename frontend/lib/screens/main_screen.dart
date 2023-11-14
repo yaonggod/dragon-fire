@@ -18,6 +18,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import '../services/connecting_service.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -25,7 +27,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _controller;
   late Animation<double> _animation;
   DateTime? backPressed;
@@ -42,6 +44,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   bool isButtonDisabled = false;
 
   bool _isFirstAccess = true; // 첫 접속 여부
+
+  bool _isHaptic = true;
 
   List<String> assetList = [
     "lib/assets/icons/tutorial0.png",
@@ -61,6 +65,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       Fluttertoast.showToast(msg: "'뒤로'버튼 한번 더 누르시면 종료됩니다.");
       return false;
     }
+    ConnectingService.connect(false);
     return true;
   }
 
@@ -69,9 +74,15 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     return prefs.getString('nickname');
   }
 
+  Future<bool?> getHaptic() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('haptic');
+  }
+
   Future<void> _checkLoginStatus() async {
     await checkFirstAccess();
     nickname = await getNickname();
+    _isHaptic = await getHaptic() ?? true;
     Map<String, String> tokens = await readToken();
     accessToken = tokens['Authorization'];
     refreshToken = tokens['refreshToken'];
@@ -202,7 +213,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
       builder: (context) {
         return Dialog(
           insetPadding: const EdgeInsets.all(10),
-          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
+          backgroundColor: const Color.fromRGBO(3, 8, 61, 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -227,8 +238,22 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     );
   }
 
+  saveVibrate(bool vibrate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('vibrate', vibrate);
+  }
+
+  saveBGM(bool bgm) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('bgm', bgm);
+  }
+
   Future<void> checkFirstAccess() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('vibrate') == null || prefs.getBool('bgm') == null) {
+      prefs.setBool('vibrate', true);
+      prefs.setBool('bgm', true);
+    }
     _isFirstAccess = prefs.getBool('isFirstAccess') ?? true;
     if (_isFirstAccess) {
       await prefs.setBool('isFirstAccess', false);
@@ -265,6 +290,11 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+
+    ConnectingService.connect(true);
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -328,6 +358,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
@@ -385,230 +416,292 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
               begin: Offset(0, MediaQuery.of(context).size.height * 5 / 7),
               end: const Offset(0, 0),
             ),
-            Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.55,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (!isButtonDisabled) {
-                          _navigateToStartScreen();
-                          setState(() {
-                            isButtonDisabled = true;
-                          });
-                          Timer(Duration(milliseconds: 1500), () {
+            Positioned(
+              bottom: 0,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (!isButtonDisabled) {
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                            _navigateToStartScreen();
                             setState(() {
-                              isButtonDisabled = false;
+                              isButtonDisabled = true;
                             });
-                          });
-                        }
-                      },
-                      onTapDown: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton2.png';
-                          });
-                        }
-                      },
-                      onTapUp: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      onTapCancel: () {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        height: MediaQuery.of(context).size.width * 0.35,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc),
-                            fit: BoxFit.fitWidth,
+                            Timer(Duration(milliseconds: 1500), () {
+                              setState(() {
+                                isButtonDisabled = false;
+                              });
+                            });
+                          }
+                        },
+                        onTapDown: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton2.png';
+                            });
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                          }
+                        },
+                        onTapUp: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        onTapCancel: () {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: MediaQuery.of(context).size.width * 0.35,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        if (!isButtonDisabled) {
-                          _navigateToTowerEnterScreen();
-                          setState(() {
-                            isButtonDisabled = true;
-                          });
-                          Timer(Duration(milliseconds: 1500), () {
+                      GestureDetector(
+                        onTap: () {
+                          if (!isButtonDisabled) {
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                            _navigateToTowerEnterScreen();
                             setState(() {
-                              isButtonDisabled = false;
+                              isButtonDisabled = true;
                             });
-                          });
-                        }
-                      },
-                      onTapDown: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton2.png';
-                          });
-                        }
-                      },
-                      onTapUp: (_) {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      onTapCancel: () {
-                        if (!isButtonDisabled) {
-                          setState(() {
-                            buttonsrc5 = 'lib/assets/icons/startButton.png';
-                          });
-                        }
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        height: MediaQuery.of(context).size.width * 0.35,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc5),
-                            fit: BoxFit.fitWidth,
+                            Timer(Duration(milliseconds: 1500), () {
+                              setState(() {
+                                isButtonDisabled = false;
+                              });
+                            });
+                          }
+                        },
+                        onTapDown: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton2.png';
+                            });
+                            if (_isHaptic) {
+                              HapticFeedback.lightImpact();
+                            }
+                          }
+                        },
+                        onTapUp: (_) {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        onTapCancel: () {
+                          if (!isButtonDisabled) {
+                            setState(() {
+                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                            });
+                          }
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.35,
+                          height: MediaQuery.of(context).size.width * 0.35,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc5),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToRankingScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToRankingScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc1 = 'lib/assets/icons/rankingButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc1 = 'lib/assets/icons/rankingButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc1 = 'lib/assets/icons/rankingButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc1),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc1),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToReportScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton2.png';
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
-                          buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc2 = 'lib/assets/icons/reportButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc2),
-                            fit: BoxFit.fitWidth,
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToFriendScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc3 = 'lib/assets/icons/friendButton2.png';
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     if (_isHaptic) {
+                      //       HapticFeedback.lightImpact();
+                      //     }
+                      //     _navigateToReportScreen();
+                      //   },
+                      //   onTapDown: (_) {
+                      //     setState(() {
+                      //       buttonsrc2 = 'lib/assets/icons/reportButton2.png';
+                      //     });
+                      //     if (_isHaptic) {
+                      //       HapticFeedback.lightImpact();
+                      //     }
+                      //   },
+                      //   onTapUp: (_) {
+                      //     setState(() {
+                      //       buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                      //     });
+                      //   },
+                      //   onTapCancel: () => setState(() {
+                      //     buttonsrc2 = 'lib/assets/icons/reportButton.png';
+                      //   }),
+                      //   child: Container(
+                      //     width: MediaQuery.of(context).size.width * 0.25,
+                      //     height: MediaQuery.of(context).size.width * 0.25,
+                      //     decoration: BoxDecoration(
+                      //       image: DecorationImage(
+                      //         image: AssetImage(buttonsrc2),
+                      //         fit: BoxFit.fitWidth,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToFriendScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc3 = 'lib/assets/icons/friendButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc3 = 'lib/assets/icons/friendButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc3 = 'lib/assets/icons/friendButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc3),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc3),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _navigateToMyInfoScreen();
-                      },
-                      onTapDown: (_) {
-                        setState(() {
-                          buttonsrc4 = 'lib/assets/icons/myButton2.png';
-                        });
-                      },
-                      onTapUp: (_) {
-                        setState(() {
+                      GestureDetector(
+                        onTap: () {
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                          _navigateToMyInfoScreen();
+                        },
+                        onTapDown: (_) {
+                          setState(() {
+                            buttonsrc4 = 'lib/assets/icons/myButton2.png';
+                          });
+                          if (_isHaptic) {
+                            HapticFeedback.lightImpact();
+                          }
+                        },
+                        onTapUp: (_) {
+                          setState(() {
+                            buttonsrc4 = 'lib/assets/icons/myButton.png';
+                          });
+                        },
+                        onTapCancel: () => setState(() {
                           buttonsrc4 = 'lib/assets/icons/myButton.png';
-                        });
-                      },
-                      onTapCancel: () => setState(() {
-                        buttonsrc4 = 'lib/assets/icons/myButton.png';
-                      }),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.25,
-                        height: MediaQuery.of(context).size.width * 0.25,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(buttonsrc4),
-                            fit: BoxFit.fitWidth,
+                        }),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.33,
+                          height: MediaQuery.of(context).size.width * 0.33,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(buttonsrc4),
+                              fit: BoxFit.fitWidth,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      // 앱이 다시 활성화될 때의 동작
+      print("main 앱이 다시 활성화될 때의 동작");
+      ConnectingService.connect(true);
+    } else if (state == AppLifecycleState.inactive) {
+      // 앱이 동작 안할 때
+      print("main 앱이 동작 안할 때");
+      ConnectingService.connect(false);
+    } else if (state == AppLifecycleState.paused) {
+      // 앱이 일시 중지될 때의 동작
+      print("main 앱이 일시 중지될 때의 동작");
+      ConnectingService.connect(false);
+    } else if (state == AppLifecycleState.detached) {
+      // 앱이 종료될 때의 동작
+      // update
+      print("main 앱이 종료될 때의 동작");
+      ConnectingService.connect(false);
+    }
   }
 }
