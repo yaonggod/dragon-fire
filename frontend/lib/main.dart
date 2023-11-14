@@ -80,7 +80,7 @@ class AudioManager {
 
   static Future<void> initAndPause() async {
     audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await audioPlayer.play(AssetSource('Showdown_full.wav'), mode: PlayerMode.mediaPlayer);
+    await audioPlayer.play(AssetSource('Showdown_full.mp3'), mode: PlayerMode.mediaPlayer);
     pause();
   }
 
