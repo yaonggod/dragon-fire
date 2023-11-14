@@ -1216,6 +1216,40 @@ class TowerScreenState extends State<TowerScreen> {
                         ],
                       ),
                     ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: 0,
+                      height: MediaQuery.of(context).size.height * 0.31,
+                      child: Center(
+                        child:
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: Image.asset(
+                            'lib/assets/icons/contender.gif',
+                            fit: BoxFit.fitHeight,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top:  MediaQuery.of(context).size.height * 0.31,
+                      height: MediaQuery.of(context).size.height * 0.31,
+                      child: Center(
+                        child:
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: Image.asset(
+                            'lib/assets/icons/myCharacter.gif',
+                            fit: BoxFit.fitHeight,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (isWaiting)
                     Container(
                       color: Colors.black.withOpacity(0.6),

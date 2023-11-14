@@ -405,6 +405,72 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                     fit: BoxFit.fitHeight,
                   ),
                 )).animate().fade(),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.25,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Center(
+                child:
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Image.asset(
+                    'lib/assets/icons/contender.gif',
+                    fit: BoxFit.fitHeight,
+                    width: MediaQuery.of(context).size.width,
+                  ).animate().fade(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: Image.asset(
+                      'lib/assets/skills/newFireBallRival.gif',
+                      fit: BoxFit.fitHeight,
+                      width: MediaQuery.of(context).size.width,
+                    ).animate().fade(),
+                  ),
+                ],
+              ),
+            ),
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.2,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: Image.asset(
+                        'lib/assets/skills/newFireBallPlayer.gif',
+                        fit: BoxFit.fitHeight,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            Positioned(
+              bottom: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Center(
+                child:
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  child: Image.asset(
+                    'lib/assets/icons/myCharacter.gif',
+                    fit: BoxFit.fitHeight,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                ),
+              ),
+            ),
             slidingWidget(
               context,
               _animation,
