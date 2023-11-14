@@ -345,85 +345,97 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 100),
                 TextField(
-                    controller: nicknameController,
-                    maxLength: 6,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFF6766E),
-                        ),
+                  controller: nicknameController,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFF6766E),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.grey.withOpacity(0.5),
-                        ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.grey.withOpacity(0.5),
                       ),
-                      isDense: true,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      contentPadding: const EdgeInsets.all(12),
-                      labelText: '닉네임을 입력해주세요',
-                      labelStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                    )),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '중복체크',
-                    style: TextStyle(color: Colors.white),
+                    ),
+                    isDense: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    contentPadding: const EdgeInsets.all(12),
+                    labelText: '닉네임을 입력해주세요',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
                   ),
-                  onPressed: () {
-                    if (nicknameController.text.isEmpty) {
-                      // 경고 메시지 표시 로직
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("닉네임 또는 소개는 필수사항입니다!")),
-                      );
-                    } else if (containsWhitespace(nicknameController.text)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
-                      );
-                    } else {
-                      nicknameCheck();
-                    }
-                  },
                 ),
-                MaterialButton(
-                  color: Colors.red,
-                  child: const Text(
-                    '등록',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    if (nicknameChecked == false) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('알림'),
-                            content: const Text('닉네임 중복체크를 해주세요.'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('확인'),
-                              ),
-                            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MaterialButton(
+                      color: Colors.red,
+                      child: const Text(
+                        '중복체크',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        if (nicknameController.text.isEmpty) {
+                          // 경고 메시지 표시 로직
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("닉네임 또는 소개는 필수사항입니다!")),
                           );
-                        },
-                      );
-                    } else {
-                      if (containsWhitespace(nicknameController.text)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
-                        );
-                      } else {
-                        sendDataToServer();
-                      }
-                    }
-                  },
+                        } else if (containsWhitespace(
+                            nicknameController.text)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
+                          );
+                        } else {
+                          nicknameCheck();
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 25),
+                    MaterialButton(
+                      color: Colors.red,
+                      child: const Text(
+                        '등록',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        if (nicknameChecked == false) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('알림'),
+                                content: const Text('닉네임 중복체크를 해주세요.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('확인'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          if (containsWhitespace(nicknameController.text)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
+                            );
+                          } else {
+                            sendDataToServer();
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 5.0),
@@ -439,32 +451,33 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 100),
                 TextField(
-                    controller: introductionController,
-                    maxLength: 20,
-                    minLines: 2,
-                    maxLines: 2,
-                    decoration: InputDecoration(
-                      alignLabelWithHint: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFF6766E),
-                        ),
+                  controller: introductionController,
+                  maxLength: 20,
+                  minLines: 2,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    alignLabelWithHint: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFF6766E),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide(
-                          color: Colors.grey.withOpacity(0.5),
-                        ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                      borderSide: BorderSide(
+                        color: Colors.grey.withOpacity(0.5),
                       ),
-                      isDense: true,
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      contentPadding: const EdgeInsets.all(12),
-                      labelText: '닉네임을 입력해주세요',
-                      labelStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                    )),
+                    ),
+                    isDense: true,
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    contentPadding: const EdgeInsets.all(12),
+                    labelText: '자기소개를 입력해주세요',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
                 MaterialButton(
                   color: Colors.red,
                   child: const Text(
