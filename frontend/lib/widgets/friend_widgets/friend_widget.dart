@@ -6,6 +6,8 @@ import 'package:frontend/models/friend_models/friend_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/screens/friend_game_screen.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -18,6 +20,7 @@ class FriendWidget extends StatefulWidget {
 
 class _FriendWidgetState extends State<FriendWidget> {
   bool visible = true;
+  BuildContext? myContext;
   String buttonsrc = 'lib/assets/icons/friendFightButton.png';
 
   String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
@@ -38,20 +41,20 @@ class _FriendWidgetState extends State<FriendWidget> {
     return list;
   }
 
-  Future<bool> _deleteResultDialog(BuildContext context, bool result) async {
+  Future<void> _deleteResultDialog(BuildContext context) async {
     return await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('친구 삭제'),
           content: Text(
-            result ? '${widget.friend.toNickname}님을 삭제했습니다.' : '친구 삭제에 실패했습니다.',
+            '${widget.friend.toNickname}님을 삭제했습니다.',
             style: const TextStyle(fontSize: 18),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true);
+                Navigator.of(context).pop();
               },
               child: const Text('닫기'),
             ),
@@ -80,11 +83,78 @@ class _FriendWidgetState extends State<FriendWidget> {
 
   }
 
+  Future<bool> friendFight() async {
+    Map<String, String> list = await readToken();
+    // 친구랑 싸우자!
+    Uri uri = Uri.parse("$baseUrl/friend-game/wait");
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${list["Authorization"]!}',
+          'refreshToken': 'Bearer ${list['refreshToken']!}'
+        });
+    // 성공하면 룸넘버랑 firebase AT 가져옴
+    if (response.statusCode == 200) {
+      var jsonString = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+      // 친구랑 싸울 방 번호
+      final roomId = jsonMap["roomId"];
+      // 친구한테 알림보낼 firebase AT
+      final firebaseAccessToken = response.headers["firebase"]!.substring(7);
+      // 내 닉네임
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final myNickname = prefs.getString('nickname');
+
+      // 일단 친구한테 알림을 보내고
+      if (widget.friend.fcmToken != null) {
+
+        final response2 = await http.post(Uri.parse("https://fcm.googleapis.com/v1/projects/${dotenv.env["PROJECT_ID"]}/messages:send"),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': "Bearer $firebaseAccessToken"
+            },
+            body: jsonEncode(
+                {
+                  "message": {
+                    "data": {
+                      "do": "friend-fight",
+                      "nickname": "$myNickname",
+                      "roomId": "$roomId"
+                    },
+                    "token": widget.friend.fcmToken
+                  }
+                }
+            )
+        );
+        // 알람을 보내고 성공할 경우 친구대전 가넝~
+        if (response2.statusCode == 200) {
+          print('성공 했다.');
+          print(roomId);
+          Navigator.push(
+              context,
+            MaterialPageRoute(
+              builder: (context) => FriendGameScreen(
+                  roomId: roomId,
+                  nickname: myNickname!,
+                  nowNumber: -1), // 이건 game.dart에 있다.
+            ),
+          );
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return !visible
-        ? Container()
-        : Slidable(
+    myContext = context;
+
+    if (!visible) {
+      return Container();
+    } else {
+      return Slidable(
             endActionPane: ActionPane(
               motion: const DrawerMotion(),
               extentRatio: 0.15,
@@ -92,18 +162,24 @@ class _FriendWidgetState extends State<FriendWidget> {
               openThreshold: 0.001,
               children: [
                 SlidableAction(
+                  backgroundColor: const Color.fromRGBO(0, 0, 0, 0.5),
                   borderRadius: BorderRadius.circular(10.0),
-                  padding: const EdgeInsets.only(right: 10),
-                  icon: Icons.delete,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  icon: Icons.clear_outlined,
+                  label: "삭제",
                   onPressed: (context) async {
-                      bool result = await deleteFriend();
-                      if (result) {
-                        setState(() {
-                          visible = false;
-                        });
-                      }
-                      _deleteResultDialog(context, result);
-                    },)
+                    bool result = await deleteFriend();
+                    if (result) {
+                      await _deleteResultDialog(myContext!);
+                      setState(() {
+                        visible = false;
+                      });
+                    }
+                  },
+
+                  )
+
+
                   ],
                 ),
             child: Card(
@@ -132,7 +208,7 @@ class _FriendWidgetState extends State<FriendWidget> {
                                   const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             Text(
-                              '지존 ${widget.friend.score}점',
+                              '${widget.friend.score}점 ${widget.friend.win}승 ${widget.friend.lose}패',
                               style: TextStyle(fontSize: 12, color: Colors.white),
                             ),
                             Text(
@@ -145,24 +221,24 @@ class _FriendWidgetState extends State<FriendWidget> {
                     ),
                     GestureDetector(
                       onTap: () {
-
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('알림'),
-                              content: Text('친구 대전은 아직 준비중입니다.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('확인'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        friendFight();
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (BuildContext context) {
+                        //     return AlertDialog(
+                        //       title: Text('알림'),
+                        //       content: Text('친구 대전은 아직 준비중입니다.'),
+                        //       actions: <Widget>[
+                        //         TextButton(
+                        //           onPressed: () {
+                        //             Navigator.of(context).pop();
+                        //           },
+                        //           child: Text('확인'),
+                        //         ),
+                        //       ],
+                        //     );
+                        //   },
+                        // );
 
                       },
                       onTapDown: (_) {
@@ -195,5 +271,6 @@ class _FriendWidgetState extends State<FriendWidget> {
               ),
             ),
           );
+    }
   }
 }

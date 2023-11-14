@@ -22,6 +22,7 @@ class SearchResultWidget extends StatefulWidget {
 class _SearchResultWidgetState extends State<SearchResultWidget> {
   // String baseUrl = "http://10.0.2.2:8080";
   String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
+  String buttonSrc = 'lib/assets/icons/addFriend.png';
 
   Future<Map<String, String>> readToken() async {
     const storage = FlutterSecureStorage();
@@ -48,7 +49,29 @@ class _SearchResultWidgetState extends State<SearchResultWidget> {
             widget.onEvent();
             _requestResultDialog(context, result);
           },
-          child: const Text("친구 신청하기", style: TextStyle(color: Colors.white),));
+        onTapUp: (_) {
+          setState(() {
+            buttonSrc = 'lib/assets/icons/addFriend.png';
+          });
+        },
+        onTapDown: (_) {
+          setState(() {
+            buttonSrc = 'lib/assets/icons/addFriendPressed.png';
+          });
+        },
+        onTapCancel: () => setState(() {
+          buttonSrc = 'lib/assets/icons/addFriend.png';
+        }),
+          child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(buttonSrc),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
+      ),);
     } else if (widget.searchResult.friendStatus == "WAITING") {
       return const Text("수락 대기중", style: TextStyle(color: Colors.white));
     }
