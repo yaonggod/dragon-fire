@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
             accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
         saveNickname(nickname);
         saveEmail(email);
-        saveIntroduction(introduction!);
+        saveIntroduction(introduction ?? "");
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -267,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
               accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
           saveNickname(nickname);
           saveEmail(email);
-          saveIntroduction(introduction!);
+          saveIntroduction(introduction ?? "");
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
