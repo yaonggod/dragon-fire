@@ -198,9 +198,15 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByMemberIdAndAndQuitFlagIsFalse(memberId)
                 .orElseThrow(() -> new NoSuchElementException());
 
+        MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+            .orElseThrow(() -> new NoSuchElementException());
+
         RefreshToken refreshTokenEntity = member.getRefreshToken();
 
         refreshTokenEntity.updateRefreshToken(null);
+
+        memberInfo.updateIsConnecting(false);
+        memberInfoRepository.save(memberInfo);
 
         log.info("로그아웃 완료: ");
         log.info("  UUID: " + member.getMemberId());
