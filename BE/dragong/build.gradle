@@ -49,6 +49,10 @@ dependencies {
 	// firebase-admin
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 
+	// Monitoring
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '3.1.0'
+	implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.11.1'
+
 }
 
 tasks.named('test') {
