@@ -60,10 +60,14 @@ class _GameScreenState extends State<GameScreen> {
   int? myWin;
   int? myLose;
   int? myScore;
+  int? myWinningStreak;
+  String? myIntroduction;
   String? nickname2;
   int? contenderWin;
   int? contenderLose;
   int? contenderScore;
+  int? contenderWinningStreak;
+  String? contenderIntroduction;
   bool countdownChange = true;
 
   bool isGiPressed = false; // 기
@@ -677,16 +681,24 @@ class _GameScreenState extends State<GameScreen> {
           myWin = gameRecord['user1Win'];
           myLose = gameRecord['user1Lose'];
           myScore = gameRecord['user1Score'];
+          myIntroduction = gameRecord['user1Introduction'];
+          myWinningStreak = gameRecord['user1WinningStreak'];
           contenderWin = gameRecord['user2Win'];
           contenderLose = gameRecord['user2Lose'];
           contenderScore = gameRecord['user2Score'];
+          contenderIntroduction = gameRecord['user2Introduction'];
+          contenderWinningStreak = gameRecord['user2WinningStreak'];
         } else {
           contenderWin = gameRecord['user1Win'];
           contenderLose = gameRecord['user1Lose'];
           contenderScore = gameRecord['user1Score'];
+          contenderIntroduction = gameRecord['user1Introduction'];
+          contenderWinningStreak = gameRecord['user1WinningStreak'];
           myWin = gameRecord['user2Win'];
           myLose = gameRecord['user2Lose'];
           myScore = gameRecord['user2Score'];
+          myIntroduction = gameRecord['user2Introduction'];
+          myWinningStreak = gameRecord['user2WinningStreak'];
         }
         print(nickname1);
         print(myWin);
@@ -950,7 +962,7 @@ class _GameScreenState extends State<GameScreen> {
       config: StompConfig(
         url: socketUrl,
         // STOMP 서버 URL로 변경
-        //url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -1321,7 +1333,11 @@ class _GameScreenState extends State<GameScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "$contenderWin승 $contenderLose패",
+                                      "$contenderWin승 $contenderLose패 $contenderWinningStreak연승 중",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    Text(
+                                      "$contenderIntroduction",
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
@@ -1398,7 +1414,11 @@ class _GameScreenState extends State<GameScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "$myWin승 $myLose패",
+                                      "$myWin승 $myLose패 $myWinningStreak연승 중",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    Text(
+                                      "$myIntroduction",
                                       style: TextStyle(fontSize: 20),
                                     ),
                                   ],
