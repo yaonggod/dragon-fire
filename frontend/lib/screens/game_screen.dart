@@ -1037,13 +1037,13 @@ class _GameScreenState extends State<GameScreen> {
                   if (showTemp)
                     Positioned(
                       top: 0,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.31,
                       child: Column(
                         children: [
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
                             // 원하는 너비 값으로 설정
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.31,
                             // 원하는 높이 값으로 설정
                             // child: Lottie.asset(
                             //   'lib/assets/lottie/$youPick.json',
@@ -1091,22 +1091,23 @@ class _GameScreenState extends State<GameScreen> {
                         )),
                   if (showTemp)
                     Positioned(
-                      top: MediaQuery.of(context).size.height * 0.3,
+                      top: MediaQuery.of(context).size.height * 0.31,
                       width: MediaQuery.of(context).size.width,
                       child: Divider(
                         thickness: 3,
                       ),
                     ),
+
                   if (showTemp)
                     Positioned(
-                      top: MediaQuery.of(context).size.height * 0.3,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      top: MediaQuery.of(context).size.height * 0.31,
+                      height: MediaQuery.of(context).size.height * 0.31,
                       child: Column(
                         children: [
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
                             // 원하는 너비 값으로 설정
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.31,
                             // 원하는 높이 값으로 설정
                             // child: Lottie.asset(
                             //   'lib/assets/lottie/$mePick.json',
@@ -1126,6 +1127,40 @@ class _GameScreenState extends State<GameScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top: 0,
+                      height: MediaQuery.of(context).size.height * 0.31,
+                      child: Center(
+                        child:
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: Image.asset(
+                            'lib/assets/icons/contender.gif',
+                            fit: BoxFit.fitHeight,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
+                      top:  MediaQuery.of(context).size.height * 0.31,
+                      height: MediaQuery.of(context).size.height * 0.31,
+                      child: Center(
+                        child:
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          child: Image.asset(
+                            'lib/assets/icons/myCharacter.gif',
+                            fit: BoxFit.fitHeight,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                        ),
                       ),
                     ),
                   if (isWaiting)
@@ -1612,6 +1647,7 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                       ),
                     ),
+
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
                       top: MediaQuery.of(context).size.height * 0.70,
