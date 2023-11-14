@@ -10,6 +10,7 @@ import 'package:frontend/screens/friend_game_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(NotificationResponse details) {
@@ -93,8 +94,8 @@ void initializeNotification() async {
         String? refreshToken = await storage.read(key: 'refreshToken');
 
         if (nickname != null && accessToken != null && refreshToken != null) {
-
-          final response = await http.post(Uri.parse("http://10.0.2.2:8080/api/friend-game/accept"),
+          String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
+          final response = await http.post(Uri.parse("$baseUrl/friend-game/accept"),
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer $accessToken',

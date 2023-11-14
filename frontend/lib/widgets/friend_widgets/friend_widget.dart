@@ -86,8 +86,7 @@ class _FriendWidgetState extends State<FriendWidget> {
   Future<bool> friendFight() async {
     Map<String, String> list = await readToken();
     // 친구랑 싸우자!
-    Uri uri = Uri.parse("$baseUrl/api/friend-game/wait");
-    // Uri uri = Uri.parse("http://10.0.2.2:8080/api/friend-game/wait");
+    Uri uri = Uri.parse("$baseUrl/friend-game/wait");
     final response = await http.post(uri,
         headers: {
           'Content-Type': 'application/json',
@@ -209,7 +208,7 @@ class _FriendWidgetState extends State<FriendWidget> {
                                   const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             Text(
-                              '지존 ${widget.friend.score}점',
+                              '${widget.friend.score}점 ${widget.friend.win}승 ${widget.friend.lose}패',
                               style: TextStyle(fontSize: 12, color: Colors.white),
                             ),
                             Text(
