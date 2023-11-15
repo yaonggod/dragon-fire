@@ -121,6 +121,7 @@ class GameLogDetailScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
@@ -145,256 +146,32 @@ class GameLogDetailScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 10),
-                SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Round 1',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10.0,
-                                horizontal: 15,
-                              ),
-                              child: Text(
-                                detailGameLog.opponentNickname,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Center(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: divideRound(
+                              optHistoryImg,
+                              myHistoryImg,
+                              detailGameLog,
+                              index,
                             ),
-                            SizedBox(
-                              height: 150,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          children: [
-                                            optHistoryImg(
-                                              skillName: optRound1[index],
-                                              winLose:
-                                                  !detailGameLog.playResult,
-                                            ),
-                                            const SizedBox(
-                                              height: 15,
-                                            ),
-                                            myHistoryImg(
-                                              skillName: myRound1[index],
-                                              winLose: detailGameLog.playResult,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) =>
-                                          const SizedBox(width: 30),
-                                      itemCount: myRound1.length,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 15,
-                              ),
-                              child: Text(
-                                detailGameLog.myNickname,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
+                          );
+                        },
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 15),
+                        itemCount: 3,
+                      ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Round 2',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10.0,
-                              horizontal: 15,
-                            ),
-                            child: Text(
-                              detailGameLog.opponentNickname,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 150,
-                            child: Expanded(
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      optHistoryImg(
-                                        skillName: optRound2[index],
-                                        winLose: !detailGameLog.playResult,
-                                      ),
-                                      const SizedBox(
-                                        height: 15,
-                                      ),
-                                      myHistoryImg(
-                                        skillName: myRound2[index],
-                                        winLose: detailGameLog.playResult,
-                                      ),
-                                    ],
-                                  );
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(width: 30),
-                                itemCount: myRound2.length,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 15,
-                            ),
-                            child: Text(
-                              detailGameLog.myNickname,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Round 3',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      myPlay[2].isNotEmpty
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 15,
-                                  ),
-                                  child: Text(
-                                    detailGameLog.opponentNickname,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 150,
-                                  child: Expanded(
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          children: [
-                                            optHistoryImg(
-                                              skillName: optRound3[index],
-                                              winLose:
-                                                  !detailGameLog.playResult,
-                                            ),
-                                            const SizedBox(
-                                              height: 15,
-                                            ),
-                                            myHistoryImg(
-                                              skillName: myRound3[index],
-                                              winLose: detailGameLog.playResult,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) =>
-                                          const SizedBox(width: 30),
-                                      itemCount: myRound3.length,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 10,
-                                    horizontal: 15,
-                                  ),
-                                  child: Text(
-                                    detailGameLog.myNickname,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 15.0),
-                                child: Text(
-                                  '해당 라운드 정보가 없습니다!',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            )
-                    ],
                   ),
                 ),
               ],
@@ -402,6 +179,111 @@ class GameLogDetailScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget divideRound(
+    Widget Function({required String skillName, required bool winLose})
+        optHistoryImg,
+    Widget Function({required String skillName, required bool winLose})
+        myHistoryImg,
+    GameLogModel detailGameLog,
+    int roundNum,
+  ) {
+    var myPlay = detailGameLog.myPlay.split('_');
+    var opponentPlay = detailGameLog.opponentPlay.split('_');
+
+    var curMyRound = myPlay[roundNum].split(':');
+    var curOptRound = opponentPlay[roundNum].split(':');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Round ${roundNum + 1}',
+          style: const TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        myPlay[roundNum].isNotEmpty
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 15,
+                    ),
+                    child: Text(
+                      detailGameLog.opponentNickname,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 150,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  optHistoryImg(
+                                    skillName: curOptRound[index],
+                                    winLose: !detailGameLog.playResult,
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  myHistoryImg(
+                                    skillName: curMyRound[index],
+                                    winLose: detailGameLog.playResult,
+                                  ),
+                                ],
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 30),
+                            itemCount: curMyRound.length,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 15,
+                    ),
+                    child: Text(
+                      detailGameLog.myNickname,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : const Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Text(
+                  '대전 이력이 없습니다!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+      ],
     );
   }
 }

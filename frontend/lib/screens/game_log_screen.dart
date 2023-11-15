@@ -37,99 +37,64 @@ class GameLogScreen extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Center(
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      const SingleChildScrollView(
-                        child: Center(
-                          child: Text(
-                            '최근 다섯개의 대전 이력 조회가 가능합니다.',
-                            style: TextStyle(
-                              color: Colors.blue,
-                            ),
+            child: Column(
+              children: [
+                const Center(
+                  child: Text(
+                    '최근 다섯개의 대전 이력 조회가 가능합니다.',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FutureBuilder(
+                  future: gameLogs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      );
+                    }
+                    if (snapshot.hasData) {
+                      var logInfo = snapshot.data!;
+                      int indexCnt = logInfo.length;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0,
+                          vertical: 10,
+                        ),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return fightHistoryBox(
+                              context: context,
+                              indexCnt: indexCnt,
+                              logInfo: logInfo,
+                              curIdx: index,
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 10),
+                          itemCount: 5,
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: Text(
+                          '최근 대전 이력이 없습니다!',
+                          style: TextStyle(
+                            fontSize: 32,
+                            color: Colors.black,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      FutureBuilder(
-                        future: gameLogs,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            );
-                          }
-                          if (snapshot.hasData) {
-                            var logInfo = snapshot.data!;
-                            int indexCnt = logInfo.length;
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0,
-                                vertical: 10,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  fightHistoryBox(
-                                    context: context,
-                                    indexCnt: indexCnt,
-                                    logInfo: logInfo,
-                                    curIdx: 0,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  fightHistoryBox(
-                                    context: context,
-                                    indexCnt: indexCnt,
-                                    logInfo: logInfo,
-                                    curIdx: 1,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  fightHistoryBox(
-                                    context: context,
-                                    indexCnt: indexCnt,
-                                    logInfo: logInfo,
-                                    curIdx: 2,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  fightHistoryBox(
-                                    context: context,
-                                    indexCnt: indexCnt,
-                                    logInfo: logInfo,
-                                    curIdx: 3,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  fightHistoryBox(
-                                    context: context,
-                                    indexCnt: indexCnt,
-                                    logInfo: logInfo,
-                                    curIdx: 4,
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return const Center(
-                              child: Text(
-                                '최근 대전 이력이 없습니다!',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ],
