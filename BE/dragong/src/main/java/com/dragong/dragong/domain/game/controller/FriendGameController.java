@@ -371,10 +371,11 @@ public class FriendGameController {
     }
 
     @MessageMapping("/friend-game/{roomId}/panShow")
-    public void showingPan(@DestinationVariable String roomId, String nickname) {
+    public void showingPan(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
         // 1.5 초를 쉬고 명령을 보내줄 것이다. // 근데 이 명령이 2번 들어올테니 이것도 처리를 해줘야 한다.
         int roomID = Integer.parseInt(roomId) - FriendGameService.FRIEND_WEBSOCKET_ROOM;
-
+        String nickname = (String) messageBody.get("nickname");
+        int pan = (int) messageBody.get("pan");
         // 사람끼리의 대전이다
         friendGameService.messageInsert(roomID, nickname);
         int cnt = friendGameService.evenReturn(roomID);
@@ -395,6 +396,14 @@ public class FriendGameController {
                 }
                 if (errorCnt >= 5) {
 //                    System.out.println("메시지 보냄");
+                    if(pan!=1){
+                        // 처음 시작할 때가 아니고 현재 한 놈이 나간 상황이다.
+                        // 그럼 나간 놈이 졌다고 해야겠지?
+                        String winner = friendGameService.returnName(roomID); // 얘가 승자다
+                        messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                "승자는" + " " + winner);
+                        friendGameService.cleanList(roomID);
+                    }
                     messagingTemplate.convertAndSend("/sub/friend-game/" + roomId + "/escape", "escape");
                     break;
                 }
