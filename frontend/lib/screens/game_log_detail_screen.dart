@@ -9,20 +9,8 @@ class GameLogDetailScreen extends StatelessWidget {
   final GameLogModel detailGameLog;
   @override
   Widget build(BuildContext context) {
-    var myPlay = detailGameLog.myPlay.split('_');
-    var opponentPlay = detailGameLog.opponentPlay.split('_');
-
-    var myRound1 = myPlay[0].split(':');
-    var myRound2 = myPlay[1].split(':');
-    var myRound3 = myPlay[2].split(':');
-
-    var optRound1 = opponentPlay[0].split(':');
-    var optRound2 = opponentPlay[1].split(':');
-    var optRound3 = opponentPlay[2].split(':');
-
     Widget myHistoryImg({
       required String skillName,
-      required bool winLose,
     }) {
       if (skillName == '기') {
         return Image.asset(
@@ -48,30 +36,17 @@ class GameLogDetailScreen extends StatelessWidget {
           width: 64,
           height: 64,
         );
-      } else if (skillName == '원기옥') {
+      } else {
         return Image.asset(
           'lib/assets/skills/meteorPlayer.gif',
           width: 64,
           height: 64,
         );
-      } else {
-        return winLose
-            ? Image.asset(
-                'lib/assets/icons/winIcon.png',
-                width: 64,
-                height: 64,
-              )
-            : Image.asset(
-                'lib/assets/icons/loseIcon.png',
-                width: 64,
-                height: 64,
-              );
       }
     }
 
     Widget optHistoryImg({
       required String skillName,
-      required bool winLose,
     }) {
       if (skillName == '기') {
         return Image.asset(
@@ -97,31 +72,18 @@ class GameLogDetailScreen extends StatelessWidget {
           width: 64,
           height: 64,
         );
-      } else if (skillName == '원기옥') {
+      } else {
         return Image.asset(
           'lib/assets/skills/meteorRival.gif',
           width: 64,
           height: 64,
         );
-      } else {
-        return winLose
-            ? Image.asset(
-                'lib/assets/icons/winIcon.png',
-                width: 64,
-                height: 64,
-              )
-            : Image.asset(
-                'lib/assets/icons/loseIcon.png',
-                width: 64,
-                height: 64,
-              );
       }
     }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
@@ -183,10 +145,12 @@ class GameLogDetailScreen extends StatelessWidget {
   }
 
   Widget divideRound(
-    Widget Function({required String skillName, required bool winLose})
-        optHistoryImg,
-    Widget Function({required String skillName, required bool winLose})
-        myHistoryImg,
+    Widget Function({
+      required String skillName,
+    }) optHistoryImg,
+    Widget Function({
+      required String skillName,
+    }) myHistoryImg,
     GameLogModel detailGameLog,
     int roundNum,
   ) {
@@ -238,21 +202,19 @@ class GameLogDetailScreen extends StatelessWidget {
                                 children: [
                                   optHistoryImg(
                                     skillName: curOptRound[index],
-                                    winLose: !detailGameLog.playResult,
                                   ),
                                   const SizedBox(
                                     height: 15,
                                   ),
                                   myHistoryImg(
                                     skillName: curMyRound[index],
-                                    winLose: detailGameLog.playResult,
                                   ),
                                 ],
                               );
                             },
                             separatorBuilder: (context, index) =>
                                 const SizedBox(width: 30),
-                            itemCount: curMyRound.length,
+                            itemCount: curMyRound.length - 1,
                           ),
                         ),
                       ],
