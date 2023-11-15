@@ -26,9 +26,9 @@ public class TowerService {
     private Stack<String> bossChoose[] = new Stack[1000000]; // 해당 방에 컴퓨터가 무엇을 pick할 것인지
 
     {
-        bossList[0] = new BossData("SSAFY1학기", 20, 5);
-        bossList[1] = new BossData("SSAFY2학기", 30, 5);
-        bossList[2] = new BossData("취직", 50, 5);
+        bossList[0] = new BossData("회색수염", 10, 5);
+        bossList[1] = new BossData("빨간수염", 20, 5);
+        bossList[2] = new BossData("파란수염", 30, 5);
     }
 
     private final String[][] bossPick = {
@@ -38,6 +38,7 @@ public class TowerService {
             {"막기", "파", "기"},
             {"막기", "파", "파", "기", "막기", "기"},
             {"파", "파", "기", "기"},
+            {"원기옥", "기", "막기", "기", "기"}
     };
 
     @PostConstruct
@@ -163,7 +164,7 @@ public class TowerService {
     public void bossScene(int roomId) {
         // 보스가 어떤 시나리오를 선택할지
         Random random = new Random();
-        int randomIndex = random.nextInt(6);
+        int randomIndex = random.nextInt(7);
         for (String pick : bossPick[randomIndex]) {
             bossChoose[roomId].push(pick);
         }
@@ -267,7 +268,11 @@ public class TowerService {
                     if (!miss) {
                         answer += player1;
                         winner = player1;
-                        damage += cnt;
+                        if (cnt >= 2) {
+                            damage += 2;
+                        } else {
+                            damage += 1;
+                        }
                     } else {
                         answer += "비겼습니다";
                     }
@@ -285,7 +290,7 @@ public class TowerService {
                     gi2 -= 3;
                     answer += player2;
                     winner = player2;
-                    damage += cnt;
+                    damage += 2;
                 }
 
             } else if (picked1.equals("막기")) {
@@ -305,7 +310,7 @@ public class TowerService {
                     // 원기옥
                     answer += player2;
                     winner = player2;
-                    damage += cnt;
+                    damage += 2;
                 }
 
             } else if (picked1.equals("순간이동")) {
@@ -333,18 +338,17 @@ public class TowerService {
                     gi2 += 1;
                     answer += player1;
                     winner = player1;
-                    damage += cnt;
+                    damage += 3;
                 } else if (picked2.equals("파")) {
                     gi2 -= 1;
-
                     answer += player1;
                     winner = player1;
-                    damage += cnt;
+                    damage += 3;
                 } else if (picked2.equals("막기")) {
 
                     answer += player1;
                     winner = player1;
-                    damage += cnt;
+                    damage += 3;
                 } else if (picked2.equals("순간이동")) {
                     gi2 -= 1;
                     answer += "비겼습니다";
@@ -368,10 +372,13 @@ public class TowerService {
                     if (!miss) {
                         answer += player2;
                         winner = player2;
-                        damage += cnt;
+                        if (cnt >= 2) {
+                            damage += 2;
+                        } else {
+                            damage += 1;
+                        }
                     } else {
                         answer += "비겼습니다";
-
                     }
                     System.out.println("3현재 damamge" + damage);
                 } else if (picked2.equals("막기")) {
@@ -384,7 +391,7 @@ public class TowerService {
                     gi1 -= 3;
                     answer += player2;
                     winner = player2;
-                    damage += cnt;
+                    damage += 3;
                 }
             } else if (picked1.equals("파")) {
                 gi2 -= 1;
@@ -392,6 +399,7 @@ public class TowerService {
                     gi1 += 1;
                     answer += player1;
                     winner = player1;
+                    damage += 1;
                     System.out.println("4현재 damamge" + damage);
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
@@ -406,7 +414,7 @@ public class TowerService {
                     gi1 -= 3;
                     answer += player2;
                     winner = player2;
-                    damage += cnt;
+                    damage += 3;
                 }
 
             } else if (picked1.equals("막기")) {
@@ -426,7 +434,7 @@ public class TowerService {
                     gi1 -= 3;
                     answer += player2;
                     winner = player2;
-                    damage += cnt;
+                    damage += 3;
                 }
 
             } else if (picked1.equals("순간이동")) {
@@ -455,15 +463,16 @@ public class TowerService {
                     gi1 += 1;
                     answer += player1;
                     winner = player1;
-                    damage += cnt;
+                    damage += 2;
                 } else if (picked2.equals("파")) {
                     gi1 -= 1;
                     answer += player1;
                     winner = player1;
-                    damage += cnt;
+                    damage += 2;
                 } else if (picked2.equals("막기")) {
                     answer += player1;
                     winner = player1;
+                    damage += 2;
                 } else if (picked2.equals("순간이동")) {
                     gi1 -= 1;
                     answer += "비겼습니다";
