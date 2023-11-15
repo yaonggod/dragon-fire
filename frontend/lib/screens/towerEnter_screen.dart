@@ -68,17 +68,8 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
 
   Future<void> climbTower(int floor) async {
     String baseUrl = dotenv.env['BASE_URL']!;
-    // final response = await http.post(
-    //   Uri.parse('$baseUrl/api/towerEnter'),
-    //   headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     'Authorization': 'Bearer $accessToken',
-    //     'refreshToken': 'Bearer $refreshToken'
-    //   },
-    //   body: jsonEncode({"nickname": widget.nickname!}),
-    // );
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8080/towerEnter'),
+      Uri.parse('$baseUrl/api/towerEnter'),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $accessToken',
@@ -86,6 +77,15 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
       },
       body: jsonEncode({"nickname": widget.nickname!}),
     );
+    // final response = await http.post(
+    //   Uri.parse('http://10.0.2.2:8080/towerEnter'),
+    //   headers: {
+    //     'Content-Type': 'application/json; charset=UTF-8',
+    //     'Authorization': 'Bearer $accessToken',
+    //     'refreshToken': 'Bearer $refreshToken'
+    //   },
+    //   body: jsonEncode({"nickname": widget.nickname!}),
+    // );
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
 

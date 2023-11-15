@@ -1113,9 +1113,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        //url: socketUrl,
+        url: socketUrl,
         // STOMP 서버 URL로 변경
-        url: 'ws://10.0.2.2:8080/ws',
+        // url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -1485,10 +1485,16 @@ class _GameScreenState extends State<GameScreen> {
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      "$contenderWin승 $contenderLose패 $contenderWinningStreak연승 중",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
+                                    if(contenderWinningStreak!>0)
+                                      Text(
+                                        "$contenderWin승 $contenderLose패\n$contenderWinningStreak연승 중",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    if(contenderWinningStreak! ==0)
+                                      Text(
+                                        "$contenderWin승 $contenderLose패",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
                                     Text(
                                       contenderIntroduction ?? "",
                                       style: TextStyle(fontSize: 20),
@@ -1566,10 +1572,16 @@ class _GameScreenState extends State<GameScreen> {
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      "$myWin승 $myLose패 $myWinningStreak연승 중",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
+                                    if(myWinningStreak!>0)
+                                      Text(
+                                        "$myWin승 $myLose패\n$myWinningStreak연승 중",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    if(myWinningStreak! ==0)
+                                      Text(
+                                        "$myWin승 $myLose패",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
                                     Text(
                                       myIntroduction ?? "",
                                       style: TextStyle(fontSize: 20),
