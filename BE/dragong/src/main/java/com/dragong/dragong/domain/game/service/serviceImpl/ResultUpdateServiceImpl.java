@@ -39,7 +39,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
     @Override
     @Transactional
-    public void updateWinner(String accessToken) {
+    public int updateWinner(String accessToken, int logLength) {
         log.info("impl에서 updateWinnder 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
         Member member = memberRepository.findById(myUUID).orElse(null);
@@ -63,20 +63,23 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             playResult.setScore(1020);
             playResult.setWinningStreak(1);
             resultUpdateRepository.save(playResult);
+            return 20;
 
         } else {
             //이미 정보가 있는 상태입니다.
             int nowScore = playResult.getScore();
             int nowMaxScore = playResult.getSeasonMaxScore();
+            int nowStreak = playResult.getWinningStreak(); // 현재까지의 연승 정보
             playResult.setWin(playResult.getWin() + 1);
-            playResult.setScore(nowScore + 20);
+            playResult.setScore(nowScore + 20 + nowStreak * 2 + logLength / 3);
             playResult.setWinningStreak(playResult.getWinningStreak() + 1);
             playResult.setSeasonMaxWinningStreak(Math.max(playResult.getWinningStreak(),
                     playResult.getSeasonMaxWinningStreak()));
             if (nowScore + 20 > nowMaxScore) {
-                playResult.setSeasonMaxScore(nowScore + 20);
+                playResult.setSeasonMaxScore(nowScore + 20 + nowStreak * 2 + logLength / 3);
             }
 
+            return 20 + nowStreak * 2 + logLength / 3;
         }
 
 
@@ -84,7 +87,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
     @Override
     @Transactional
-    public void updateLoser(String accessToken) {
+    public int updateLoser(String accessToken, int logLength) {
         log.info("impl에서 updateLoser 실행");
         UUID myUUID = jwtUtil.extractMemberId(accessToken.substring(7)); // getUUID로 UUID 얻기
         log.info("uuid 출력" + String.valueOf(myUUID));
@@ -104,6 +107,8 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             playResult.setWinningStreak(0);
             resultUpdateRepository.save(playResult);
 
+            return -20;
+
         } else {
             //이미 정보가 있는 상태입니다.
             int nowScore = playResult.getScore();
@@ -112,8 +117,9 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             if (nowScore - 20 < 0) {
                 playResult.setScore(0);
             } else {
-                playResult.setScore(nowScore - 20);
+                playResult.setScore(nowScore - 20 + logLength / 3);
             }
+            return (-20 + logLength / 3);
 
         }
 
@@ -163,7 +169,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
     @Override
     public Map<String, Object> gettingInfo(String accessToken1, String nickname1,
-            String accessToken2, String nickname2) {
+                                           String accessToken2, String nickname2) {
         Map<String, Object> data = new HashMap<>();
         UUID myUUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
         UUID myUUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
@@ -239,7 +245,7 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
 
     @Override
     public Map<String, Object> getComAndMe(String accessToken1, String nickname1, UUID UUID2,
-            String nickname2) {
+                                           String nickname2) {
         Map<String, Object> data = new HashMap<>();
         UUID myUUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
         log.info("사용자들의 승,패 정보를 가져옵니다");
