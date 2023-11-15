@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/screens/friend_game_screen.dart';
+import 'package:frontend/utils/set_tier_img.dart';
 
 class FriendWidget extends StatefulWidget {
   final FriendModel friend;
@@ -46,19 +47,51 @@ class _FriendWidgetState extends State<FriendWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('친구 삭제'),
-          content: Text(
-            '${widget.friend.toNickname}님을 삭제했습니다.',
-            style: const TextStyle(fontSize: 18),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
           ),
+          backgroundColor: Colors.grey,
+          titlePadding: const EdgeInsets.only(right: 5),
+          title: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+              padding: const EdgeInsets.all(7),
+              child: const Text(
+                "드래곤 불",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          contentPadding: const EdgeInsets.only(right: 5),
+          content: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Text(
+              '${widget.friend.toNickname}님을 삭제했습니다.',
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+
+          actionsPadding: const EdgeInsets.only(bottom: 15),
           actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('닫기'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('확인', style: TextStyle(color: Colors.white),),
+                  ),
+                )
+              ],
             ),
           ],
+
         );
       },
     );
@@ -192,10 +225,28 @@ class _FriendWidgetState extends State<FriendWidget> {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
-                          backgroundImage:
-                              AssetImage("lib/assets/icons/appIcon.png"),
-                          radius: 30,
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
+                                child: setTierImg(score: widget.friend.score),
+                              ),
+                              Positioned(
+                                bottom: -10,
+                                right: 0,
+                                child: widget.friend.isConnect ? Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage("lib/assets/icons/on.png"),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ) : Container(),
+                              )
+                            ]
                         ),
                         SizedBox(
                             width: MediaQuery.of(context).size.width * 0.03),
