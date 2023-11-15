@@ -345,17 +345,52 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('공지'),
-            content: Text(
-                '업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "공 지 사 항",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(left: 5, right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                '업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
