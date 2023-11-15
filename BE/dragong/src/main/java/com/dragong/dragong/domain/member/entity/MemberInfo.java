@@ -41,6 +41,9 @@ public class MemberInfo extends BaseTimeEntity {
     @Column
     private String introduction;
 
+    @Column(columnDefinition = "int default 3")
+    private int chance;
+
     @Builder
     public MemberInfo(Member member, String nickname) {
         this.member = member;
@@ -67,5 +70,13 @@ public class MemberInfo extends BaseTimeEntity {
 
     public void updateIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public void resetChance() {
+        this.chance = 3;
+    }
+
+    public void updateChance(int chance) {
+        this.chance += chance;
     }
 }
