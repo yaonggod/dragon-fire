@@ -1443,7 +1443,7 @@ class TowerScreenState extends State<TowerScreen> {
                         ],
                       ),
                     ),
-                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                  if ((showTemp || isGi || isPa || isBlock || isTel || isBomb) && youPick != "teleportation" )
                     Positioned(
                       top: 0,
                       height: MediaQuery.of(context).size.height * 0.31,
@@ -1459,7 +1459,7 @@ class TowerScreenState extends State<TowerScreen> {
                         ),
                       ),
                     ),
-                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                  if ((showTemp || isGi || isPa || isBlock || isTel || isBomb) && mePick != "teleportation")
                     Positioned(
                       top: MediaQuery.of(context).size.height * 0.31,
                       height: MediaQuery.of(context).size.height * 0.31,

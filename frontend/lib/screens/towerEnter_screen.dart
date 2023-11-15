@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/tower_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -124,11 +125,16 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
       }
     });
     _scrollController.addListener(changeOpacity);
+    screenInit();
     super.initState();
   }
 
   Future<void> init() async {
     await _checkLoginStatus();
+  }
+
+  Future<void> screenInit() async {
+    await Future.delayed(Duration(seconds: 5));
   }
 
   @override
@@ -153,7 +159,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
       setState(() {
         cloudOpacity = 0.5;
       });
-    }else if ((_scrollController.offset <= 6000) &&
+    } else if ((_scrollController.offset <= 6000) &&
         (_scrollController.offset > 4000)) {
       setState(() {
         cloudOpacity = 0.0;
@@ -180,7 +186,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                   'lib/assets/icons/sky.png',
                   fit: BoxFit.fitHeight,
                 ),
-              )),
+              )).animate().fade(),
           SingleChildScrollView(
             controller: _scrollController,
             reverse: true,
@@ -237,7 +243,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                             bottom: BorderSide(color: Colors.grey),
                           ),
                           image: DecorationImage(
-                              image: AssetImage('lib/assets/icons/tower2.png'),
+                              image: AssetImage('lib/assets/icons/tower3.png'),
                               repeat: ImageRepeat.repeat,
                               fit: BoxFit.fitWidth),
                         ),
@@ -253,7 +259,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                             bottom: BorderSide(color: Colors.grey),
                           ),
                           image: DecorationImage(
-                              image: AssetImage('lib/assets/icons/tower2.png'),
+                              image: AssetImage('lib/assets/icons/tower3.png'),
                               repeat: ImageRepeat.repeat,
                               fit: BoxFit.fitWidth),
                         ),
@@ -269,7 +275,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                             bottom: BorderSide(color: Colors.grey),
                           ),
                           image: DecorationImage(
-                              image: AssetImage('lib/assets/icons/tower2.png'),
+                              image: AssetImage('lib/assets/icons/tower3.png'),
                               repeat: ImageRepeat.repeat,
                               fit: BoxFit.fitWidth),
                         ),
@@ -285,14 +291,14 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                             bottom: BorderSide(color: Colors.grey),
                           ),
                           image: DecorationImage(
-                              image: AssetImage('lib/assets/icons/tower2.png'),
+                              image: AssetImage('lib/assets/icons/tower3.png'),
                               repeat: ImageRepeat.repeat,
                               fit: BoxFit.fitWidth),
                         ),
                       ),
                     ],
                   ),
-                ),
+                ).animate().fade(),
                 Padding(
                   padding: EdgeInsets.only(
                     left: MediaQuery.of(context).size.width * 0.2,
@@ -307,7 +313,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                         bottom: BorderSide(color: Colors.grey),
                       ),
                       image: DecorationImage(
-                          image: AssetImage('lib/assets/icons/tower2.png'),
+                          image: AssetImage('lib/assets/icons/tower3.png'),
                           repeat: ImageRepeat.repeat,
                           fit: BoxFit.fitWidth),
                     ),
@@ -326,51 +332,80 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                                     fontSize: 20),
                               ),
                               onTap: () {
-                                if((100-index) >=4) {
+                                if ((100 - index) >= 4) {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(0),
+                                          borderRadius:
+                                              BorderRadius.circular(0),
                                         ),
                                         backgroundColor: Colors.grey,
-                                        titlePadding: const EdgeInsets.only(right: 5),
+                                        titlePadding:
+                                            const EdgeInsets.only(right: 5),
                                         title: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Container(
-                                            decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                            decoration: BoxDecoration(
+                                                color: Colors.red,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color: Colors.black54,
+                                                      offset:
+                                                          const Offset(5, 5),
+                                                      blurRadius: 0)
+                                                ]),
                                             padding: const EdgeInsets.all(7),
                                             child: const Text(
                                               "드래곤 불",
-                                              style: TextStyle(fontSize: 20, color: Colors.white),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.white),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
-
-                                        contentPadding: const EdgeInsets.only(right: 5),
+                                        contentPadding:
+                                            const EdgeInsets.only(right: 5),
                                         content: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 10),
                                           child: Text(
                                             '오픈 예정입니다',
-                                            style: const TextStyle(fontSize: 18, color: Colors.white),
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white),
                                           ),
                                         ),
-
-                                        actionsPadding: const EdgeInsets.only(bottom: 15),
+                                        actionsPadding:
+                                            const EdgeInsets.only(bottom: 15),
                                         actions: <Widget>[
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               Container(
-                                                decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
-                                                padding: const EdgeInsets.all(7),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          color: Colors.black54,
+                                                          offset: const Offset(
+                                                              5, 5),
+                                                          blurRadius: 0)
+                                                    ]),
+                                                padding:
+                                                    const EdgeInsets.all(7),
                                                 child: GestureDetector(
                                                   onTap: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text('확인', style: TextStyle(color: Colors.white),),
+                                                  child: const Text(
+                                                    '확인',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
                                                 ),
                                               )
                                             ],
@@ -379,52 +414,84 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                                       );
                                     },
                                   );
-                                }else{
-                                  if(100-index>widget.maxFloor) {
+                                } else {
+                                  if (100 - index > widget.maxFloor) {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(0),
+                                            borderRadius:
+                                                BorderRadius.circular(0),
                                           ),
                                           backgroundColor: Colors.grey,
-                                          titlePadding: const EdgeInsets.only(right: 5),
+                                          titlePadding:
+                                              const EdgeInsets.only(right: 5),
                                           title: Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Container(
-                                              decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.black54,
+                                                        offset:
+                                                            const Offset(5, 5),
+                                                        blurRadius: 0)
+                                                  ]),
                                               padding: const EdgeInsets.all(7),
                                               child: const Text(
                                                 "드래곤 불",
-                                                style: TextStyle(fontSize: 20, color: Colors.white),
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    color: Colors.white),
                                                 textAlign: TextAlign.center,
                                               ),
                                             ),
                                           ),
-
-                                          contentPadding: const EdgeInsets.only(right: 5),
+                                          contentPadding:
+                                              const EdgeInsets.only(right: 5),
                                           content: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
                                             child: Text(
                                               '전 단계를 클리어해주세요.',
-                                              style: const TextStyle(fontSize: 18, color: Colors.white),
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
                                             ),
                                           ),
-
-                                          actionsPadding: const EdgeInsets.only(bottom: 15),
+                                          actionsPadding:
+                                              const EdgeInsets.only(bottom: 15),
                                           actions: <Widget>[
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Container(
-                                                  decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
-                                                  padding: const EdgeInsets.all(7),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.grey,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            color:
+                                                                Colors.black54,
+                                                            offset:
+                                                                const Offset(
+                                                                    5, 5),
+                                                            blurRadius: 0)
+                                                      ]),
+                                                  padding:
+                                                      const EdgeInsets.all(7),
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      Navigator.of(context).pop();
+                                                      Navigator.of(context)
+                                                          .pop();
                                                     },
-                                                    child: const Text('확인', style: TextStyle(color: Colors.white),),
+                                                    child: const Text(
+                                                      '확인',
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
                                                   ),
                                                 )
                                               ],
@@ -433,8 +500,8 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                                         );
                                       },
                                     );
-                                  }else{
-                                    _navigateToTowerScreen(100-index);
+                                  } else {
+                                    _navigateToTowerScreen(100 - index);
                                   }
                                 }
                                 //여기에 다음 페이지로 이동하는 거 하면 됨
@@ -450,7 +517,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                       ),
                     ),
                   ),
-                ),
+                ).animate().fade(),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.15,
                   width: MediaQuery.of(context).size.width,
@@ -464,7 +531,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                 )
               ],
             ),
-          ),
+          ).animate().fade(),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.5,
             left: -MediaQuery.of(context).size.width * 0.1,
