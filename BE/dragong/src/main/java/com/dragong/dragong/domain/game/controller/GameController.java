@@ -553,6 +553,9 @@ public class GameController {
             log.info("게임이 끝났습니다 어떻게 하실래연?");
             String result = gameService.winnerAndLoserToken(roomID, winner);
             String[] parts = result.split(":");
+
+            gameService.updateLog(roomID, winner); // 컴퓨터 로그 추가
+
             System.out.println("승자는" + winner);
 //            log.info(parts[0]); // 이게 승자의 accessToken
 //            log.info(parts[1]); // 이게 패자의 accessToken
