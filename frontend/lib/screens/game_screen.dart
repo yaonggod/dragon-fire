@@ -1102,10 +1102,20 @@ class _GameScreenState extends State<GameScreen> {
       isConnected = false;
       isPan = true;
     });
+
+
+    final Map<String, dynamic> messageBody = {
+      "nickname": widget.nickname,
+      "pan": pan,
+    };
+    final headers = {
+      'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
+    };
     stompClient.send(
         destination: '/pub/${widget.roomId}/panShow',
-        body: 'widget.nickname',
-        headers: {});
+        body: jsonEncode(messageBody),
+        headers: headers);
+
   }
 
   @override
@@ -1117,7 +1127,7 @@ class _GameScreenState extends State<GameScreen> {
       config: StompConfig(
         url: socketUrl,
         // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        //url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
