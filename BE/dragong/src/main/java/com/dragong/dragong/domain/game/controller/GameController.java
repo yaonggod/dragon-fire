@@ -568,7 +568,7 @@ public class GameController {
                 resultUpdateService.updateLoser(parts[1], 1);
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getComWinnerInfo(uuid)+":20:20";
+                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
@@ -578,7 +578,7 @@ public class GameController {
                 resultUpdateService.updateLoseComputer(uuid);
                 String info = "";
                 info += resultUpdateService.getComLoserInfo(uuid) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0])+":20:20";
+                        + resultUpdateService.getWinnerInfo(parts[0]) + ":20:20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
@@ -604,7 +604,7 @@ public class GameController {
                 log.info("DB에 승자와 패자 정보를 갱신합니다");
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0])+":"+Integer.toString(winScore)+":"+Integer.toString(loseScore);
+                        + resultUpdateService.getWinnerInfo(parts[0]) + ":" + Integer.toString(winScore) + ":" + Integer.toString(loseScore);
                 log.info("최종 결과를 도출합니다" + info);
 
                 // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
@@ -627,9 +627,14 @@ public class GameController {
     }
 
     @MessageMapping("/{roomId}/panShow")
-    public void showingPan(@DestinationVariable String roomId, String nickname) {
+    public void showingPan(@DestinationVariable String roomId, @RequestBody Map<String, Object> messageBody) {
         // 1.5 초를 쉬고 명령을 보내줄 것이다. // 근데 이 명령이 2번 들어올테니 이것도 처리를 해줘야 한다.
         int roomID = Integer.parseInt(roomId);
+        String nickname = (String) messageBody.get("nickname");
+        int pan = (int) messageBody.get("pan");
+        System.out.println("panshow 입장");
+        System.out.println("nickname은" + nickname);
+        System.out.println("pan은" + pan);
         int comCheck = gameService.isComputer(roomID);
         if (comCheck == 1) {
             // 컴퓨터와의 대전이다!
@@ -658,6 +663,14 @@ public class GameController {
                         break;
                     }
                     if (errorCnt >= 5) {
+                        if(pan!=1){
+                            // 처음 시작할 때가 아니고 현재 한 놈이 나간 상황이다.
+                            // 그럼 나간 놈이 졌다고 해야겠지?
+                            String winner = gameService.returnName(roomID); // 얘가 승자다
+                            messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                                    "승자는" + " " + winner);
+                            gameService.cleanList(roomID);
+                        }
                         System.out.println("메시지 보냄");
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/escape", "escape");
                         break;
