@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,9 +12,52 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 @pragma('vm:entry-point')
-void backgroundHandler(NotificationResponse details) {
-  // print('background111 ${details.payload}');
-  print("1111111");
+void backgroundHandler(NotificationResponse details) async {
+
+  print("backgroundHandler");
+  print(details.payload);
+
+  // 받은 데이터로 리다이렉트하기
+  if (details.payload == "friend-add" || details.payload == "friend-accept") {
+    DragonG.navigatorKey.currentState!.pushNamed('/friend');
+  } else {
+    print("roomId ${details.payload}");
+    String? nickname;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    nickname = prefs.getString('nickname');
+
+    const storage = FlutterSecureStorage();
+    String? accessToken = await storage.read(key: 'accessToken');
+    String? refreshToken = await storage.read(key: 'refreshToken');
+
+    if (nickname != null && accessToken != null && refreshToken != null) {
+      String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
+      final response = await http.post(Uri.parse("$baseUrl/friend-game/accept"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+          'refreshToken': 'Bearer $refreshToken'
+        },
+        body: jsonEncode({"roomId": int.parse(details.payload!)}),
+      );
+      if (response.statusCode == 200) {
+        DragonG.navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (context) => FriendGameScreen(roomId: int.parse(details.payload!), nickname: nickname!, nowNumber: -1),
+          ),
+        );
+      }
+
+    } else {
+      DragonG.navigatorKey.currentState!.push(
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
+      );
+    }
+
+
+  }
 }
 
 @pragma('vm:entry-point')
@@ -38,6 +80,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     payload = "${message.data["roomId"]}";
   }
 
+  ///////
+  print("백그라운드에서, 종료 시 알림을 show하기");
+  ///////
 
   flutterLocalNotificationPlugin.show(
       0,
@@ -53,7 +98,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // 앱 시작할때 notification 열어놓기
 void initializeNotification() async {
   final flutterLocalNotificationPlugin = FlutterLocalNotificationsPlugin();
-  
+
   // 알림 채널 만들기
   await flutterLocalNotificationPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
@@ -76,9 +121,12 @@ void initializeNotification() async {
     // 안드로이드 기본 세팅
     const InitializationSettings(android: AndroidInitializationSettings('appicontrans')),
 
-    // 포그라운드에서 noti를 받을 때
     onDidReceiveNotificationResponse: (details) async {
-      print('foreground ${details.payload}');
+
+      //////
+      print('백그라운드, 포그라운드에서 알람을 누르고 들어왔음');
+      print(details.payload);
+      //////
 
       // 받은 데이터로 리다이렉트하기
       if (details.payload == "friend-add" || details.payload == "friend-accept") {
@@ -96,19 +144,19 @@ void initializeNotification() async {
         if (nickname != null && accessToken != null && refreshToken != null) {
           String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
           final response = await http.post(Uri.parse("$baseUrl/friend-game/accept"),
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer $accessToken',
-                'refreshToken': 'Bearer $refreshToken'
-              },
-              body: jsonEncode({"roomId": int.parse(details.payload!)}),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken',
+              'refreshToken': 'Bearer $refreshToken'
+            },
+            body: jsonEncode({"roomId": int.parse(details.payload!)}),
           );
           if (response.statusCode == 200) {
-              DragonG.navigatorKey.currentState!.push(
-                MaterialPageRoute(
-                  builder: (context) => FriendGameScreen(roomId: int.parse(details.payload!), nickname: nickname!, nowNumber: -1),
-                ),
-              );
+            DragonG.navigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => FriendGameScreen(roomId: int.parse(details.payload!), nickname: nickname!, nowNumber: -1),
+              ),
+            );
           }
 
         } else {
@@ -131,7 +179,6 @@ void initializeNotification() async {
   // 포그라운드에서 firebase message를 듣기
   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
     String notiBody = "멍멍";
-    print(message.data["do"]);
     if (message.data["do"] == "friend-add") {
       notiBody = "${message.data["nickname"]}님이 친구 추가 요청을 보냈습니다.";
     } else if (message.data["do"] == "friend-accept") {
@@ -146,6 +193,11 @@ void initializeNotification() async {
       payload = "${message.data["roomId"]}";
     }
 
+    ////////
+    print("${message.data["do"]} $notiBody");
+    print("포그라운드에서 알림을 show하기");
+    ////////
+
     flutterLocalNotificationPlugin.show(
         0,
         "드래곤 불",
@@ -157,15 +209,62 @@ void initializeNotification() async {
     );
   });
 
+  // 앱이 완전히 종료된 상태에서 메시지를 수신한 경우
   RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
   if (message != null) {
-    print(message.data);
+
+    print("앱이 종료된 후에 메시지를 받음");
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+      final route = message.data["do"];
+
+      // 받은 데이터로 리다이렉트하기
+      if (route == "friend-add" || route == "friend-accept")  {
+        DragonG.navigatorKey.currentState!.pushNamed('/friend');
+      } else if (route == "friend-fight") {
+        String? nickname;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        nickname = prefs.getString('nickname');
+
+        const storage = FlutterSecureStorage();
+        String? accessToken = await storage.read(key: 'accessToken');
+        String? refreshToken = await storage.read(key: 'refreshToken');
+
+        if (nickname != null && accessToken != null && refreshToken != null) {
+          String baseUrl = "${dotenv.env["BASE_URL"]!}/api";
+          final response = await http.post(Uri.parse("$baseUrl/friend-game/accept"),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken',
+              'refreshToken': 'Bearer $refreshToken'
+            },
+            body: jsonEncode({"roomId": int.parse(message.data["roomId"]!)}),
+          );
+          if (response.statusCode == 200) {
+            DragonG.navigatorKey.currentState!.push(
+              MaterialPageRoute(
+                builder: (context) => FriendGameScreen(roomId: int.parse(message.data["roomId"]!), nickname: nickname!, nowNumber: -1),
+              ),
+            );
+          }
+
+        } else {
+          DragonG.navigatorKey.currentState!.push(
+            MaterialPageRoute(
+              builder: (context) => const LoginScreen(),
+            ),
+          );
+        }
+      }
+    });
   }
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-    print("background opened ${message.data}");
+  FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+    print("onMessageOpenedAppListen");
 
     final route = message.data["do"];
+    print("여기로 가세요 $route");
+
     // 받은 데이터로 리다이렉트하기
     if (route == "friend-add" || route == "friend-accept")  {
       DragonG.navigatorKey.currentState!.pushNamed('/friend');
@@ -205,5 +304,5 @@ void initializeNotification() async {
       }
     }
   });
-
 }
+
