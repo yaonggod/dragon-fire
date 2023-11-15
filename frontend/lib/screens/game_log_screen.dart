@@ -42,11 +42,13 @@ class GameLogScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      const Center(
-                        child: Text(
-                          '최근 다섯개의 대전 이력 조회가 가능합니다.',
-                          style: TextStyle(
-                            color: Colors.blue,
+                      const SingleChildScrollView(
+                        child: Center(
+                          child: Text(
+                            '최근 다섯개의 대전 이력 조회가 가능합니다.',
+                            style: TextStyle(
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
                       ),
