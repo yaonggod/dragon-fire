@@ -1066,10 +1066,18 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
       isConnected = false;
       isPan = true;
     });
+
+    final Map<String, dynamic> messageBody = {
+      "nickname": widget.nickname,
+      "pan": pan,
+    };
+    final headers = {
+      'Content-Type': 'application/json', // JSON 형식으로 보내기 위한 헤더 설정
+    };
     stompClient.send(
         destination: '/pub/friend-game/${widget.roomId}/panShow',
-        body: 'widget.nickname',
-        headers: {});
+        body: jsonEncode(messageBody),
+        headers: headers);
   }
 
   @override
