@@ -114,7 +114,7 @@ public class TowerController {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                if(towerService.choosedSize(roomID)!=2){
+                if (towerService.choosedSize(roomID) != 2) {
                     System.out.println("error 입장");
                     messagingTemplate.convertAndSend("/sub/" + nickname + "/error", "승자는" + " " + "없어도된다");
                     return;
@@ -160,12 +160,11 @@ public class TowerController {
                     log.info("보스 레이드 도중 아직 pingpong 값을 받지 못하였습니다.");
                     errorCnt += 1;
                     if (errorCnt >= 7) {
-                        if (towerService.messageRecevierSize(roomID) == 0) {
-                            // 그냥 신호가 없다는 말이다 => 즉 나갔다는 말이다.
-                            log.info("현재 연결이 끊긴 상황입니다.");
-                            messagingTemplate.convertAndSend("/sub/" + nickname + "/error", "승자는" + " " + "???????");
-                            return;
-                        }
+
+                        log.info("현재 연결이 끊긴 상황입니다.");
+                        messagingTemplate.convertAndSend("/sub/" + nickname + "/error", "승자는" + " " + "???????");
+                        return;
+
                     }
                 }
                 towerService.cleanMessageReceiver(roomID);
@@ -228,11 +227,11 @@ public class TowerController {
     @MessageMapping("/{nickname}/updateMaxFloor")
     public void updateMaxFloor(@RequestBody Map<String, String> requestBody) {
         log.info("승리했으니 최종 층수를 업데이트 해줍니다");
-        String accessToken=requestBody.get("Authorization");
+        String accessToken = requestBody.get("Authorization");
         int nowFloor = Integer.parseInt(requestBody.get("nowFloor"));
         log.info(accessToken);
         log.info(requestBody.get("nowFloor"));
-        resultUpdateService.updateMaxFloor(accessToken,nowFloor);
+        resultUpdateService.updateMaxFloor(accessToken, nowFloor);
 
     }
 
