@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/main.dart';
 import 'package:frontend/screens/friendGameResult_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1127,55 +1125,64 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
 
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        left: 0,
-                        right: 0,
-                        height: MediaQuery.of(context).size.height -
-                            MediaQuery.of(context).size.width * 0.5 -
-                            MediaQuery.of(context).size.width * 0.06,
-                        child: Container(
-                          child: Image.asset(
-                            'lib/assets/icons/background.png',
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ))
+                            left: 0,
+                            right: 0,
+                            height: MediaQuery.of(context).size.height * 0.67,
+                            child: Container(
+                              child: Image.asset(
+                                'lib/assets/icons/background.png',
+                                fit: BoxFit.fitHeight,
+                              ),
+                            ))
                         .animate()
                         .fade()
                         .scaleXY(
-                        curve: Curves.linear,
-                        duration: Duration(milliseconds: 800),
-                        begin: 1.5),
+                            curve: Curves.linear,
+                            duration: Duration(milliseconds: 800),
+                            begin: 1.5),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        bottom: 0,
+                        top: MediaQuery.of(context).size.height * 0.67,
                         left: 0,
-                        height: MediaQuery.of(context).size.width * 0.5 +
-                            MediaQuery.of(context).size.width * 0.06 +
-                            MediaQuery.of(context).size.width * 0.075 * 1.2 +
-                            10,
-                        width: MediaQuery.of(context).size.width * 0.67,
+                        right: 0,
+                        height: MediaQuery.of(context).size.height * 0.33,
                         child: Container(
-                          decoration: BoxDecoration(
-                              color: Color(0xffCBB98A),
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(15))),
+                          color: Colors.black,
                         )),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                        bottom: 0,
+                        top: MediaQuery.of(context).size.height * 0.67 - MediaQuery.of(context).size.width * 0.1,
                         left: 0,
-                        right: 0,
-                        height: MediaQuery.of(context).size.width * 0.5 +
-                            MediaQuery.of(context).size.width * 0.06,
-                        child: Container(color: Color(0xffD6CFB7))),
+                        height: MediaQuery.of(context).size.height * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.67,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(15))
+                          ),
+                        )),
                   if (showTemp)
                     Positioned(
                       top: 0,
-                      height: MediaQuery.of(context).size.height * 0.31,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: Column(
                         children: [
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.31,
+                            // 원하는 너비 값으로 설정
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            // 원하는 높이 값으로 설정
+                            // child: Lottie.asset(
+                            //   'lib/assets/lottie/$youPick.json',
+                            //   fit: BoxFit.fitHeight,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   repeat: true,
+                            //   onLoaded: (composition) {
+                            //     Timer(const Duration(milliseconds: 1200), () {
+                            //       // 여기에 콜백 코드를 넣으세요
+                            //     });
+                            //   },
+                            // ),
                             child: Image.asset(
                               'lib/assets/skills/$youPick.gif',
                               fit: BoxFit.fitHeight,
@@ -1187,37 +1194,58 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
+                        top:0,
+                        right: 0,
+                        height: MediaQuery.of(context).size.width * 0.12,
+                        width: MediaQuery.of(context).size.width * 0.68,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
+                          ),
+                        )),
+                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
+                    Positioned(
                         top: MediaQuery.of(context).size.width * 0.1,
                         right: 0,
                         height: MediaQuery.of(context).size.width * 0.09,
                         width: MediaQuery.of(context).size.width * 0.47,
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Color(0xffCBB98A),
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(15))),
-                        )),
-                  if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
-                    Positioned(
-                        top: 0,
-                        right: 0,
-                        height: MediaQuery.of(context).size.width * 0.12,
-                        width: MediaQuery.of(context).size.width * 0.68,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Color(0xffD6CFB7),
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(15))),
+                              color: Colors.black,
+                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15))
+                          ),
                         )),
                   if (showTemp)
                     Positioned(
-                      top: MediaQuery.of(context).size.height * 0.31,
-                      height: MediaQuery.of(context).size.height * 0.31,
+                      top: MediaQuery.of(context).size.height * 0.3,
+                      width: MediaQuery.of(context).size.width,
+                      child: Divider(
+                        thickness: 3,
+                      ),
+                    ),
+                  if (showTemp)
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: Column(
                         children: [
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.31,
+                            // 원하는 너비 값으로 설정
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            // 원하는 높이 값으로 설정
+                            // child: Lottie.asset(
+                            //   'lib/assets/lottie/$mePick.json',
+                            //   fit: BoxFit.fitHeight,
+                            //   width: MediaQuery.of(context).size.width,
+                            //   repeat: true,
+                            //   onLoaded: (composition) {
+                            //     Timer(const Duration(milliseconds: 2000), () {
+                            //       // 여기에 콜백 코드를 넣으세요
+                            //     });
+                            //   },
+                            // ),
                             child: Image.asset(
                               'lib/assets/skills/$mePick.gif',
                               fit: BoxFit.fitHeight,
@@ -1232,7 +1260,8 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                       top: 0,
                       height: MediaQuery.of(context).size.height * 0.31,
                       child: Center(
-                        child: SizedBox(
+                        child:
+                        SizedBox(
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: Image.asset(
@@ -1245,10 +1274,11 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                      top: MediaQuery.of(context).size.height * 0.31,
+                      top:  MediaQuery.of(context).size.height * 0.31,
                       height: MediaQuery.of(context).size.height * 0.31,
                       child: Center(
-                        child: SizedBox(
+                        child:
+                        SizedBox(
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: Image.asset(
@@ -1266,7 +1296,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1306,7 +1336,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1350,7 +1380,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                       child: Center(
                         child: Dialog(
                           insetPadding: const EdgeInsets.all(10),
-                          backgroundColor: const Color.fromRGBO(3, 8, 61, 0.75),
+                          backgroundColor: const Color.fromRGBO(0, 0, 132, 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1375,11 +1405,11 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                   )
                                       .animate()
                                       .scaleXY(
-                                      begin: 10, curve: Curves.bounceInOut)
+                                          begin: 10, curve: Curves.bounceInOut)
                                       .shake(
-                                      delay:
-                                      const Duration(milliseconds: 500),
-                                      curve: Curves.bounceInOut),
+                                          delay:
+                                              const Duration(milliseconds: 500),
+                                          curve: Curves.bounceInOut),
                                 ],
                               ),
                             ),
@@ -1433,7 +1463,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                           0.55,
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         //
                                         // crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -1510,7 +1540,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                           0.55,
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         //
                                         // crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -1548,32 +1578,32 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                       right: 0,
                       child: Center(
                         child: Container(
-                            child: const Text("VS",
-                                style: TextStyle(fontSize: 60)))
+                                child: const Text("VS",
+                                    style: TextStyle(fontSize: 60)))
                             .animate()
                             .show(delay: const Duration(milliseconds: 1100))
                             .scaleXY(
-                            delay: const Duration(milliseconds: 1150),
-                            duration: const Duration(milliseconds: 400),
-                            begin: 10,
-                            curve: Curves.bounceInOut)
+                                delay: const Duration(milliseconds: 1150),
+                                duration: const Duration(milliseconds: 400),
+                                begin: 10,
+                                curve: Curves.bounceInOut)
                             .shake(
-                            delay: const Duration(milliseconds: 1550),
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.bounceInOut)
+                                delay: const Duration(milliseconds: 1550),
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.bounceInOut)
                             .tint(
-                          color: Colors.amber,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
+                              color: Colors.amber,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
                             .tint(
-                          color: Colors.blue,
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 500),
-                        )
+                              color: Colors.blue,
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 500),
+                            )
                             .tint(
-                            color: Colors.black,
-                            delay: const Duration(milliseconds: 500)),
+                                color: Colors.black,
+                                delay: const Duration(milliseconds: 500)),
                       ),
                     ),
                   // Column(
@@ -1595,36 +1625,36 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                         right: 0,
                         child: Center(
                             child: Text(
-                              '$countdown',
-                              style: const TextStyle(
-                                  fontSize: 65,
-                                  height: 0.8,
-                                  fontWeight: FontWeight.bold),
-                            )
+                          '$countdown',
+                          style: const TextStyle(
+                              fontSize: 65,
+                              height: 0.8,
+                              fontWeight: FontWeight.bold),
+                        )
                                 .animate(target: countdown == '3' ? 1 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '2' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '1' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut)
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut)
                                 .animate(target: countdown == '0' ? 2 : 0)
                                 .scaleXY(
-                                duration: Duration(milliseconds: 100),
-                                begin: 2,
-                                end: 0.1,
-                                curve: Curves.bounceInOut))),
+                                    duration: Duration(milliseconds: 100),
+                                    begin: 2,
+                                    end: 0.1,
+                                    curve: Curves.bounceInOut))),
 
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
@@ -1683,8 +1713,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                           Container(
                             child: Center(
                               child: Text(giCnt.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 28, color: Colors.white)),
+                                  style: const TextStyle(fontSize: 28, color: Colors.white)),
                             ),
                           ),
                         ],
@@ -1692,27 +1721,24 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                      top: MediaQuery.of(context).size.width * 0.09 + 10,
+                      top: MediaQuery.of(context).size.width * 0.09,
                       right: 10,
                       child: Center(
                         child: Text(contender!,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700),
+                            style: const TextStyle( color: Colors.white,
+                                fontSize: 20, fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center),
                       ),
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                      bottom: MediaQuery.of(context).size.width * 0.5,
+                      top: MediaQuery.of(context).size.height * 0.64 +
+                          MediaQuery.of(context).size.width * 0.075,
                       left: 10,
                       child: Center(
                         child: Text(widget.nickname,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
+                            style: const TextStyle(color:Colors.white,
+                                fontSize: 18, fontWeight: FontWeight.w700),
                             textAlign: TextAlign.center),
                       ),
                     ),
@@ -1726,7 +1752,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image:
-                            AssetImage('lib/assets/icons/hp$youHp-1.png'),
+                                AssetImage('lib/assets/icons/hp$youHp-1.png'),
                             fit: BoxFit.fitWidth,
                           ),
                         ),
@@ -1734,9 +1760,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                     ),
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                      bottom: MediaQuery.of(context).size.width * 0.5 +
-                          MediaQuery.of(context).size.width * 0.06 +
-                          10,
+                      top: MediaQuery.of(context).size.height * 0.64,
                       left: 0,
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.61,
@@ -1749,10 +1773,9 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                         ),
                       ),
                     ),
-
                   if (showTemp || isGi || isPa || isBlock || isTel || isBomb)
                     Positioned(
-                      bottom: 0,
+                      top: MediaQuery.of(context).size.height * 0.70,
                       left: 0,
                       right: 0,
                       child: Column(
@@ -1763,231 +1786,121 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               if (giCnt < 1)
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width:
+                                Container(
+                                  width:
                                       MediaQuery.of(context).size.width * 0.33,
-                                      height:
+                                  height:
                                       MediaQuery.of(context).size.width * 0.25,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          opacity: 0.4,
-                                          image: AssetImage(buttonTele),
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonTele),
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: Text(
-                                          '순간이동',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-
                               if (giCnt >= 1)
                                 GestureDetector(
                                   onTap: () {
-                                    if (!showTemp) {
+                                    if (!showTemp && !isTelPressed) {
                                       // 순간이동을 하는 경우
                                       sendMessage('순간이동', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
                                       setState(() {
-                                        isBombPressed = false;
-                                        isPaPressed = false;
-                                        isGiPressed = false;
                                         isTelPressed = true;
-                                        isBlockPressed = false;
                                       });
-                                    }
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
                                     }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonTele =
-                                      'lib/assets/icons/buttonTele2.png';
+                                          'lib/assets/icons/buttonTele2.png';
                                     });
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
-                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonTele =
-                                      'lib/assets/icons/buttonTele.png';
+                                          'lib/assets/icons/buttonTele.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
                                     buttonTele =
-                                    'lib/assets/icons/buttonTele.png';
+                                        'lib/assets/icons/buttonTele.png';
                                   }),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context).size.width *
-                                            0.33,
-                                        height:
-                                        MediaQuery.of(context).size.width *
-                                            0.25,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            if (isTelPressed)
-                                              BoxShadow(
-                                                color: Color.fromRGBO(
-                                                    255, 50, 0, 0.8),
-                                                offset: Offset(0, -10),
-                                                blurRadius: 28,
-                                                spreadRadius: -15,
-                                              ),
-                                          ],
-                                          image: DecorationImage(
-                                            image: AssetImage(buttonTele),
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonTele),
+                                        fit: BoxFit.fitWidth,
                                       ),
-                                      Positioned(
-                                        bottom: 8,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
-                                          child: Text(
-                                            '순간이동',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               if (giCnt < 3)
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width:
+                                Container(
+                                  width:
                                       MediaQuery.of(context).size.width * 0.33,
-                                      height:
+                                  height:
                                       MediaQuery.of(context).size.width * 0.25,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          opacity: 0.4,
-                                          image: AssetImage(buttonOne),
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonOne),
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: Text(
-                                          '원기옥',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               if (giCnt >= 3)
                                 GestureDetector(
                                   onTap: () {
-                                    if (!showTemp) {
+                                    if (!showTemp && !isBombPressed) {
+                                      // 원기옥을 선택하는 경우
                                       sendMessage('원기옥', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
                                       setState(() {
                                         isBombPressed = true;
-                                        isPaPressed = false;
-                                        isGiPressed = false;
-                                        isTelPressed = false;
-                                        isBlockPressed = false;
                                       });
-                                    }
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
                                     }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonOne =
-                                      'lib/assets/icons/buttonOne2.png';
+                                          'lib/assets/icons/buttonOne2.png';
                                     });
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
-                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonOne =
-                                      'lib/assets/icons/buttonOne.png';
+                                          'lib/assets/icons/buttonOne.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
                                     buttonOne =
-                                    'lib/assets/icons/buttonOne.png';
+                                        'lib/assets/icons/buttonOne.png';
                                   }),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context).size.width *
-                                            0.33,
-                                        height:
-                                        MediaQuery.of(context).size.width *
-                                            0.25,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            if (isBombPressed)
-                                              BoxShadow(
-                                                color: Color.fromRGBO(
-                                                    255, 50, 0, 0.8),
-                                                offset: Offset(0, -10),
-                                                blurRadius: 28,
-                                                spreadRadius: -15,
-                                              ),
-                                          ],
-                                          image: DecorationImage(
-                                            image: AssetImage(buttonOne),
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonOne),
+                                        fit: BoxFit.fitWidth,
                                       ),
-                                      Positioned(
-                                        bottom: 8,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
-                                          child: Text(
-                                            '원기옥',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                             ],
@@ -1997,27 +1910,23 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  if (!showTemp) {
+                                  if (!showTemp && !isGiPressed) {
                                     sendMessage('기', widget.nickname);
+                                    print("기");
+                                    // isGi = false;
+                                    // isPa = false;
+                                    // isBlock = false;
+                                    // isTel = false;
+                                    // isBomb = false;
                                     setState(() {
-                                      isBombPressed = false;
-                                      isPaPressed = false;
                                       isGiPressed = true;
-                                      isTelPressed = false;
-                                      isBlockPressed = false;
                                     });
-                                  }
-                                  if (_isHaptic) {
-                                    HapticFeedback.lightImpact();
                                   }
                                 },
                                 onTapDown: (_) {
                                   setState(() {
                                     buttonGi = 'lib/assets/icons/buttonGi2.png';
                                   });
-                                  if (_isHaptic) {
-                                    HapticFeedback.lightImpact();
-                                  }
                                 },
                                 onTapUp: (_) {
                                   setState(() {
@@ -2027,241 +1936,158 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
                                 onTapCancel: () => setState(() {
                                   buttonGi = 'lib/assets/icons/buttonGi.png';
                                 }),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width:
-                                      MediaQuery.of(context).size.width *
-                                          0.33,
-                                      height:
-                                      MediaQuery.of(context).size.width *
-                                          0.25,
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          if (isGiPressed)
-                                            BoxShadow(
-                                              color: Color.fromRGBO(
-                                                  255, 50, 0, 0.8),
-                                              offset: Offset(0, -10),
-                                              blurRadius: 28,
-                                              spreadRadius: -15,
-                                            ),
-                                        ],
-                                        image: DecorationImage(
-                                          image: AssetImage(buttonGi),
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(buttonGi),
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: Text(
-                                          '으',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     // 가위를 선택한 경우
+                              //     sendMessage('기', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('기'),
+                              // ),
                               GestureDetector(
                                 onTap: () {
-                                  if (!showTemp) {
+                                  if (!showTemp && !isBlockPressed) {
+                                    //막기를 선택 하는 경우
                                     sendMessage('막기', widget.nickname);
+                                    // isGi = false;
+                                    // isPa = false;
+                                    // isBlock = false;
+                                    // isTel = false;
+                                    // isBomb = false;
                                     setState(() {
-                                      isBombPressed = false;
-                                      isPaPressed = false;
-                                      isGiPressed = false;
-                                      isTelPressed = false;
                                       isBlockPressed = true;
                                     });
-                                  }
-                                  if (_isHaptic) {
-                                    HapticFeedback.lightImpact();
                                   }
                                 },
                                 onTapDown: (_) {
                                   setState(() {
                                     buttonShield =
-                                    'lib/assets/icons/buttonShield2.png';
+                                        'lib/assets/icons/buttonShield2.png';
                                   });
-                                  if (_isHaptic) {
-                                    HapticFeedback.lightImpact();
-                                  }
                                 },
                                 onTapUp: (_) {
                                   setState(() {
                                     buttonShield =
-                                    'lib/assets/icons/buttonShield.png';
+                                        'lib/assets/icons/buttonShield.png';
                                   });
                                 },
                                 onTapCancel: () => setState(() {
                                   buttonShield =
-                                  'lib/assets/icons/buttonShield.png';
+                                      'lib/assets/icons/buttonShield.png';
                                 }),
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width:
-                                      MediaQuery.of(context).size.width *
-                                          0.33,
-                                      height:
-                                      MediaQuery.of(context).size.width *
-                                          0.25,
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          if (isBlockPressed)
-                                            BoxShadow(
-                                              color: Color.fromRGBO(
-                                                  255, 50, 0, 0.8),
-                                              offset: Offset(0, -10),
-                                              blurRadius: 28,
-                                              spreadRadius: -15,
-                                            ),
-                                        ],
-                                        image: DecorationImage(
-                                          image: AssetImage(buttonShield),
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.33,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(buttonShield),
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: Text(
-                                          '막기',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                               if (giCnt >= 1)
                                 GestureDetector(
                                   onTap: () {
-                                    if (!showTemp) {
+                                    if (!showTemp && !isPaPressed) {
+                                      // 바위를 선택한 경우
                                       sendMessage('파', widget.nickname);
+                                      // isGi = false;
+                                      // isPa = false;
+                                      // isBlock = false;
+                                      // isTel = false;
+                                      // isBomb = false;
                                       setState(() {
-                                        isBombPressed = false;
                                         isPaPressed = true;
-                                        isGiPressed = false;
-                                        isTelPressed = false;
-                                        isBlockPressed = false;
                                       });
-                                    }
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
                                     }
                                   },
                                   onTapDown: (_) {
                                     setState(() {
                                       buttonPa =
-                                      'lib/assets/icons/buttonPa2.png';
+                                          'lib/assets/icons/buttonPa2.png';
                                     });
-                                    if (_isHaptic) {
-                                      HapticFeedback.lightImpact();
-                                    }
                                   },
                                   onTapUp: (_) {
                                     setState(() {
                                       buttonPa =
-                                      'lib/assets/icons/buttonPa.png';
+                                          'lib/assets/icons/buttonPa.png';
                                     });
                                   },
                                   onTapCancel: () => setState(() {
                                     buttonPa = 'lib/assets/icons/buttonPa.png';
                                   }),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width:
-                                        MediaQuery.of(context).size.width *
-                                            0.33,
-                                        height:
-                                        MediaQuery.of(context).size.width *
-                                            0.25,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            if (isPaPressed)
-                                              BoxShadow(
-                                                color: Color.fromRGBO(
-                                                    255, 50, 0, 0.8),
-                                                offset: Offset(0, -10),
-                                                blurRadius: 28,
-                                                spreadRadius: -15,
-                                              ),
-                                          ],
-                                          image: DecorationImage(
-                                            image: AssetImage(buttonPa),
-                                            fit: BoxFit.fitWidth,
-                                          ),
-                                        ),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.33,
+                                    height: MediaQuery.of(context).size.width *
+                                        0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage(buttonPa),
+                                        fit: BoxFit.fitWidth,
                                       ),
-                                      Positioned(
-                                        bottom: 8,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
-                                          child: Text(
-                                            '파',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               if (giCnt < 1)
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width:
+                                Container(
+                                  width:
                                       MediaQuery.of(context).size.width * 0.33,
-                                      height:
+                                  height:
                                       MediaQuery.of(context).size.width * 0.25,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          opacity: 0.4,
-                                          image: AssetImage(buttonPa),
-                                          fit: BoxFit.fitWidth,
-                                        ),
-                                      ),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      opacity: 0.5,
+                                      image: AssetImage(buttonPa),
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    Positioned(
-                                      bottom: 8,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: Text(
-                                          '파',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     // 바위를 선택한 경우
+                              //     sendMessage('파', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('파'),
+                              // ),
+
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     //막기를 선택 하는 경우
+                              //     sendMessage('막기', widget.nickname);
+                              //     isGi = false;
+                              //     isPa = false;
+                              //     isBlock = false;
+                              //     isTel = false;
+                              //     isBomb = false;
+                              //   },
+                              //   child: const Text('막기'),
+                              // ),
                             ],
                           ),
                         ],
