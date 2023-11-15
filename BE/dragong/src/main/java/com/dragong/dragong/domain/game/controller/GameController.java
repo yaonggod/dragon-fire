@@ -565,20 +565,20 @@ public class GameController {
             if (parts[0].equals("computerToken")) {
                 //승자가 컴퓨터인 경우
                 resultUpdateService.updateWinComputer(uuid);
-                resultUpdateService.updateLoser(parts[1]);
+                resultUpdateService.updateLoser(parts[1], 1);
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getComWinnerInfo(uuid);
+                        + resultUpdateService.getComWinnerInfo(uuid)+":20:20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
             } else {
                 // 승자가 사용자인 경우
-                resultUpdateService.updateWinner(parts[0]);
+                resultUpdateService.updateWinner(parts[0], 1);
                 resultUpdateService.updateLoseComputer(uuid);
                 String info = "";
                 info += resultUpdateService.getComLoserInfo(uuid) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0]);
+                        + resultUpdateService.getWinnerInfo(parts[0])+":20:20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
@@ -596,19 +596,21 @@ public class GameController {
                 String[] parts = result.split(":");
 //                log.info(parts[0]); // 이게 승자의 accessToken
 //                log.info(parts[1]); // 이게 패자의 accessToken
-                resultUpdateService.updateWinner(parts[0]);
-                resultUpdateService.updateLoser(parts[1]);
+                gameService.updateLog(roomID, winner);
+                log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
+                int logLength = gameService.logLength(roomID);
+                int winScore = resultUpdateService.updateWinner(parts[0], logLength);
+                int loseScore = resultUpdateService.updateLoser(parts[1], logLength);
                 log.info("DB에 승자와 패자 정보를 갱신합니다");
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0]);
+                        + resultUpdateService.getWinnerInfo(parts[0])+":"+Integer.toString(winScore)+":"+Integer.toString(loseScore);
                 log.info("최종 결과를 도출합니다" + info);
 
                 // 이때 최종 결과를 보내는거니까 게임이 전부 끝났다는 것을 의미한다.
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
-                gameService.updateLog(roomID, winner);
-                log.info("나와 상대가 선택했던 정보들을 DB에 저장합니다");
+
             }
             gameService.cleanList(roomID);
         }
@@ -617,7 +619,7 @@ public class GameController {
 
     @MessageMapping("/{roomId}/alive")
     public void checkConnection(@DestinationVariable String roomId,
-            @RequestBody Map<String, Object> messageBody) {
+                                @RequestBody Map<String, Object> messageBody) {
         int roomID = Integer.parseInt(roomId);
         int nowNumber = (int) messageBody.get("nowNumber");
         gameService.whoIn(roomID, nowNumber);

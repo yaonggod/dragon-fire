@@ -994,6 +994,15 @@ public class GameService {
 
     }
 
+    public int logLength(int roomId) {
+        if (logs[roomId].get(0) != null) {
+            return logs[roomId].get(0).getLog().length();
+        } else {
+            return 0;
+        }
+
+    }
+
     public void updateLog(int roomId, String winner) {
         TokenData tokenData1 = accessTokenRoom[roomId].poll();
         TokenData tokenData2 = accessTokenRoom[roomId].poll();
@@ -1087,7 +1096,6 @@ public class GameService {
     }
 
 
-
     public void chooseCom(int roomId) {
         Random random = new Random();
         int randomIndex = random.nextInt(6);
@@ -1112,8 +1120,8 @@ public class GameService {
         ComData comData = ComInfo[roomId];
         String comName = comData.getNickname();
         String uuid = comData.getUuid();
-        data.put("comName",comName);
-        data.put("uuid",uuid);
+        data.put("comName", comName);
+        data.put("uuid", uuid);
 
         return data;
     }
