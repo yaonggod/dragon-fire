@@ -571,7 +571,7 @@ public class GameController {
                 resultUpdateService.updateLoser(parts[1], 1);
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:20";
+                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:-20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
@@ -581,7 +581,7 @@ public class GameController {
                 resultUpdateService.updateLoseComputer(uuid);
                 String info = "";
                 info += resultUpdateService.getComLoserInfo(uuid) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0]) + ":20:20";
+                        + resultUpdateService.getWinnerInfo(parts[0]) + ":20:-20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
