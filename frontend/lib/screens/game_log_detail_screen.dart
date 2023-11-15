@@ -83,18 +83,18 @@ class GameLogDetailScreen extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          "대전이력",
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   surfaceTintColor: Colors.transparent,
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   title: const Text(
+      //     "대전이력",
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.w900,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      // ),
       body: Stack(
         children: [
           Positioned(
@@ -110,29 +110,32 @@ class GameLogDetailScreen extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: MediaQuery.of(context).size.height * 0.1,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Center(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.7,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: divideRound(
-                              optHistoryImg,
-                              myHistoryImg,
-                              detailGameLog,
-                              index,
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 15),
-                        itemCount: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: divideRound(
+                                optHistoryImg,
+                                myHistoryImg,
+                                detailGameLog,
+                                index,
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 15),
+                          itemCount: 3,
+                        ),
                       ),
                     ),
                   ),
