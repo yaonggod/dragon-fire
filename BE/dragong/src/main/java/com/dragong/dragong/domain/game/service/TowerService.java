@@ -26,9 +26,9 @@ public class TowerService {
     private Stack<String> bossChoose[] = new Stack[1000000]; // 해당 방에 컴퓨터가 무엇을 pick할 것인지
 
     {
-        bossList[0] = new BossData("회색수염", 10, 5);
-        bossList[1] = new BossData("빨간수염", 20, 5);
-        bossList[2] = new BossData("파란수염", 30, 5);
+        bossList[0] = new BossData("레드드래곤", 10, 5);
+        bossList[1] = new BossData("보라드래곤", 20, 5);
+        bossList[2] = new BossData("초록드래곤", 30, 5);
     }
 
     private final String[][] bossPick = {
