@@ -342,6 +342,19 @@ public class GameService {
             String player2 = grd2.getNickname();
             String picked2 = grd2.getPicked();
 
+            // logs 넣는 부분
+            String p1 = logs[roomId].get(0).getNickname();
+            String p2 = logs[roomId].get(1).getNickname();
+            if (player1.equals(p1)) {
+                // 이 부분 converter 만들어서 돌리자
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked1 + ":"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked2 + ":"));
+            } else {
+                // player1 == p2
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + picked2 + ":"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + picked1 + ":"));
+            }
+
 
             answer += player1 + ":" + picked1 + " " + player2 + ":" + picked2 + " ";
             String nick1 = giDataRoom[roomId].get(0).getNickname();
@@ -590,6 +603,9 @@ public class GameService {
                         answer += " 계속합니다";
                     }
                 }
+
+                logs[roomId].set(0, new LogData(p1, logs[roomId].get(0).getLog() + "_"));
+                logs[roomId].set(1, new LogData(p2, logs[roomId].get(1).getLog() + "_"));
             } else {
                 answer += " 안끝남";
             }
@@ -967,6 +983,9 @@ public class GameService {
             System.out.println(access2);
             System.out.println(nick2);
 
+            // 컴퓨터와 하는 것도 log로 넣어준다.
+            logs[roomId].add(new LogData(nick1, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
+            logs[roomId].add(new LogData(nick2, "")); //첫 시작은 아무것도 없게 해야하니 "" 를 넣어준다.
 
             //access1
             String uuidString = ComInfo[roomId].getUuid();
@@ -1011,9 +1030,25 @@ public class GameService {
         LogData logData2 = logs[roomId].get(1);
 
         String accessToken1 = tokenData1.getAccessToken();
+        UUID UUID1 = null;
+        UUID UUID2 = null;
+
+        if(accessToken1.equals("computerToken")){
+            String uuidString = ComInfo[roomId].getUuid();
+            UUID1= UUID.fromString(uuidString);
+
+        }else{
+            UUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
+        }
         String accessToken2 = tokenData2.getAccessToken();
-        UUID UUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
-        UUID UUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
+        if(accessToken2.equals("computerToken")){
+            String uuidString = ComInfo[roomId].getUuid();
+            UUID2= UUID.fromString(uuidString);
+        }else{
+            UUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
+        }
+
+
         String nick1 = tokenData1.getNickname();
         String nick2 = tokenData2.getNickname();
 
