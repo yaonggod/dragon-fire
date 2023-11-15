@@ -84,8 +84,9 @@ class GameLogDetailScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
         title: const Text(
           "대전이력",
           style: TextStyle(
@@ -109,7 +110,7 @@ class GameLogDetailScreen extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
+                  height: MediaQuery.of(context).size.height * 0.05,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
