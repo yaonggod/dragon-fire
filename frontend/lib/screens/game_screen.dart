@@ -857,6 +857,10 @@ class _GameScreenState extends State<GameScreen> {
         String part4 = parts[3];
         String part5 = parts[4];
         String part6 = parts[5];
+        String part7 = parts[6];
+        String part8 = parts[7];
+        print("승자의 상승점수" + part7);
+        print("패자의 하락점수" + part8);
         if (frame.body != null) {
           if (winner == widget.nickname) {
             // 내가 승자인 경우
@@ -872,7 +876,9 @@ class _GameScreenState extends State<GameScreen> {
                         nickname: winner,
                         win: part4,
                         lose: part5,
-                        point: int.parse(part6)),
+                        point: int.parse(part6),
+                        winScore: part7,
+                        loseScore: part8),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -892,7 +898,9 @@ class _GameScreenState extends State<GameScreen> {
                         nickname: winner,
                         win: part1,
                         lose: part2,
-                        point: int.parse(part3)),
+                        point: int.parse(part3),
+                        winScore: part7,
+                        loseScore: part8),
                 transitionDuration: Duration.zero,
                 reverseTransitionDuration: Duration.zero,
               ),
@@ -1105,9 +1113,9 @@ class _GameScreenState extends State<GameScreen> {
     String socketUrl = dotenv.env['SOCKET_URL']!;
     stompClient = StompClient(
       config: StompConfig(
-        url: socketUrl,
+        //url: socketUrl,
         // STOMP 서버 URL로 변경
-        // url: 'ws://10.0.2.2:8080/ws',
+        url: 'ws://10.0.2.2:8080/ws',
         onConnect: onConnect,
         beforeConnect: () async {
           await Future.delayed(const Duration(milliseconds: 200));
@@ -1802,10 +1810,11 @@ class _GameScreenState extends State<GameScreen> {
                                 Stack(
                                   children: [
                                     Container(
-                                      width:
-                                      MediaQuery.of(context).size.width * 0.33,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.33,
                                       height:
-                                      MediaQuery.of(context).size.width * 0.25,
+                                          MediaQuery.of(context).size.width *
+                                              0.25,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           opacity: 0.4,
@@ -1831,7 +1840,6 @@ class _GameScreenState extends State<GameScreen> {
                                     ),
                                   ],
                                 ),
-
                               if (giCnt >= 1)
                                 GestureDetector(
                                   onTap: () {
@@ -1917,10 +1925,11 @@ class _GameScreenState extends State<GameScreen> {
                                 Stack(
                                   children: [
                                     Container(
-                                      width:
-                                      MediaQuery.of(context).size.width * 0.33,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.33,
                                       height:
-                                      MediaQuery.of(context).size.width * 0.25,
+                                          MediaQuery.of(context).size.width *
+                                              0.25,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           opacity: 0.4,
@@ -1986,11 +1995,11 @@ class _GameScreenState extends State<GameScreen> {
                                     children: [
                                       Container(
                                         width:
-                                        MediaQuery.of(context).size.width *
-                                            0.33,
+                                            MediaQuery.of(context).size.width *
+                                                0.33,
                                         height:
-                                        MediaQuery.of(context).size.width *
-                                            0.25,
+                                            MediaQuery.of(context).size.width *
+                                                0.25,
                                         decoration: BoxDecoration(
                                           boxShadow: [
                                             if (isBombPressed)
@@ -2066,12 +2075,11 @@ class _GameScreenState extends State<GameScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      width:
-                                      MediaQuery.of(context).size.width *
+                                      width: MediaQuery.of(context).size.width *
                                           0.33,
                                       height:
-                                      MediaQuery.of(context).size.width *
-                                          0.25,
+                                          MediaQuery.of(context).size.width *
+                                              0.25,
                                       decoration: BoxDecoration(
                                         boxShadow: [
                                           if (isGiPressed)
@@ -2145,12 +2153,11 @@ class _GameScreenState extends State<GameScreen> {
                                 child: Stack(
                                   children: [
                                     Container(
-                                      width:
-                                      MediaQuery.of(context).size.width *
+                                      width: MediaQuery.of(context).size.width *
                                           0.33,
                                       height:
-                                      MediaQuery.of(context).size.width *
-                                          0.25,
+                                          MediaQuery.of(context).size.width *
+                                              0.25,
                                       decoration: BoxDecoration(
                                         boxShadow: [
                                           if (isBlockPressed)
@@ -2225,11 +2232,11 @@ class _GameScreenState extends State<GameScreen> {
                                     children: [
                                       Container(
                                         width:
-                                        MediaQuery.of(context).size.width *
-                                            0.33,
+                                            MediaQuery.of(context).size.width *
+                                                0.33,
                                         height:
-                                        MediaQuery.of(context).size.width *
-                                            0.25,
+                                            MediaQuery.of(context).size.width *
+                                                0.25,
                                         decoration: BoxDecoration(
                                           boxShadow: [
                                             if (isPaPressed)
@@ -2269,10 +2276,11 @@ class _GameScreenState extends State<GameScreen> {
                                 Stack(
                                   children: [
                                     Container(
-                                      width:
-                                      MediaQuery.of(context).size.width * 0.33,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.33,
                                       height:
-                                      MediaQuery.of(context).size.width * 0.25,
+                                          MediaQuery.of(context).size.width *
+                                              0.25,
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           opacity: 0.4,

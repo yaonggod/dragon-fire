@@ -13,6 +13,9 @@ class GameResultScreen extends StatefulWidget {
   final String win;
   final String lose;
   final int point;
+  final String winScore; // 승자의 점수 변동
+  final String loseScore;
+
 
   const GameResultScreen({
     super.key,
@@ -21,6 +24,9 @@ class GameResultScreen extends StatefulWidget {
     required this.win,
     required this.lose,
     required this.point,
+    required this.winScore,
+    required this.loseScore,
+
   });
 
   @override
@@ -168,8 +174,8 @@ class _GameResultScreenState extends State<GameResultScreen>
                                         ),
                                         Text(
                                           widget.nickname == nickname
-                                              ? '+20'
-                                              : '-20',
+                                              ? '+'+widget.winScore
+                                              : widget.loseScore,
                                           style: TextStyle(
                                               fontSize: 25,
                                               color: Colors.white),
