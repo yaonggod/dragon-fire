@@ -144,7 +144,7 @@ class _FriendScreenState extends State<FriendScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
+            (route) => false,
       );
     }
   }
@@ -201,13 +201,13 @@ class _FriendScreenState extends State<FriendScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          iconTheme: IconThemeData(color: Colors.black),
-          title: Text("호 적 수", style: TextStyle(fontWeight: FontWeight.w900),),
-          centerTitle: true,
-        ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("호 적 수", style: TextStyle(fontWeight: FontWeight.w900),),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Positioned(
@@ -252,21 +252,21 @@ class _FriendScreenState extends State<FriendScreen> {
                                 hintStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(255,255,255,0.6)),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
+                                  BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 2, color: Colors.red),
+                                  BorderSide(width: 2, color: Colors.red),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
+                                  BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 3, color: Colors.amber),
+                                  BorderSide(width: 3, color: Colors.amber),
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0)),
+                                  BorderRadius.all(Radius.circular(10.0)),
                                   borderSide:
-                                      BorderSide(width: 1, color: Colors.red),
+                                  BorderSide(width: 1, color: Colors.red),
                                 ),
                               ),
                             ),
@@ -304,16 +304,16 @@ class _FriendScreenState extends State<FriendScreen> {
                       ),
                       searched == "FAIL"
                           ? const Padding(
-                        padding: EdgeInsets.only(top: 5, bottom: 20),
+                          padding: EdgeInsets.only(top: 5, bottom: 20),
                           child: Text(
-                              "존재하지 않는 유저입니다.",
-                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 18),
-                            )
+                            "존재하지 않는 유저입니다.",
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.w900, fontSize: 18),
+                          )
                       )
                           : Container(),
                       searched == "SUCCESS"
                           ? SearchResultWidget(
-                              searchResult: searchResult!, onEvent: showSearch)
+                          searchResult: searchResult!, onEvent: showSearch)
                           : Container(),
                       const SizedBox(height: 10,),
                       Row(
@@ -329,7 +329,7 @@ class _FriendScreenState extends State<FriendScreen> {
                               },
                               child: Container(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
+                                const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
                                     color: !friendSelected
                                         ? Colors.white
@@ -355,7 +355,7 @@ class _FriendScreenState extends State<FriendScreen> {
                               },
                               child: Container(
                                   padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
+                                  const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                       color: !friendSelected
                                           ? Colors.red

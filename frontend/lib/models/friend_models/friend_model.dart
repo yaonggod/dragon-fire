@@ -24,5 +24,5 @@ class FriendModel {
         friendWin = json['friendWin'],
         friendLose = json['friendLose'],
         fcmToken = json['fcmToken'],
-        isConnect = json['isConnect'];
+        isConnect = json['isConnect'] ?? false;
 }
