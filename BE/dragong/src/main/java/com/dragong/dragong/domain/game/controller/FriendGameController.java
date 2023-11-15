@@ -400,7 +400,7 @@ public class FriendGameController {
                         // 처음 시작할 때가 아니고 현재 한 놈이 나간 상황이다.
                         // 그럼 나간 놈이 졌다고 해야겠지?
                         String winner = friendGameService.returnName(roomID); // 얘가 승자다
-                        messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
+                        messagingTemplate.convertAndSend("/sub/friend-game/" + roomId + "/error",
                                 "승자는" + " " + winner);
                         friendGameService.cleanList(roomID);
                     }
