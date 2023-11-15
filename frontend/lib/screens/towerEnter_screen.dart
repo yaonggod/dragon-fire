@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:frontend/screens/tower_screen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -176,9 +177,6 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
       ),
       body: Stack(
         children: [
-          Container(
-            color: Colors.black,
-          ),
           Positioned(
               left: 0,
               right: 0,
@@ -188,7 +186,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                   'lib/assets/icons/sky.png',
                   fit: BoxFit.fitHeight,
                 ),
-              )),
+              )).animate().fade(),
           SingleChildScrollView(
             controller: _scrollController,
             reverse: true,
@@ -300,7 +298,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                       ),
                     ],
                   ),
-                ),
+                ).animate().fade(),
                 Padding(
                   padding: EdgeInsets.only(
                     left: MediaQuery.of(context).size.width * 0.2,
@@ -519,7 +517,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                       ),
                     ),
                   ),
-                ),
+                ).animate().fade(),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.15,
                   width: MediaQuery.of(context).size.width,
@@ -533,7 +531,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                 )
               ],
             ),
-          ),
+          ).animate().fade(),
           Positioned(
             top: MediaQuery.of(context).size.height * 0.5,
             left: -MediaQuery.of(context).size.width * 0.1,
