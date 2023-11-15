@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,12 +35,12 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
   String? nickname;
   String? accessToken;
   String? refreshToken;
-  String buttonsrc = 'lib/assets/icons/startButton.png';
+  String buttonsrc = 'lib/assets/icons/pvpButton.png';
   String buttonsrc1 = 'lib/assets/icons/rankingButton.png';
   String buttonsrc2 = 'lib/assets/icons/reportButton.png';
   String buttonsrc3 = 'lib/assets/icons/friendButton.png';
   String buttonsrc4 = 'lib/assets/icons/myButton.png';
-  String buttonsrc5 = 'lib/assets/icons/startButton.png';
+  String buttonsrc5 = 'lib/assets/icons/towerButton.png';
 
   bool isButtonDisabled = false;
 
@@ -55,6 +56,32 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
     "lib/assets/icons/tutorial4.png",
     "lib/assets/icons/tutorial5.png",
   ];
+
+  Random random = Random();
+  List<String> myImageList = [
+    'lib/assets/skills/newFireBallPlayer.gif',
+    'lib/assets/skills/blink.gif',
+    'lib/assets/skills/charging.gif',
+    'lib/assets/skills/fireShield.gif',
+  ];
+  List<String> contenderImageList = [
+    'lib/assets/skills/newFireBallRival.gif',
+    'lib/assets/skills/blink.gif',
+    'lib/assets/skills/charging.gif',
+    'lib/assets/skills/fireShield.gif',
+  ];
+  int currentMyImageIndex = 0;
+  int currentContenderImageIndex = 0;
+
+
+  void startImageChangeTimer() {
+    Timer.periodic(Duration(seconds: 2), (timer) {
+      setState(() {
+        currentMyImageIndex = random.nextInt(myImageList.length);
+        currentContenderImageIndex = random.nextInt(contenderImageList.length);
+      });
+    });
+  }
 
   Future<bool> endApp() async {
     DateTime curTime = DateTime.now();
@@ -291,6 +318,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
   @override
   void initState() {
     super.initState();
+    startImageChangeTimer();
+
     WidgetsBinding.instance?.addObserver(this);
 
     ConnectingService.connect(true);
@@ -316,17 +345,52 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('공지'),
-            content: Text(
-                '업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "공 지 사 항",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(left: 5, right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                '업데이트를 하신 후에는 앱 데이터(쿠키, 캐시) 삭제 후 재시작 부탁드립니다.\n\n죄송합니다. 정식 배포시에는 수정하도록 하겠습니다.',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
@@ -405,22 +469,23 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                     fit: BoxFit.fitHeight,
                   ),
                 )).animate().fade(),
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.25,
-              height: MediaQuery.of(context).size.height * 0.1,
-              child: Center(
-                child:
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: Image.asset(
-                    'lib/assets/icons/contender.gif',
-                    fit: BoxFit.fitHeight,
+            if(currentContenderImageIndex!=1)
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.1,
+                child: Center(
+                  child:
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
-                  ).animate().fade(),
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: Image.asset(
+                      'lib/assets/icons/contender.gif',
+                      fit: BoxFit.fitHeight,
+                      width: MediaQuery.of(context).size.width,
+                    ).animate().fade(),
+                  ),
                 ),
               ),
-            ),
             Positioned(
               top: MediaQuery.of(context).size.height * 0.3,
               height: MediaQuery.of(context).size.height * 0.2,
@@ -430,7 +495,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.2,
                     child: Image.asset(
-                      'lib/assets/skills/newFireBallRival.gif',
+                      contenderImageList[currentContenderImageIndex],
                       fit: BoxFit.fitHeight,
                       width: MediaQuery.of(context).size.width,
                     ).animate().fade(),
@@ -447,7 +512,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.2,
                       child: Image.asset(
-                        'lib/assets/skills/newFireBallPlayer.gif',
+                        myImageList[currentMyImageIndex],
                         fit: BoxFit.fitHeight,
                         width: MediaQuery.of(context).size.width,
                       ),
@@ -455,22 +520,23 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                   ],
                 ),
               ),
-            Positioned(
-              bottom: MediaQuery.of(context).size.height * 0.3,
-              height: MediaQuery.of(context).size.height * 0.1,
-              child: Center(
-                child:
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  child: Image.asset(
-                    'lib/assets/icons/myCharacter.gif',
-                    fit: BoxFit.fitHeight,
+            if(currentMyImageIndex!=1)
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.1,
+                child: Center(
+                  child:
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: Image.asset(
+                      'lib/assets/icons/myCharacter.gif',
+                      fit: BoxFit.fitHeight,
+                      width: MediaQuery.of(context).size.width,
+                    ),
                   ),
                 ),
               ),
-            ),
             slidingWidget(
               context,
               _animation,
@@ -512,7 +578,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                         onTapDown: (_) {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc = 'lib/assets/icons/startButton2.png';
+                              buttonsrc = 'lib/assets/icons/pvpButton2.png';
                             });
                             if (_isHaptic) {
                               HapticFeedback.lightImpact();
@@ -522,14 +588,14 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                         onTapUp: (_) {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc = 'lib/assets/icons/startButton.png';
+                              buttonsrc = 'lib/assets/icons/pvpButton.png';
                             });
                           }
                         },
                         onTapCancel: () {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc = 'lib/assets/icons/startButton.png';
+                              buttonsrc = 'lib/assets/icons/pvpButton.png';
                             });
                           }
                         },
@@ -564,7 +630,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                         onTapDown: (_) {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc5 = 'lib/assets/icons/startButton2.png';
+                              buttonsrc5 = 'lib/assets/icons/towerButton2.png';
                             });
                             if (_isHaptic) {
                               HapticFeedback.lightImpact();
@@ -574,14 +640,14 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
                         onTapUp: (_) {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                              buttonsrc5 = 'lib/assets/icons/towerButton.png';
                             });
                           }
                         },
                         onTapCancel: () {
                           if (!isButtonDisabled) {
                             setState(() {
-                              buttonsrc5 = 'lib/assets/icons/startButton.png';
+                              buttonsrc5 = 'lib/assets/icons/towerButton.png';
                             });
                           }
                         },

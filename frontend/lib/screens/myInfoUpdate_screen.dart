@@ -110,16 +110,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('알림'),
-            content: const Text('사용 가능'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "드래곤 불",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                "사용 가능한 닉네임입니다.",
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
@@ -129,16 +165,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('알림'),
-            content: const Text('이미 사용중인 닉네임입니다'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "드래곤 불",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                "이미 사용중인 닉네임입니다.",
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
@@ -184,20 +256,55 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
           barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('알림'),
-              content: const Text('닉네임 변경 성공'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainScreen(),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: Colors.grey,
+              titlePadding: const EdgeInsets.only(right: 5),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: const Text(
+                    "드래곤 불",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              contentPadding: const EdgeInsets.only(right: 5),
+              content: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  "닉네임 변경 성공",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+
+              actionsPadding: const EdgeInsets.only(bottom: 15),
+              actions: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      padding: const EdgeInsets.all(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MainScreen(),
+                            ),
+                                (Route<dynamic> route) => false,
+                          );
+                        },
+                        child: const Text('확인', style: TextStyle(color: Colors.white),),
                       ),
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  child: const Text('확인'),
+                    )
+                  ],
                 ),
               ],
             );
@@ -214,16 +321,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('알림'),
-              content: const Text('다시 시도해주세요'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: Colors.grey,
+              titlePadding: const EdgeInsets.only(right: 5),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: const Text(
+                    "드래곤 불",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              contentPadding: const EdgeInsets.only(right: 5),
+              content: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  "다시 시도해주세요",
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+
+              actionsPadding: const EdgeInsets.only(bottom: 15),
               actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('확인'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      padding: const EdgeInsets.all(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('확인', style: TextStyle(color: Colors.white),),
+                      ),
+                    )
+                  ],
                 ),
               ],
+
             );
           },
         );
@@ -236,16 +379,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('알림'),
-            content: const Text('닉네임 중복체크를 해주세요.'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "드래곤 불",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                "닉네임 중복 확인을 해주세요.",
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
@@ -275,20 +454,55 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
             barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text('알림'),
-                content: const Text('자기소개 변경 성공'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MainScreen(),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Colors.grey,
+                titlePadding: const EdgeInsets.only(right: 5),
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: const Text(
+                      "드래곤 불",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                contentPadding: const EdgeInsets.only(right: 5),
+                content: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    "자기소개 변경 성공",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+
+                actionsPadding: const EdgeInsets.only(bottom: 15),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MainScreen(),
+                              ),
+                                  (Route<dynamic> route) => false,
+                            );
+                          },
+                          child: const Text('확인', style: TextStyle(color: Colors.white),),
                         ),
-                        (Route<dynamic> route) => false,
-                      );
-                    },
-                    child: const Text('확인'),
+                      )
+                    ],
                   ),
                 ],
               );
@@ -301,16 +515,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('알림'),
-            content: const Text('다시 시도해주세요'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: Colors.grey,
+            titlePadding: const EdgeInsets.only(right: 5),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                padding: const EdgeInsets.all(7),
+                child: const Text(
+                  "드래곤 불",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+
+            contentPadding: const EdgeInsets.only(right: 5),
+            content: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                "다시 시도해주세요",
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+
+            actionsPadding: const EdgeInsets.only(bottom: 15),
             actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('확인'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('확인', style: TextStyle(color: Colors.white),),
+                    ),
+                  )
+                ],
               ),
             ],
+
           );
         },
       );
@@ -423,16 +673,52 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('알림'),
-                                content: const Text('닉네임 중복체크를 해주세요.'),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                backgroundColor: Colors.grey,
+                                titlePadding: const EdgeInsets.only(right: 5),
+                                title: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                    padding: const EdgeInsets.all(7),
+                                    child: const Text(
+                                      "드래곤 불",
+                                      style: TextStyle(fontSize: 20, color: Colors.white),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+
+                                contentPadding: const EdgeInsets.only(right: 5),
+                                content: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                  child: Text(
+                                    "닉네임 중복 확인을 해주세요.",
+                                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                                  ),
+                                ),
+
+                                actionsPadding: const EdgeInsets.only(bottom: 15),
                                 actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('확인'),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                        padding: const EdgeInsets.all(7),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('확인', style: TextStyle(color: Colors.white),),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ],
+
                               );
                             },
                           );
