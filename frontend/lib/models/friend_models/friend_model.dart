@@ -2,6 +2,7 @@ class FriendModel {
   String toMember, toNickname;
   int score, win, lose, friendWin, friendLose;
   String? fcmToken;
+  bool isConnect;
 
   FriendModel(
       {required this.toMember,
@@ -11,7 +12,8 @@ class FriendModel {
       required this.lose,
         required this.friendWin,
         required this.friendLose,
-      this.fcmToken});
+      this.fcmToken,
+      required this.isConnect});
 
   FriendModel.fromJson(Map<String, dynamic> json)
       : toMember = json['toMember'],
@@ -21,5 +23,6 @@ class FriendModel {
         lose = json['lose'],
         friendWin = json['friendWin'],
         friendLose = json['friendLose'],
-        fcmToken = json['fcmToken'];
+        fcmToken = json['fcmToken'],
+        isConnect = json['isConnect'] ?? false;
 }

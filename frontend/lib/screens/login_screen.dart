@@ -101,16 +101,52 @@ class _LoginScreenState extends State<LoginScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('알림'),
-              content: Text('탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: Colors.grey,
+              titlePadding: const EdgeInsets.only(right: 5),
+              title: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  padding: const EdgeInsets.all(7),
+                  child: const Text(
+                    "드래곤 불",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+
+              contentPadding: const EdgeInsets.only(right: 5),
+              content: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  '탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)',
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+
+              actionsPadding: const EdgeInsets.only(bottom: 15),
               actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('확인'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      padding: const EdgeInsets.all(7),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('확인', style: TextStyle(color: Colors.white),),
+                      ),
+                    )
+                  ],
                 ),
               ],
+
             );
           },
         );
@@ -140,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
             accessToken1.substring(7), refreshToken1.substring(7), "GOOGLE");
         saveNickname(nickname);
         saveEmail(email);
-        saveIntroduction(introduction!);
+        saveIntroduction(introduction ?? "");
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -224,16 +260,52 @@ class _LoginScreenState extends State<LoginScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('알림'),
-                content: Text('탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                backgroundColor: Colors.grey,
+                titlePadding: const EdgeInsets.only(right: 5),
+                title: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                    padding: const EdgeInsets.all(7),
+                    child: const Text(
+                      "드래곤 불",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+
+                contentPadding: const EdgeInsets.only(right: 5),
+                content: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Text(
+                    '탈퇴한 회원입니다.\n(재가입을 원할시 문의를 남겨주세요.)',
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+
+                actionsPadding: const EdgeInsets.only(bottom: 15),
                 actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('확인'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                        padding: const EdgeInsets.all(7),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('확인', style: TextStyle(color: Colors.white),),
+                        ),
+                      )
+                    ],
                   ),
                 ],
+
               );
             },
           );
@@ -267,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
               accessToken1.substring(7), refreshToken1.substring(7), "NAVER");
           saveNickname(nickname);
           saveEmail(email);
-          saveIntroduction(introduction!);
+          saveIntroduction(introduction ?? "");
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
