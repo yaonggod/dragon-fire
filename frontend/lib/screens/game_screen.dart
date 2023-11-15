@@ -686,6 +686,7 @@ class _GameScreenState extends State<GameScreen> {
         if (comparing == '비겼습니다') {
           // 비겼으니까 다시 게임을 진행해야함
           // 이 때 기를 가져온다.
+          round+=1;
           startGame();
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
@@ -755,6 +756,7 @@ class _GameScreenState extends State<GameScreen> {
           if (shouldContinue == '계속합니다') {
             // 아직 2승을 한 사람이 없기에 게임을 계속해야 한다는 것을 의미한다.
             // 그럼 이때는 처음부터 게임을 시작해야 한다.
+            round = 0;
             showPan();
             // 새로운 게임을 시작하는데 가장 중요한 요소가 뭘까? 일단 기 정보를 초기화 해줘야 한다.
           } else if (shouldContinue == '끝냅니다') {
