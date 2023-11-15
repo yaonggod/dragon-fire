@@ -54,6 +54,7 @@ class TowerScreenState extends State<TowerScreen> {
   bool isBomb = false; // 원기옥
   bool isPan = false; // 몇 번째 판인지를 보여주기 위해서
   String? nickname1;
+  String dragon='';
   int? myWin;
   int? myLose;
   int? myScore;
@@ -212,6 +213,13 @@ class TowerScreenState extends State<TowerScreen> {
   }
 
   void onConnect(StompFrame frame) {
+    if(widget.nowFloor==1){
+      dragon='redBoss';
+    }else if(widget.nowFloor==2){
+      dragon='purpleBoss';
+    }else if(widget.nowFloor==3){
+      dragon='greenBoss';
+    }
     print(widget.nowFloor);
     setState(() {
       isWaiting = true; // 연결이 성공하면 상태 변수를 true로 설정
@@ -1452,7 +1460,7 @@ class TowerScreenState extends State<TowerScreen> {
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height * 0.1,
                           child: Image.asset(
-                            'lib/assets/icons/contender.gif',
+                            'lib/assets/icons/$dragon.gif',
                             fit: BoxFit.fitHeight,
                             width: MediaQuery.of(context).size.width,
                           ),
