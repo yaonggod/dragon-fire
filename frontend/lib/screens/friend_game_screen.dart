@@ -678,6 +678,7 @@ class _FriendGameScreenState extends State<FriendGameScreen> {
         if (comparing == '비겼습니다') {
           // 비겼으니까 다시 게임을 진행해야함
           // 이 때 기를 가져온다.
+          round+=1;
           startGame();
           print('재경기를 실시합니다');
         } else if (comparing == '무효입니다') {
