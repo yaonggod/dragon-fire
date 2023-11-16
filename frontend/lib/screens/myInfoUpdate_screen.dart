@@ -434,7 +434,9 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
   void sendIntroDataToServer() async {
     Map<String, String> list = await readToken();
     String baseUrl = dotenv.env['BASE_URL']!;
-    final String introduction = introductionController.text;
+    String introduction = introductionController.text;
+    introduction = introduction.replaceAll('\n', ' ');
+
     final response =
         await http.put(Uri.parse('$baseUrl/api/member/introduction-modify'),
             headers: {
@@ -644,14 +646,18 @@ class _MyInfoUpdateScreenState extends State<MyInfoUpdateScreen> {
                         style: TextStyle(color: Colors.white),
                       ),
                       onPressed: () {
+                        String text = nicknameController.text;
                         if (nicknameController.text.isEmpty) {
+
+
+
                           // 경고 메시지 표시 로직
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 content: Text("닉네임 또는 소개는 필수사항입니다!")),
                           );
                         } else if (containsWhitespace(
-                            nicknameController.text)) {
+                            text.replaceAll('\n', ' '))) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("띄어쓰기가 포함되어 있습니다")),
                           );
