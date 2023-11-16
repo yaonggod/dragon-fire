@@ -36,6 +36,7 @@ public class GameService {
     private final int[] whoisIn = new int[1000000];
     private Stack<String> whatPick[] = new Stack[1000000]; // 해당 방에 컴퓨터가 무엇을 pick할 것인지
     private final ComData ComInfo[] = new ComData[1000000]; // 각 방에 컴퓨터가 들어간다면 어떤 닉네임과 uuid를
+    private final int NoLeave[] = new int[1000000];
     //가지는 컴퓨터가 들어갈것인지 정하는것.
     private final String[][] computerPick = {
             {"파", "기"},
@@ -140,6 +141,7 @@ public class GameService {
         // 처음 들어오자마자 하는 행위다. => visietd를 해줘야지?
         log.info("방에 입장합니다");
         total += 1;
+
         if (visited[total]) {
             // 이미 차지하고 있다면?
             while (visited[total]) {
@@ -1187,5 +1189,17 @@ public class GameService {
 
     public void cleanStack(int roomId) {
         whatPick[roomId].clear();
+    }
+
+    public void noLeaveUpdate(int roomId) {
+        NoLeave[roomId] += 1;
+    }
+
+    public void noLeaveClear(int roomId) {
+        NoLeave[roomId] = 0;
+    }
+
+    public int noLeaveGet(int roomId) {
+        return NoLeave[roomId];
     }
 }
