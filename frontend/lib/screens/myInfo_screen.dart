@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/screens/game_log_screen.dart';
 import 'package:frontend/screens/info_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/myInfoUpdate_screen.dart';
@@ -358,29 +359,29 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                               child: Stack(
                                 children: [
                                   Positioned(
-                                    child: Center(
+                                    left: 0,
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.2,
+                                    right: 0,
+                                    child: const Center(
                                       child: Text(
                                         "환경설정",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 40,
                                         ),
                                       ),
                                     ),
-                                    left: 0,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.2,
-                                    right: 0,
                                   ),
                                   Positioned(
-                                    child: Divider(
-                                      color: Colors.white,
-                                      thickness: 2,
-                                    ),
                                     left: 0,
                                     top:
                                         MediaQuery.of(context).size.width * 0.2,
                                     right: 0,
+                                    child: const Divider(
+                                      color: Colors.white,
+                                      thickness: 2,
+                                    ),
                                   ),
                                   Container(
                                     width:
@@ -401,9 +402,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                                     .width *
                                                 0.22),
                                         ListTile(
-                                          title: Text(
+                                          title: const Text(
                                             '소리 및 진동',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 20,
                                             ),
@@ -412,12 +413,12 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                             showDialog(
                                               context: context,
                                               builder: (context) {
-                                                return MediaDialog();
+                                                return const MediaDialog();
                                               },
                                             );
                                           },
                                         ),
-                                        Divider(
+                                        const Divider(
                                           color: Colors.white,
                                           thickness: 2,
                                         ),
@@ -427,20 +428,20 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      InfoScreen()),
+                                                      const InfoScreen()),
                                             );
                                           },
-                                          child: ListTile(
+                                          child: const ListTile(
                                             title: Text(
                                               '개인정보처리방침',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
                                               ),
                                             ),
                                           ),
                                         ),
-                                        Divider(
+                                        const Divider(
                                           color: Colors.white,
                                           thickness: 2,
                                         ),
@@ -486,10 +487,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                               },
                                             );
                                           },
-                                          child: ListTile(
+                                          child: const ListTile(
                                             title: Text(
                                               '튜토리얼',
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
                                               ),
@@ -511,10 +512,10 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               );
             },
             child: Container(
-              margin: EdgeInsets.only(right: 8),
+              margin: const EdgeInsets.only(right: 8),
               width: MediaQuery.of(context).size.width * 0.09,
               height: MediaQuery.of(context).size.width * 0.09,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('lib/assets/icons/settings.png'),
                   fit: BoxFit.fitWidth,
@@ -527,16 +528,17 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       body: Stack(
         children: [
           Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: MediaQuery.of(context).size.height,
-              child: Container(
-                child: Image.asset(
-                  'lib/assets/icons/background.png',
-                  fit: BoxFit.fitHeight,
-                ),
-              )),
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.of(context).size.height,
+            child: Container(
+              child: Image.asset(
+                'lib/assets/icons/background.png',
+                fit: BoxFit.fitHeight,
+              ),
+            ),
+          ),
           SafeArea(
             child: Stack(
               children: [
@@ -548,46 +550,64 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 4),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height / 4),
                         if (nickname != null && email != null)
                           Center(
                             child: Text(
-                                style: TextStyle(fontSize: 45),
+                                style: const TextStyle(fontSize: 45),
                                 nickname != null ? nickname! : "null"),
                           ),
-                        if(nickname == null || email == null)
-                          Center(
-                            child: CircularProgressIndicator(color: Colors.white),
+                        if (nickname == null || email == null)
+                          const Center(
+                            child:
+                                CircularProgressIndicator(color: Colors.white),
                           ),
                         SizedBox(
-                              height: MediaQuery.of(context).size.height / 100),
+                            height: MediaQuery.of(context).size.height / 100),
                         if (nickname != null && email != null)
                           Center(
                             child: Text(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 email != null ? email! : "null"),
                           ),
-                        if(nickname == null || email == null)
-                          Center(
-                            child: Text("",
-                                style: TextStyle(fontSize: 20)),
+                        if (nickname == null || email == null)
+                          const Center(
+                            child: Text("", style: TextStyle(fontSize: 20)),
                           ),
                         SizedBox(
-                              height: MediaQuery.of(context).size.height / 100),
+                            height: MediaQuery.of(context).size.height / 100),
                         if (nickname != null && email != null)
                           Center(
                             child: Text(
-                                style: TextStyle(fontSize: 20),
+                                style: const TextStyle(fontSize: 20),
                                 introduction != null ? introduction! : ""),
                           ),
-                        if(nickname == null || email == null)
-                          Center(
-                            child: Text("",
-                                style: TextStyle(fontSize: 20)),
+                        if (nickname == null || email == null)
+                          const Center(
+                            child: Text("", style: TextStyle(fontSize: 20)),
                           ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height / 10),
+                        MaterialButton(
+                          color: Colors.red,
+                          child: const Text(
+                            '대전이력',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation1, animation2) =>
+                                        const GameLogScreen(),
+                                transitionDuration: Duration.zero,
+                                reverseTransitionDuration: Duration.zero,
+                              ),
+                            );
+                          },
+                        ),
                         if (_naverLoginStatus == true ||
                             _googleLoggedIn == true)
                           MaterialButton(
@@ -706,6 +726,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
 }
 
 class MediaDialog extends StatefulWidget {
+  const MediaDialog({super.key});
+
   @override
   _MediaDialogState createState() => _MediaDialogState();
 }
@@ -731,7 +753,7 @@ class _MediaDialogState extends State<MediaDialog> {
   }
 
   init() async {
-    await Timer(Duration(milliseconds: 500), () {});
+    Timer(const Duration(milliseconds: 500), () {});
     _bgmSwitchValue = await getBGM() ?? true;
     _vibrateSwitchValue = await getVibrate() ?? true;
     _hapticSwitchValue = await getHaptic() ?? true;
@@ -765,27 +787,27 @@ class _MediaDialogState extends State<MediaDialog> {
                 child: Stack(
                   children: [
                     Positioned(
-                      child: Center(
+                      left: 0,
+                      height: MediaQuery.of(context).size.width * 0.2,
+                      right: 0,
+                      child: const Center(
                         child: Text(
                           "소리 및 진동",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 40,
                           ),
                         ),
                       ),
-                      left: 0,
-                      height: MediaQuery.of(context).size.width * 0.2,
-                      right: 0,
                     ),
                     Positioned(
-                      child: Divider(
-                        color: Colors.white,
-                        thickness: 2,
-                      ),
                       left: 0,
                       top: MediaQuery.of(context).size.width * 0.2,
                       right: 0,
+                      child: const Divider(
+                        color: Colors.white,
+                        thickness: 2,
+                      ),
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width - 20,
@@ -801,9 +823,9 @@ class _MediaDialogState extends State<MediaDialog> {
                           SizedBox(
                               height: MediaQuery.of(context).size.width * 0.22),
                           ListTile(
-                            title: Text(
+                            title: const Text(
                               'BGM',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                               ),
@@ -814,7 +836,7 @@ class _MediaDialogState extends State<MediaDialog> {
                                 setState(() {
                                   _bgmSwitchValue = value;
                                 });
-                                if(_bgmSwitchValue){
+                                if (_bgmSwitchValue) {
                                   HapticFeedback.lightImpact();
                                 }
                                 SharedPreferences prefs =
@@ -826,18 +848,17 @@ class _MediaDialogState extends State<MediaDialog> {
                                 } else {
                                   AudioManager.resume();
                                 }
-
                               },
                             ),
                           ),
-                          Divider(
+                          const Divider(
                             color: Colors.white,
                             thickness: 2,
                           ),
                           ListTile(
-                            title: Text(
+                            title: const Text(
                               '진동',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                               ),
@@ -848,24 +869,23 @@ class _MediaDialogState extends State<MediaDialog> {
                                 setState(() {
                                   _vibrateSwitchValue = value;
                                 });
-                                if(_vibrateSwitchValue){
+                                if (_vibrateSwitchValue) {
                                   HapticFeedback.lightImpact();
                                 }
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 await prefs.setBool('vibrate', value);
-
                               },
                             ),
                           ),
-                          Divider(
+                          const Divider(
                             color: Colors.white,
                             thickness: 2,
                           ),
                           ListTile(
-                            title: Text(
+                            title: const Text(
                               '햅틱',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                               ),
@@ -876,13 +896,12 @@ class _MediaDialogState extends State<MediaDialog> {
                                 setState(() {
                                   _hapticSwitchValue = value;
                                 });
-                                if(_hapticSwitchValue){
+                                if (_hapticSwitchValue) {
                                   HapticFeedback.lightImpact();
                                 }
                                 SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
+                                    await SharedPreferences.getInstance();
                                 await prefs.setBool('haptic', value);
-
                               },
                             ),
                           ),
