@@ -66,11 +66,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
     email = await getEmail();
     introduction = await getIntroduction();
 
-    print(nickname);
-
-    print("nickname ${nickname == null}");
-    print(nickname);
-
     Map<String, String> tokens = await readToken();
     if (tokens.isNotEmpty && tokens['socialType'] == "GOOGLE") {
       setState(() {
@@ -92,15 +87,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       await getMyInfo();
       introduction = await getIntroduction();
     }
-
-    print(_googleLoggedIn);
-    print(_naverLoginStatus);
-    print(tokens['Authorization']);
-    print(tokens['refreshToken']);
   }
 
   Future<void> getMyInfo() async {
-    print("getmyinfo");
     String baseUrl = dotenv.env['BASE_URL']!;
     final response = await http.get(
       Uri.parse('$baseUrl/api/member/info'),
@@ -118,8 +107,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
           jsonDecode(utf8.decode(response.bodyBytes))['introduction'];
 
       if (introduction != null) {
-        saveIntroduction(introduction!);
-        print(introduction);
+        saveIntroduction(introduction);
       }
     }
   }
@@ -145,11 +133,8 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         },
         body: jsonEncode({"fcmToken": null}),
       );
-      print(response2.statusCode);
-      //
 
       Uri uri = Uri.parse("$baseUrl/api/oauth/logout");
-      // Uri uri = Uri.parse("http://10.0.2.2:8080/oauth/logout");
       final response = await http.post(
         uri,
         headers: {
@@ -163,7 +148,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
         removeNickname();
-        print("로그아웃 완료");
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -199,7 +183,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
         FlutterSecureStorage storage = const FlutterSecureStorage();
         storage.deleteAll();
         removeNickname();
-        print("탈퇴 완료");
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -212,7 +195,14 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
               title: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                  decoration: const BoxDecoration(
+                      color: Colors.red,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black54,
+                            offset: Offset(5, 5),
+                            blurRadius: 0)
+                      ]),
                   padding: const EdgeInsets.all(7),
                   child: const Text(
                     "드래곤 불",
@@ -221,23 +211,29 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                   ),
                 ),
               ),
-
               contentPadding: const EdgeInsets.only(right: 5),
               content: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Text(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: const Text(
                   '회원탈퇴 되었습니다.',
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-
               actionsPadding: const EdgeInsets.only(bottom: 15),
               actions: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                      decoration: const BoxDecoration(
+                          color: Colors.grey,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black54,
+                                offset: Offset(5, 5),
+                                blurRadius: 0)
+                          ]),
                       padding: const EdgeInsets.all(7),
                       child: GestureDetector(
                         onTap: () {
@@ -245,16 +241,18 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const LoginScreen()),
-                                (route) => false,
+                            (route) => false,
                           );
                         },
-                        child: const Text('확인', style: TextStyle(color: Colors.white),),
+                        child: const Text(
+                          '확인',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     )
                   ],
                 ),
               ],
-
             );
           },
         );
@@ -333,7 +331,7 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: <Widget>[
           GestureDetector(
             onTap: () {
@@ -532,11 +530,9 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
             left: 0,
             right: 0,
             height: MediaQuery.of(context).size.height,
-            child: Container(
-              child: Image.asset(
-                'lib/assets/icons/background.png',
-                fit: BoxFit.fitHeight,
-              ),
+            child: Image.asset(
+              'lib/assets/icons/background.png',
+              fit: BoxFit.fitHeight,
             ),
           ),
           SafeArea(
@@ -637,7 +633,6 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                           ),
                           onPressed: () {
                             _logout();
-                            print('Logout button pressed.');
                           },
                         ),
                         MaterialButton(
@@ -659,54 +654,86 @@ class _MyInfoScreenState extends State<MyInfoScreen> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      decoration: BoxDecoration(color: Colors.red, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                      decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.black54,
+                                                offset: Offset(5, 5),
+                                                blurRadius: 0)
+                                          ]),
                                       padding: const EdgeInsets.all(7),
                                       child: const Text(
                                         "드래곤 불",
-                                        style: TextStyle(fontSize: 20, color: Colors.white),
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ),
-
-                                  contentPadding: const EdgeInsets.only(right: 5),
+                                  contentPadding:
+                                      const EdgeInsets.only(right: 5),
                                   content: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                    child: Text(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: const Text(
                                       '탈퇴하시겠습니까?\n(재가입은 불가능합니다.)',
-                                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
                                     ),
                                   ),
-
-                                  actionsPadding: const EdgeInsets.only(bottom: 15),
+                                  actionsPadding:
+                                      const EdgeInsets.only(bottom: 15),
                                   actions: <Widget>[
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Container(
-                                          decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                          decoration: const BoxDecoration(
+                                              color: Colors.grey,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.black54,
+                                                    offset: Offset(5, 5),
+                                                    blurRadius: 0)
+                                              ]),
                                           padding: const EdgeInsets.all(7),
                                           child: GestureDetector(
                                             onTap: () {
                                               Navigator.of(context).pop(false);
                                             },
-                                            child: const Text('취소', style: TextStyle(color: Colors.white),),
+                                            child: const Text(
+                                              '취소',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                           ),
                                         ),
                                         Container(
-                                          decoration: BoxDecoration(color: Colors.grey, boxShadow: [BoxShadow(color: Colors.black54, offset: const Offset(5, 5), blurRadius: 0)]),
+                                          decoration: const BoxDecoration(
+                                              color: Colors.grey,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.black54,
+                                                    offset: Offset(5, 5),
+                                                    blurRadius: 0)
+                                              ]),
                                           padding: const EdgeInsets.all(7),
                                           child: GestureDetector(
                                             onTap: () {
                                               _out();
                                             },
-                                            child: const Text('탈퇴하기', style: TextStyle(color: Colors.white),),
+                                            child: const Text(
+                                              '탈퇴하기',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ],
-
                                 );
                               },
                             );
