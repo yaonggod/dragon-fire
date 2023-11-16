@@ -229,7 +229,7 @@ public class GameController {
             for (int i = 3; i >= 0; i--) {
                 if (i != 3) {
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(600);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -285,7 +285,7 @@ public class GameController {
                     for (int j = 3; j >= 0; j--) {
                         // 이건 뭘 뽑았는지 보여주는 시간이다.
                         try {
-                            Thread.sleep(700);
+                            Thread.sleep(600);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -398,7 +398,7 @@ public class GameController {
                 for (int i = 3; i >= 0; i--) {
                     if (i != 3) {
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(600);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -458,7 +458,7 @@ public class GameController {
                         for (int j = 3; j >= 0; j--) {
                             // 이건 뭘 뽑았는지 보여주는 시간이다.
                             try {
-                                Thread.sleep(700);
+                                Thread.sleep(650);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
@@ -695,7 +695,7 @@ public class GameController {
             } else if (cnt == 2) {
                 gameService.cleanList(roomID);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
