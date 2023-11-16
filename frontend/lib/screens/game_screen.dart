@@ -667,6 +667,7 @@ class _GameScreenState extends State<GameScreen> {
             isTie = false;
           });
         }
+        sendNoLeave();
       },
     );
     // 각 게임의 결과값 반환을 위한 subscriber
@@ -1049,6 +1050,13 @@ class _GameScreenState extends State<GameScreen> {
     stompClient.send(
         destination: '/pub/${widget.roomId}/pickwhat',
         body: '$nickname:$message',
+        headers: {});
+  }
+
+  void sendNoLeave(){
+    stompClient.send(
+        destination: '/pub/${widget.roomId}/noLeave',
+        body: '',
         headers: {});
   }
 
