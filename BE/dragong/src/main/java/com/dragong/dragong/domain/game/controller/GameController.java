@@ -229,7 +229,7 @@ public class GameController {
             for (int i = 3; i >= 0; i--) {
                 if (i != 3) {
                     try {
-                        Thread.sleep(600);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -285,7 +285,7 @@ public class GameController {
                     for (int j = 3; j >= 0; j--) {
                         // 이건 뭘 뽑았는지 보여주는 시간이다.
                         try {
-                            Thread.sleep(600);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -398,7 +398,7 @@ public class GameController {
                 for (int i = 3; i >= 0; i--) {
                     if (i != 3) {
                         try {
-                            Thread.sleep(600);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -458,7 +458,7 @@ public class GameController {
                         for (int j = 3; j >= 0; j--) {
                             // 이건 뭘 뽑았는지 보여주는 시간이다.
                             try {
-                                Thread.sleep(650);
+                                Thread.sleep(500);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
@@ -583,7 +583,7 @@ public class GameController {
                 int loseScore = resultUpdateService.updateLoser(parts[1], logLength);
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:"+Integer.toString(loseScore);
+                        + resultUpdateService.getComWinnerInfo(uuid) + ":10:"+Integer.toString(loseScore);
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
