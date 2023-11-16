@@ -206,7 +206,7 @@ public class FriendGameController {
             for (int i = 3; i >= 0; i--) {
                 if (i != 3) {
                     try {
-                        Thread.sleep(600);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -219,7 +219,7 @@ public class FriendGameController {
                     while (friendGameService.evenReturn(friendRoomId) != 2) {
                         //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
                         try {
-                            Thread.sleep(600);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -268,7 +268,7 @@ public class FriendGameController {
                     for (int j = 3; j >= 0; j--) {
                         // 이건 뭘 뽑았는지 보여주는 시간이다.
                         try {
-                            Thread.sleep(600);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -287,7 +287,7 @@ public class FriendGameController {
                     while (friendGameService.evenReturn(friendRoomId) != 2) {
                         //양쪽에서 값을 받지 못한 경우 넘어갈 수 없다.
                         try {
-                            Thread.sleep(600);
+                            Thread.sleep(500);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
@@ -412,7 +412,7 @@ public class FriendGameController {
         } else if (cnt == 2) {
             friendGameService.cleanList(roomID);
             try {
-                Thread.sleep(600);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
