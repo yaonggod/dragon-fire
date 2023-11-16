@@ -39,7 +39,6 @@ class GameLogScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-
                 const SizedBox(height: 20),
                 FutureBuilder(
                   future: gameLogs,
@@ -87,15 +86,31 @@ class GameLogScreen extends StatelessWidget {
                     }
                   },
                 ),
-                const Center(
-                  child: Text(
-                    '최근 다섯 개의 대전 이력 조회 가능',
-
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color.fromARGB(255, 50, 151, 206),
-                      backgroundColor: Color.fromRGBO(0, 0, 0, 0.7),
-                      fontWeight: FontWeight.bold,
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 10,
+                  ),
+                  child: Card(
+                    color: Color.fromRGBO(0, 0, 0, 0.5),
+                    margin: EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 10,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          '최근 다섯 개의 대전 이력 조회 가능',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 50, 151, 206),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
