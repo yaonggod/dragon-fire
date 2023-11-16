@@ -321,7 +321,7 @@ public class GameController {
                                 Map<String, Object> computerInfo = gameService.getCom(roomID);
 
                                 String comName = (String) computerInfo.get("comName");
-
+                                resultUpdateService.updateLoser(gameService.getPlayerAccessToken(roomID,parts[0]),1);
                                 log.info("현재 연결이 끊긴 상황입니다.");
                                 messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
                                         "승자는" + " " + comName);
