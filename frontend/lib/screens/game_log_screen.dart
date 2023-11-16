@@ -41,9 +41,11 @@ class GameLogScreen extends StatelessWidget {
               children: [
                 const Center(
                   child: Text(
-                    '최근 다섯개의 대전 이력 조회가 가능합니다.',
+                    '최근 다섯 개의 대전 이력 조회 가능',
                     style: TextStyle(
-                      color: Colors.blue,
+                      fontSize: 16,
+                      color: Color.fromARGB(255, 50, 151, 206),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -87,7 +89,7 @@ class GameLogScreen extends StatelessWidget {
                           '최근 대전 이력이 없습니다!',
                           style: TextStyle(
                             fontSize: 32,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                         ),
                       );
@@ -108,12 +110,12 @@ class GameLogScreen extends StatelessWidget {
     required List<GameLogModel> logInfo,
     required int curIdx,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+    return Card(
+      color: const Color.fromRGBO(0, 0, 0, 0.5),
+      margin: const EdgeInsets.symmetric(
+        vertical: 5,
+        horizontal: 10,
       ),
-      width: MediaQuery.of(context).size.width * 0.95,
-      height: MediaQuery.of(context).size.height * 0.15,
       child: indexCnt > curIdx
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +138,11 @@ class GameLogScreen extends StatelessWidget {
                             width: 32,
                             height: 32,
                           )
-                        : Image.asset('lib/assets/icons/loseIcon.png'),
+                        : Image.asset(
+                            'lib/assets/icons/loseIcon.png',
+                            width: 32,
+                            height: 32,
+                          ),
                     subtitle: Column(
                       children: [
                         Row(
@@ -145,9 +151,9 @@ class GameLogScreen extends StatelessWidget {
                             Text(
                               logInfo[curIdx].myNickname,
                               style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -160,8 +166,8 @@ class GameLogScreen extends StatelessWidget {
                               logInfo[curIdx].opponentNickname,
                               style: const TextStyle(
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
                               ),
                             ),
                           ],
@@ -174,15 +180,26 @@ class GameLogScreen extends StatelessWidget {
                             width: 32,
                             height: 32,
                           )
-                        : Image.asset('lib/assets/icons/winIcon.png'),
+                        : Image.asset(
+                            'lib/assets/icons/winIcon.png',
+                            width: 32,
+                            height: 32,
+                          ),
                   ),
                 ),
               ],
             )
-          : const Center(
-              child: Text(
-                '대전 이력이 없습니다',
-                style: TextStyle(fontSize: 25),
+          : const Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Center(
+                child: Text(
+                  '대전 이력이 없습니다',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
     );
