@@ -36,11 +36,15 @@ class GameLogDetailScreen extends StatelessWidget {
           width: 64,
           height: 64,
         );
-      } else {
+      } else if (skillName == '원기옥'){
         return Image.asset(
           'lib/assets/skills/meteorPlayer.gif',
           width: 64,
           height: 64,
+        );
+      } else {
+        return Container(
+          width: 64, height: 64,
         );
       }
     }
@@ -72,11 +76,15 @@ class GameLogDetailScreen extends StatelessWidget {
           width: 64,
           height: 64,
         );
-      } else {
+      } else if (skillName == '원기옥'){
         return Image.asset(
           'lib/assets/skills/meteorRival.gif',
           width: 64,
           height: 64,
+        );
+      } else {
+        return Container(
+          width: 64, height: 64,
         );
       }
     }
@@ -156,6 +164,10 @@ class GameLogDetailScreen extends StatelessWidget {
   ) {
     var myPlay = detailGameLog.myPlay.split('_');
     var opponentPlay = detailGameLog.opponentPlay.split('_');
+
+    if(roundNum >= myPlay.length){
+      return Container();
+    }
 
     var curMyRound = myPlay[roundNum].split(':');
     var curOptRound = opponentPlay[roundNum].split(':');
