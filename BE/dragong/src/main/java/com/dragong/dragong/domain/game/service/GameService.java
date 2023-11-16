@@ -1202,4 +1202,19 @@ public class GameService {
     public int noLeaveGet(int roomId) {
         return NoLeave[roomId];
     }
+
+    public void cleanEveryThing(int roomId) {
+        gameRoom[roomId] = null;
+        giDataRoom[roomId] = null;
+        countDownandstartGame[roomId] = null;
+        accessTokenRoom[roomId] = null;
+        saving[roomId] = 0;
+        visited[roomId] = false;
+        isComputerRoom[roomId] = false;
+        whoisIn[roomId] = 0;
+        whatPick[roomId] = null;
+        ComInfo[roomId] = null;
+        winInfo[roomId] = null;
+        NoLeave[roomId] = 0;
+    }
 }
