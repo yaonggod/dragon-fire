@@ -207,11 +207,13 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin, 
         int maxFloor = data["maxFloor"];
         Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => TowerEnterScreen(
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => TowerEnterScreen(
                 maxFloor: maxFloor,
                 nickname: nickname!,
               ),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
             ));
       } else {
         print('서버 응답에 roomId가 없음');

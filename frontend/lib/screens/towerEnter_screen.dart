@@ -177,6 +177,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
       ),
       body: Stack(
         children: [
+          Container(color: Colors.black),
           Positioned(
               left: 0,
               right: 0,
@@ -186,7 +187,7 @@ class _TowerScreenEnterState extends State<TowerEnterScreen> {
                   'lib/assets/icons/sky.png',
                   fit: BoxFit.fitHeight,
                 ),
-              )).animate().fade(),
+              )),
           SingleChildScrollView(
             controller: _scrollController,
             reverse: true,
