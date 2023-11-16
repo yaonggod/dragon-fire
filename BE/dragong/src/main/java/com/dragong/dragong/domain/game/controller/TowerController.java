@@ -102,7 +102,7 @@ public class TowerController {
         for (int i = 3; i >= 0; i--) {
             if (i != 3) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(600);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
