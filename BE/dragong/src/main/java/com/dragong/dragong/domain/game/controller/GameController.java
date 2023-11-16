@@ -292,6 +292,17 @@ public class GameController {
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/selected",
                                 String.valueOf(j) + " " + answer);
                     }
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    if(gameService.noLeaveGet(roomID)!=4){
+                        // 사이에 나갔다는 의미다.
+                        resultUpdateService.updateLoser(gameService.getPlayerAccessToken(roomID,parts[0]),1);
+                        gameService.noLeaveClear(roomID);
+                    }
+                    gameService.noLeaveClear(roomID);
                     // 이게 결과값을 반환하는 것이다. //
                     if (information[3].equals("나갑니다")) {
                         messagingTemplate.convertAndSend("/sub/" + roomId + "/result", answer);
@@ -691,7 +702,11 @@ public class GameController {
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/startinggame", "start");
             }
         }
+    }
 
-
+    @MessageMapping("/{roomId}/noLeave")
+    public void noLeave(@DestinationVariable String roomId) {
+        int roomID = Integer.parseInt(roomId);
+        gameService.noLeaveUpdate(roomID);
     }
 }
