@@ -71,15 +71,15 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             int nowMaxScore = playResult.getSeasonMaxScore();
             int nowStreak = playResult.getWinningStreak(); // 현재까지의 연승 정보
             playResult.setWin(playResult.getWin() + 1);
-            playResult.setScore(nowScore + 20 + nowStreak * 2 + logLength / 3);
+            playResult.setScore(nowScore + 20 + (nowStreak * 2) + (logLength / 4));
             playResult.setWinningStreak(playResult.getWinningStreak() + 1);
             playResult.setSeasonMaxWinningStreak(Math.max(playResult.getWinningStreak(),
                     playResult.getSeasonMaxWinningStreak()));
-            if (nowScore + 20 > nowMaxScore) {
-                playResult.setSeasonMaxScore(nowScore + 20 + nowStreak * 2 + logLength / 3);
+            if (nowScore + 20 + (nowStreak * 2) + (logLength / 4) > nowMaxScore) {
+                playResult.setSeasonMaxScore(nowScore + 20 + (nowStreak * 2) + (logLength / 4));
             }
 
-            return 20 + nowStreak * 2 + logLength / 3;
+            return 20 + (nowStreak * 2) + (logLength / 4);
         }
 
 
@@ -114,12 +114,20 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             int nowScore = playResult.getScore();
             playResult.setLose(playResult.getLose() + 1);
             playResult.setWinningStreak(0);
-            if (nowScore - 20 < 0) {
+            int minusscore = 0;
+            if (-20 + (logLength / 4) > -10) {
+                minusscore = -10;
+            } else {
+                minusscore = -20 + (logLength / 4);
+            }
+            if (nowScore + minusscore < 0) {
                 playResult.setScore(0);
             } else {
-                playResult.setScore(nowScore - 20 + logLength / 3);
+                playResult.setScore(nowScore + minusscore);
             }
-            return (-20 + logLength / 3);
+
+            return minusscore;
+
 
         }
 
@@ -341,8 +349,8 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             playResult.setLose(0);
             playResult.setWin(1);
             playResult.setPlayResultEmpId(playResultEmpId);
-            playResult.setSeasonMaxScore(1020);
-            playResult.setScore(1020);
+            playResult.setSeasonMaxScore(1010);
+            playResult.setScore(1010);
             playResult.setWinningStreak(1);
             playResult.setSeasonMaxWinningStreak(1);
             resultUpdateRepository.save(playResult);
@@ -351,12 +359,12 @@ public class ResultUpdateServiceImpl implements ResultUpdateService {
             int nowScore = playResult.getScore();
             int nowMaxScore = playResult.getSeasonMaxScore();
             playResult.setWin(playResult.getWin() + 1);
-            playResult.setScore(nowScore + 20);
+            playResult.setScore(nowScore + 10);
             playResult.setWinningStreak(playResult.getWinningStreak() + 1);
             playResult.setSeasonMaxWinningStreak(Math.max(playResult.getSeasonMaxWinningStreak(),
                     playResult.getWinningStreak()));
-            if (nowScore + 20 > nowMaxScore) {
-                playResult.setSeasonMaxScore(nowScore + 20);
+            if (nowScore + 10 > nowMaxScore) {
+                playResult.setSeasonMaxScore(nowScore + 10);
             }
 
         }
