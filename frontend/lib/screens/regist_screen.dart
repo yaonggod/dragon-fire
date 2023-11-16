@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/main_screen.dart';
 
 import 'package:http/http.dart' as http;
@@ -180,7 +181,7 @@ class _RegistScreenState extends State<RegistScreen> {
         print("Successfully sent data to server");
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
           (Route<dynamic> route) => false,
         );
       } else {
