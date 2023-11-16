@@ -39,16 +39,7 @@ class GameLogScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                const Center(
-                  child: Text(
-                    '최근 다섯 개의 대전 이력 조회 가능',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color.fromARGB(255, 50, 151, 206),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 20),
                 FutureBuilder(
                   future: gameLogs,
@@ -95,6 +86,18 @@ class GameLogScreen extends StatelessWidget {
                       );
                     }
                   },
+                ),
+                const Center(
+                  child: Text(
+                    '최근 다섯 개의 대전 이력 조회 가능',
+
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color.fromARGB(255, 50, 151, 206),
+                      backgroundColor: Color.fromRGBO(0, 0, 0, 0.7),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
