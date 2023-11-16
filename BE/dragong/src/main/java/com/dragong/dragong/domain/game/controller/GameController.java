@@ -254,7 +254,8 @@ public class GameController {
                             if (gameService.evenReturn(roomID) == 0) {
                                 log.info("현재 연결이 끊긴 상황이고, 양쪽에서 전부 연결이 끊긴 상황입니다.");
                                 Map<String, Object> computerInfo = gameService.getCom(roomID);
-
+                                //여기서 점수를 내려야한다.
+                                resultUpdateService.updateLoser(gameService.getPlayerAccessToken(roomID,parts[0]),1);
                                 String comName = (String) computerInfo.get("comName");
                                 messagingTemplate.convertAndSend("/sub/" + roomId + "/error",
                                         "승자는" + " " + comName);
@@ -555,7 +556,7 @@ public class GameController {
             String[] parts = result.split(":");
 
             gameService.updateLog(roomID, winner); // 컴퓨터 로그 추가
-
+            int logLength = gameService.logLength(roomID);
             System.out.println("승자는" + winner);
 //            log.info(parts[0]); // 이게 승자의 accessToken
 //            log.info(parts[1]); // 이게 패자의 accessToken
@@ -568,20 +569,20 @@ public class GameController {
             if (parts[0].equals("computerToken")) {
                 //승자가 컴퓨터인 경우
                 resultUpdateService.updateWinComputer(uuid);
-                resultUpdateService.updateLoser(parts[1], 1);
+                int loseScore = resultUpdateService.updateLoser(parts[1], logLength);
                 String info = "";
                 info += resultUpdateService.getLoserInfo(parts[1]) + ":"
-                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:20";
+                        + resultUpdateService.getComWinnerInfo(uuid) + ":20:"+Integer.toString(loseScore);
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));
             } else {
                 // 승자가 사용자인 경우
-                resultUpdateService.updateWinner(parts[0], 1);
+                int winScore = resultUpdateService.updateWinner(parts[0], logLength);
                 resultUpdateService.updateLoseComputer(uuid);
                 String info = "";
                 info += resultUpdateService.getComLoserInfo(uuid) + ":"
-                        + resultUpdateService.getWinnerInfo(parts[0]) + ":20:20";
+                        + resultUpdateService.getWinnerInfo(parts[0]) + ":"+Integer.toString(winScore)+":-20";
                 log.info("최종 결과를 도출합니다" + info);
                 messagingTemplate.convertAndSend("/sub/" + roomId + "/finalInfo",
                         String.valueOf(info));

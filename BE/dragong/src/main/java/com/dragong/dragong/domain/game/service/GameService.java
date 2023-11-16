@@ -99,6 +99,20 @@ public class GameService {
         accessTokenRoom[roomId].clear();
     }
 
+    public String getPlayerAccessToken(int roomId, String nickname) {
+        TokenData tokenData1 = accessTokenRoom[roomId].poll();
+        TokenData tokenData2 = accessTokenRoom[roomId].poll();
+
+        accessTokenRoom[roomId].add(tokenData1);
+        accessTokenRoom[roomId].add(tokenData2);
+
+        if (tokenData1.getNickname().equals(nickname)) {
+            return tokenData1.getAccessToken();
+        } else {
+            return tokenData2.getAccessToken();
+        }
+    }
+
     public String winnerAndLoserToken(int roomId, String nickname) {
         // 승자의 nickname을 받아서 승자와 패자의 accessToken을 반환한다.
         TokenData tokenData1 = accessTokenRoom[roomId].poll();
@@ -1033,18 +1047,18 @@ public class GameService {
         UUID UUID1 = null;
         UUID UUID2 = null;
 
-        if(accessToken1.equals("computerToken")){
+        if (accessToken1.equals("computerToken")) {
             String uuidString = ComInfo[roomId].getUuid();
-            UUID1= UUID.fromString(uuidString);
+            UUID1 = UUID.fromString(uuidString);
 
-        }else{
+        } else {
             UUID1 = jwtUtil.extractMemberId(accessToken1.substring(7)); // getUUID로 UUID 얻기
         }
         String accessToken2 = tokenData2.getAccessToken();
-        if(accessToken2.equals("computerToken")){
+        if (accessToken2.equals("computerToken")) {
             String uuidString = ComInfo[roomId].getUuid();
-            UUID2= UUID.fromString(uuidString);
-        }else{
+            UUID2 = UUID.fromString(uuidString);
+        } else {
             UUID2 = jwtUtil.extractMemberId(accessToken2.substring(7)); // getUUID로 UUID 얻기
         }
 
