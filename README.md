@@ -1,6 +1,8 @@
 # 드래곤 불 - 천하제일 쎄쎄쎄
 #### 구글 플레이 스토어 주소
 https://play.google.com/store/apps/details?id=com.capsule.frontend
+#### 드래곤 불 홍보 영상 주소
+https://www.youtube.com/watch?v=QjlcItBnrfY
 ## 목차
 - [배경](#배경)
 - [개요](#개요)
