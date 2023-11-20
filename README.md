@@ -3,7 +3,9 @@
 https://play.google.com/store/apps/details?id=com.capsule.frontend
 #### 드래곤 불 홍보 영상 주소
 https://www.youtube.com/watch?v=QjlcItBnrfY
-<img src="./media/시연영상.gif" width=20%>
+
+<img src="./media/시연영상.gif" width=60%>
+
 ## 목차
 - [배경](#배경)
 - [개요](#개요)
